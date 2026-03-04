@@ -1,0 +1,10 @@
+upnpclient
+# upnpinfo
+# twisted
+# requests
+# SOAPpy
+# pyupnp
+# Coherence
+# PyInstaller
+# pywin32-ctypes
+

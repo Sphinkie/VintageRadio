@@ -1,0 +1,4 @@
+lxml
+requests
+Twisted
+urllib3

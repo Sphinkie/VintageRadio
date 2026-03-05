@@ -1,9 +1,10 @@
 1  # list_dlna.py
 import os
 import configparser
+import vlc
+import time
 from pathlib import Path
 from typing import List, Tuple, Optional
-
 from dlna_network import DLNANetwork
 
 # --------------------------------------------------------------------- #
@@ -11,6 +12,14 @@ from dlna_network import DLNANetwork
 # --------------------------------------------------------------------- #
 CONFIG_FILE = Path("preferred_dlna.ini")
 CONFIG_SECTION = "server"
+
+# --------------------------------------------------------------------- #
+# Dynamic Configuration (future GPI/O)
+# --------------------------------------------------------------------- #
+MODE = "By Genre"   # fre: "Par genre"
+MODE_ID = "1"       # 1: By Genre
+GENRE = "Blues"
+GENRE_ID = "2"  # (Blues)
 
 
 # --------------------------------------------------------------------- #
@@ -139,8 +148,6 @@ def main():
     # Configurable folder hierarchy – you can change these constants
     # -----------------------------------------------------------------
     ROOT_ID = "0"  # the root container (Music / Photo / Video)
-    BY_FOLDER_ID = "1"  # placeholder – will be looked up below
-    BLUES_ID = "2"  # placeholder – will be looked up below
 
     # -------------------------------------------------------------
     # Helper to find a child container by its title (case‑insensitive)
@@ -170,23 +177,21 @@ def main():
         return
 
     # 2️⃣ “By Genre” (configurable)
-    byGenre_id = find_child_id(music_container_id, "By Genre")
-    if byGenre_id is None:
-        byGenre_id = find_child_id(music_container_id, "Par genre")
-    if byGenre_id is None:
-        print("Could not locate a 'By Genre' container under 'Music'.")
+    container_id = find_child_id(music_container_id, MODE)
+    if container_id is None:
+        print("Could not locate a '" + MODE + "' container under 'Music'.")
         return
 
     # 3️⃣ “Blues” (configurable)
-    blues_id = find_child_id(byGenre_id, "Blues")
-    if blues_id is None:
+    genre_id = find_child_id(container_id, GENRE)
+    if genre_id is None:
         print("Could not locate a 'Blues' container under 'By Genre'.")
         return
 
     # -------------------------------------------------------------
     # Finally list MP3 files inside the Blues container
     # -------------------------------------------------------------
-    didl_blues = net.browse(control_url, object_id=blues_id)
+    didl_blues = net.browse(control_url, object_id=genre_id)
     if didl_blues is None:  # DDL
         print("Failed to browse the 'Blues' container.")
         return
@@ -200,6 +205,15 @@ def main():
     for url in mp3_urls:
         print(url)
 
+    print("\n--- Start playing ---")
+    for url in mp3_urls:
+        # Create a VLC instance and media player
+        player = vlc.MediaPlayer(url)
+        # Start playback (returns immediately)
+        player.play()
+        # Wait until the track ends
+        while player.get_state() != vlc.State.Ended:
+            time.sleep(0.5)          # poll every half-second
 
 # -------------------------------------------------------------
 # Launch Main Program

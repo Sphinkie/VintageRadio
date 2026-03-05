@@ -1,4 +1,4 @@
-# Render ython libs comparison from Lumo
+# Render Python libs comparison by Lumo
 
 
 ## playsound – what it actually does
@@ -27,10 +27,15 @@ Because the library delegates the decoding and playback to whatever player the O
 
 ## Better-suited alternatives for high-quality, controllable MP3 playback in Python
 
-| Library| Quality / Features | Typical Install Command | 
-| ---| ---| ---| 
-When to choose itpygame.mixer (part of pygame)Uses SDL’s mixer, which decodes MP3 via libmad/ffmpeg; solid 44.1 kHz – 16‑bit output. 
-Supports volume, pause, stop, looping, and non‑blocking playback.pip install pygameYou already need a game‑style loop or want simple real‑time control.vlc (python‑vlc)Thin binding to libVLC – the same engine behind the VLC desktop player. Handles every common codec, offers precise seeking, volume, playlists, and hardware‑accelerated decoding when available.pip install python-vlc (requires VLC installed on the system)You need robust codec support, streaming, or advanced controls.pydub + simpleaudiopydub loads/filters audio (uses ffmpeg under the hood); simpleaudio plays the raw PCM buffer. Gives you full access to the waveform, can change sample rate, apply effects, and play asynchronously.pip install pydub simpleaudio (ffmpeg must be on PATH)You want to manipulate the audio (trim, fade, concatenate) before playing.sounddeviceDirectly streams NumPy arrays to the sound card via PortAudio. Very low latency, great for synthesis or processing pipelines.pip install sounddeviceYou generate audio programmatically or need sample‑accurate timing.playsound‑async (fork)Same API as playsound but runs playback in a background thread, letting your script continue. Still relies on the OS player for decoding.pip install playsound-asyncYou like the one‑liner style but need non‑blocking behaviour.ffpyplayerFFmpeg‑based player with Python bindings; supports video too. Good for custom media pipelines.pip install ffpyplayerYou already use FFmpeg elsewhere and want a unified interface.pyglet.mediaPart of the pyglet multimedia library; uses OpenAL/AVbin for decoding. Handles MP3, OGG, WAV, etc., with volume and looping.pip install pygletYou are building a GUI/game with pyglet already.
+| Library                       | Quality / Features                                                                                                                                                                                   | Typical Install Command                                           | When to choose it                                                          | 
+|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------|----------------------------------------------------------------------------|
+| pygame.mixer (part of pygame) | Uses SDL’s mixer, which decodes MP3 via libmad/ffmpeg; solid 44.1kHz–16‑bit output. Supports volume, pause, stop, looping, and non‑blocking playback.                                                | pip install pygame                                                | You already need a game‑style loop or want simple real‑time control.       |
+| vlc (python‑vlc)              | Thin binding to libVLC – the same engine behind the VLC desktop player. Handles every common codec, offers precise seeking, volume, playlists, and hardware‑accelerated decoding when available.     | pip install python-vlc (requires VLC installed on the system)     | You need robust codec support, streaming, or advanced controls.            | 
+| pydub + simpleaudio           | pydub loads/filters audio (uses ffmpeg under the hood); simpleaudio plays the raw PCM buffer. Gives you full access to the waveform, can change sample rate, apply effects, and play asynchronously. | pip install pydub simpleaudio (ffmpeg must be on PATH)            | You want to manipulate the audio (trim, fade, concatenate) before playing. | 
+| sounddevice                   | Directly streams NumPy arrays to the sound card via PortAudio. Very low latency, great for synthesis or processing pipelines.                                                                        | pip install sounddevice                                           | You generate audio programmatically or need sample‑accurate timing.        |
+| playsound‑async (fork)        | Same API as playsound but runs playback in a background thread, letting your script continue. Still relies on the OS player for decoding.                                                            | pip install playsound-async                                       | You like the one‑liner style but need non‑blocking behaviour.              |
+| ffpyplayer                    | FFmpeg‑based player with Python bindings; supports video too. Good for custom media pipelines.                                                                                                       | pip install ffpyplayer                                            | You already use FFmpeg elsewhere and want a unified interface.             |
+| pyglet.media                  | Part of the pyglet multimedia library; uses OpenAL/AVbin for decoding. Handles MP3, OGG, WAV, etc., with volume and looping.                                                                         | pip install pyglet                                                | You are building a GUI/game with pyglet already.                           |
 
 ## Quick example with python-vlc (high-quality, non-blocking)
 
@@ -51,7 +56,7 @@ while player.get_state() != vlc.State.Ended:
 
 ## Quick example with pygame.mixer
 
-```
+```python
 import pygame
 
 pygame.mixer.init()               # initializes the audio subsystem
@@ -62,20 +67,20 @@ pygame.mixer.music.play()
 # Keep the script alive while music plays
 while pygame.mixer.music.get_busy():
     pygame.time.Clock().tick(30)   # 30-fps loop
-```	
+```
 	
 Both of these libraries decode the MP3 themselves (via ffmpeg/libVLC or SDL_mixer), so the playback quality is consistent across platforms and independent of the OS’s built-in decoder.
 
 ## Which one should you pick?
 
-| Goal | Recommended library| 
-| ---| ---| 
-| Just a quick “play this file” in a throw-away script| playsound (if you accept blocking) or playsound-async.| 
-| Need volume/pause/stop and reliable cross-platform quality| pygame.mixer or python-vlc.| 
-| Want to edit/concatenate audio before playing| pydub+simpleaudio.| 
-| Real-time synthesis or low-latency playback| sounddevice (or pygame if you already have a game loop).| 
-| Already using VLC or need advanced codec support| python-vlc.| 
-| Building a GUI/game with its own event loop| pyglet.media or pygame.| 
+| Goal                                                       | Recommended library                                      | 
+|------------------------------------------------------------|----------------------------------------------------------| 
+| Just a quick “play this file” in a throw-away script       | playsound (if you accept blocking) or playsound-async.   | 
+| Need volume/pause/stop and reliable cross-platform quality | pygame.mixer or python-vlc.                              | 
+| Want to edit/concatenate audio before playing              | pydub+simpleaudio.                                       | 
+| Real-time synthesis or low-latency playback                | sounddevice (or pygame if you already have a game loop). | 
+| Already using VLC or need advanced codec support           | python-vlc.                                              | 
+| Building a GUI/game with its own event loop                | pyglet.media or pygame.                                  | 
 
 ## Bottom line
 
@@ -94,7 +99,7 @@ It uses the same underlying OS player as playsound but runs the playback in a ba
 ## Minimal example – fire-and-forget playback with playsound-async
 
 
-```
+```python
 from playsound_async import playsound
 import time
 
@@ -118,9 +123,9 @@ When the script exits, the daemon thread is terminated, so the sound stops autom
 
 ### Controlling the playback (optional)
 
-playsound-async returns a PlayHandle object that lets you stop the sound early if you need to:
+`playsound-async` returns a `PlayHandle` object that lets you stop the sound early if you need to:
 
-```
+```python
 from playsound_async import playsound
 import time
 
@@ -128,18 +133,19 @@ handle = playsound("example.mp3")   # start async playback
 time.sleep(3)                      # let it play for a bit
 handle.stop()                      # stop immediately
 print("Playback stopped manually.")
-
-handle.stop() sends a termination request to the underlying OS player.
-The handle also exposes is_playing() (True while the sound is still active).
 ```
+
+`handle.stop()` sends a termination request to the underlying OS player.  
+The handle also exposes `is_playing()` (True while the sound is still active).
 
 ### Things to keep in mind
 
-| Aspect|Detail|
-| ---| ---| 
-| File format| Any format the OS can play (MP3, WAV, AAC, …).| 
-| Blocking vs. non-blocking | The call itself never blocks; the returned handle lets you intervene.| 
-| Thread safety| The playback runs in a daemon thread, so it won’t prevent the interpreter from exiting.| 
-| Dependencies| No extra binaries; it relies on the OS-provided player (same as playsound).| 
+| Aspect                    | Detail                                                                                  |
+|---------------------------|-----------------------------------------------------------------------------------------| 
+| File format               | Any format the OS can play (MP3, WAV, AAC, …).                                          | 
+| Blocking vs. non-blocking | The call itself never blocks; the returned handle lets you intervene.                   | 
+| Thread safety             | The playback runs in a daemon thread, so it won’t prevent the interpreter from exiting. | 
+| Dependencies              | No extra binaries; it relies on the OS-provided player (same as playsound).             | 
 
-That’s all you need to get quick, asynchronous MP3 playback with playsound‑async. Happy coding!
+That’s all you need to get quick, asynchronous MP3 playback with playsound‑async.  
+Happy coding!

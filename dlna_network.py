@@ -114,10 +114,10 @@ class DLNANetwork:
                 ctrl_url = service.findtext('{*}controlURL')
                 # Resolve relative URLs against the base description URL
                 if ctrl_url.startswith('http'):
-                    print("XMl contains control url:", ctrl_url)
+                    # print("XMl contains control url:", ctrl_url)
                     return ctrl_url
                 else:
-                    print("control url:", ctrl_url, "needs base prefix.")
+                    # print("control url:", ctrl_url, "needs base url prefix.")
                     base = f"{parsed.scheme}://{parsed.netloc}"
                     return base + (ctrl_url if ctrl_url.startswith('/') else '/' + ctrl_url)
         return None

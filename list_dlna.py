@@ -7,18 +7,13 @@ from pathlib import Path
 from typing import List, Tuple, Optional
 from dlna_network import DLNANetwork
 from dlna_music import DLNAMusic
+from dlna_user_request import DLNAUserRequest
 
 # --------------------------------------------------------------------- #
 # Configuration handling (preferred_dlna.ini)
 # --------------------------------------------------------------------- #
 CONFIG_FILE = Path("preferred_dlna.ini")
 CONFIG_SECTION = "server"
-
-# --------------------------------------------------------------------- #
-# Dynamic Configuration (from JSON file)
-# --------------------------------------------------------------------- #
-MODE = "By Genre"  # fre: "Par genre"
-GENRE = "Blues"
 
 
 # --------------------------------------------------------------------- #
@@ -80,6 +75,7 @@ def pick_server_interactively(servers: List[Tuple[str, str]]) -> Optional[str]:
 def resolve_control(url: str) -> Optional[str]:
     return DLNANetwork.get_content_directory_control_url(url)
 
+
 # --------------------------------------------------------------------- #
 # Installe un Handler qui stoppe VLC proprement en cas de CTRL-C.
 # --------------------------------------------------------------------- #
@@ -88,11 +84,28 @@ def install_signal_handler(music_obj):
     # Handler
     # -----------------------
     def handler(sig, frame):
-        print("\nStopping playback…")
+        print("\n--- Stop playing... (exit)")
         music_obj.stop()
         sys.exit(0)
+
     # -----------------------
     signal.signal(signal.SIGINT, handler)
+
+
+# -----------------------------------------------------------------
+# Callback that runs after each track finishes.
+# -----------------------------------------------------------------
+def refresh_config():
+    new_request = dlna_user_request.load_user_request()
+    # Only change the variables if the file actually differs.
+    # This avoids unnecessary prints when the user hasn't edited the file.
+    if (new_request["mode"] != dlna_user_request.previous_mode
+            or new_request["genre"] != dlna_user_request.previous_genre):
+        print(f"\n🔄  Detected user request change – new mode: {new_request['mode']}, genre: {new_request['genre']}")
+        dlna_user_request.previous_mode = new_request["mode"]
+        dlna_user_request.previous_genre = new_request["genre"]
+    # No return value needed
+
 
 # --------------------------------------------------------------------- #
 # Main orchestration
@@ -100,7 +113,12 @@ def install_signal_handler(music_obj):
 def main():
     net = DLNANetwork()
     musics = DLNAMusic()
+    user_request = DLNAUserRequest()
+    # On ajoute un handler pour le CTR-C
     install_signal_handler(musics)
+    # On ajoute un callback pour actualiser les modes et genre
+    # musics.after_track_callback = refresh_config
+    musics.after_track_callback = user_request.refresh_user_request
 
     # 1️⃣ Try to load a previously saved server
     control_url: Optional[str] = None
@@ -173,6 +191,9 @@ def main():
                 return container.attrib.get('id')
         return None
 
+    # Première lecture du fichier de demande
+    user_request.load_user_request()
+
     # -------------------------------------------------------------
     # Resolve the two configurable sub‑folders
     # -------------------------------------------------------------
@@ -186,15 +207,15 @@ def main():
         return
 
     # 2️⃣ “By Genre” (configurable)
-    container_id = find_child_id(music_container_id, MODE)
+    container_id = find_child_id(music_container_id, user_request.get('mode'))
     if container_id is None:
-        print(f"Could not locate a '{MODE}' container under 'Music'.")
+        print(f"Could not locate a '{user_request.get('mode')}' container under 'Music'.")
         return
 
     # 3️⃣ “Blues” (configurable)
-    genre_id = find_child_id(container_id, GENRE)
+    genre_id = find_child_id(container_id, user_request.get('genre'))
     if genre_id is None:
-        print(f"Could not locate a '{GENRE}' container under '{MODE}'.")
+        print(f"Could not locate a '{user_request.get('genre')}' container under '{user_request.get('mode')}'.")
         return
 
     # -------------------------------------------------------------
@@ -202,7 +223,7 @@ def main():
     # -------------------------------------------------------------
     didl_blues = net.browse(control_url, object_id=genre_id)
     if didl_blues is None:
-        print(f"Failed to browse the '{GENRE}' container.")
+        print(f"Failed to browse the '{user_request.get('genre')}' container.")
         return
 
     # -------------------------------------------------------------
@@ -211,7 +232,7 @@ def main():
     # On récupère la liste des MP3
     musics.discover_tracks(net.extract_mp3_items(didl_blues))
 
-    print(f"\n--- MP3 files found in '{GENRE}':")
+    print(f"\n--- MP3 files found in '{user_request.get('genre')}':")
     musics.list_all()
 
     print("\n--- Start playing...")

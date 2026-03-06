@@ -2,6 +2,7 @@
 import time
 import random
 import sys
+
 try:
     import vlc
 except ImportError:
@@ -24,7 +25,8 @@ class DLNAMusic:
         self.tracks = []
         self._stop_requested = False
         self.renderer = vlc.MediaPlayer()
-
+        #  Optional hook that the caller can set to be notified after each track
+        self.after_track_callback = None
 
     # --------------------------------------------------------------------- #
     # Remplissage de la structure
@@ -98,7 +100,7 @@ class DLNAMusic:
             pause before accepting the next URI). Default is 0.
 
         Notes
-        -----
+        ----------
         * The method respects ``self._stop_requested`` – calling ``self.stop()``
           from another thread will break out of the loop promptly.
         * It makes a shallow copy of ``self.tracks`` before shuffling so the
@@ -109,8 +111,8 @@ class DLNAMusic:
 
         while True:
             # Create a fresh shuffled copy each iteration (important if repeat=True)
-            shuffled_tracklist = self.tracks[:]          # shallow copy
-            random.shuffle(shuffled_tracklist)           # in‑place randomisation
+            shuffled_tracklist = self.tracks[:]  # shallow copy
+            random.shuffle(shuffled_tracklist)  # in‑place randomisation
 
             for uri in shuffled_tracklist:
                 if self._stop_requested:
@@ -118,17 +120,25 @@ class DLNAMusic:
                     self._stop_requested = False
                     return
 
-                # Start the track
+                # Play the track
                 self.play_track(uri)
 
                 # Optional: give the renderer a moment to settle before the next URI
-                if delay_between > 0:
+                if delay_between:
                     time.sleep(delay_between)
 
+                # --------------------------------------------------------------------
+                # Invoke the optional hook – this is where we will reload request.json
+                # TODO: A faire au bout de 10 secondes de playout
+                # --------------------------------------------------------------------
+                if callable(self.after_track_callback):
+                    self.after_track_callback()
+                # --------------------------------------------------------------------
+
                 # NOTE: If you want to wait until the track actually finishes,
-                # you could poll the renderer’s TransportState or listen for an
-                # event. For simplicity, this example just fires the next URI
+                # you could poll the renderer’s TransportState or listen for an event.
+                # For simplicity, this example just fires the next URI
                 # after the optional delay.
 
             if not repeat:
-                break   # Exit after one full shuffled run
+                break  # Exit after one full shuffled run

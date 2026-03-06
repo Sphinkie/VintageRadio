@@ -1,6 +1,8 @@
 1  # list_dlna.py
 import os
 import configparser
+import sys
+import signal
 from pathlib import Path
 from typing import List, Tuple, Optional
 from dlna_network import DLNANetwork
@@ -13,12 +15,10 @@ CONFIG_FILE = Path("preferred_dlna.ini")
 CONFIG_SECTION = "server"
 
 # --------------------------------------------------------------------- #
-# Dynamic Configuration (future GPI/O)
+# Dynamic Configuration (from JSON file)
 # --------------------------------------------------------------------- #
 MODE = "By Genre"  # fre: "Par genre"
-MODE_ID = "1"  # 1: By Genre
 GENRE = "Blues"
-GENRE_ID = "2"  # (Blues)
 
 
 # --------------------------------------------------------------------- #
@@ -74,13 +74,25 @@ def pick_server_interactively(servers: List[Tuple[str, str]]) -> Optional[str]:
         print("Invalid selection – try again.")
 
 
-# -----------------------------------------------------------------
+# --------------------------------------------------------------------- #
 # Helper to turn a description URL into the ContentDirectory control URL
-# DDL; sorti du MAiN
-# -----------------------------------------------------------------
+# --------------------------------------------------------------------- #
 def resolve_control(url: str) -> Optional[str]:
     return DLNANetwork.get_content_directory_control_url(url)
 
+# --------------------------------------------------------------------- #
+# Installe un Handler qui stoppe VLC proprement en cas de CTRL-C.
+# --------------------------------------------------------------------- #
+def install_signal_handler(music_obj):
+    # -----------------------
+    # Handler
+    # -----------------------
+    def handler(sig, frame):
+        print("\nStopping playback…")
+        music_obj.stop()
+        sys.exit(0)
+    # -----------------------
+    signal.signal(signal.SIGINT, handler)
 
 # --------------------------------------------------------------------- #
 # Main orchestration
@@ -88,6 +100,7 @@ def resolve_control(url: str) -> Optional[str]:
 def main():
     net = DLNANetwork()
     musics = DLNAMusic()
+    install_signal_handler(musics)
 
     # 1️⃣ Try to load a previously saved server
     control_url: Optional[str] = None
@@ -144,11 +157,6 @@ def main():
     print(f"\nUsing ContentDirectory control URL: {control_url}")
     assert control_url is not None
 
-    # -----------------------------------------------------------------
-    # Configurable folder hierarchy – you can change these constants
-    # -----------------------------------------------------------------
-    ROOT_ID = "0"  # the root container (Music / Photo / Video)
-
     # -------------------------------------------------------------
     # Helper to find a child container by its title (case‑insensitive)
     # Note : DIDL‑Lite(Digital Item Description Language) is the standard
@@ -157,7 +165,7 @@ def main():
     # -------------------------------------------------------------
     def find_child_id(parent_id: str, title: str) -> Optional[str]:
         didl = net.browse(control_url, object_id=parent_id)
-        if didl is None:  # DDL
+        if didl is None:
             return None
         for container in didl.findall('.//{*}container'):
             dc_title = container.find('{*}title')
@@ -168,6 +176,7 @@ def main():
     # -------------------------------------------------------------
     # Resolve the two configurable sub‑folders
     # -------------------------------------------------------------
+    ROOT_ID = "0"  # the root container (Music / Photo / Video)
     # 1️⃣ “Music” – we assume it is a direct child of the root
     music_container_id = find_child_id(ROOT_ID, "Music")
     if music_container_id is None:
@@ -192,7 +201,7 @@ def main():
     # List MP3 files inside the container
     # -------------------------------------------------------------
     didl_blues = net.browse(control_url, object_id=genre_id)
-    if didl_blues is None:  # DDL
+    if didl_blues is None:
         print(f"Failed to browse the '{GENRE}' container.")
         return
 

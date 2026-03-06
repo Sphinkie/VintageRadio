@@ -93,8 +93,13 @@ class DLNANetwork:
         """
         parsed = urlparse(desc_url)
         conn = http.client.HTTPConnection(parsed.hostname, parsed.port or 80, timeout=5)
-        conn.request("GET", parsed.path or "/")
-        resp = conn.getresponse()
+        try:
+            conn.request("GET", parsed.path or "/")
+            resp = conn.getresponse()
+        except Exception as e:
+            # Gestion des erreurs réseau
+            print(f"Failed to fetch device description: {e}")
+            return None
         if resp.status != 200:
             return None
         xml_data = resp.read()
@@ -188,8 +193,13 @@ class DLNANetwork:
             "Content-Length": str(len(envelope)),
         }
         path = parsed.path or "/"
-        conn.request("POST", path, envelope.encode('utf-8'), headers)
-        resp = conn.getresponse()
+        try:
+            conn.request("POST", path, envelope.encode('utf-8'), headers)
+            resp = conn.getresponse()
+        except Exception as e:
+            # Gestion des erreurs réseau
+            print(f"Failed to fetch ContentDirectory: {e}")
+            return None
         if resp.status != 200:
             conn.close()
             return None

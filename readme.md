@@ -6,14 +6,18 @@
 
 A command-line python program for RaspberryPi that plays music served by a DLNA NAS (Synology).
 
+Faire CTRL-C pour stopper
+
 ## Tips
 
 ### Sur Raspberry:
 
 - Apairer la sortie audio avec une enceinte bluetooth si souhaité.
-- commandes utiles:
-```
-apt instal python3-vlc
+- Installation:
+```bash
+sudo apt update
+sudo apt install python3-pip python3-vlc
+pip3 install -r requirements.txt   # (optional, if you add extra deps)
 git clone https://github.com/Sphinkie/VintageRadio
 cd Programmes/VintageRadio
 python list_dlna.py
@@ -24,7 +28,7 @@ git pull
 
 ### Sur Windows:
 
-- appliquer le module `python vlc` dans l'environnement virtiel.
+- appliquer le module `python vlc` dans l'environnement virtuel.
   (ou faire `pip install python-vlc`).
 
-Utilise la librairie Python `libvlc.dll`.
+- Utilise la librairie Python `libvlc.dll`.

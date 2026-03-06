@@ -1,7 +1,11 @@
 # dlna_music.py
-import vlc
 import time
 import random
+import sys
+try:
+    import vlc
+except ImportError:
+    sys.exit("python-vlc not found – install with: sudo apt-get install python3-vlc ")
 
 
 # ----------------------------------------------------------------------- #
@@ -16,15 +20,17 @@ class DLNAMusic:
     # Constructeur
     # --------------------------------------------------------------------- #
     def __init__(self):
+        """ Constructor. """
         self.tracks = []
         self._stop_requested = False
         self.renderer = vlc.MediaPlayer()
+
 
     # --------------------------------------------------------------------- #
     # Remplissage de la structure
     # --------------------------------------------------------------------- #
     def discover_tracks(self, mp3_urls):
-        """ Populate self.tracks with absolute URLs of MP3 files found under container_url."""
+        """ Populate tracks with absolute URLs of MP3 files found under container_url."""
         if mp3_urls is None:  # DDL
             print("No MP3 files were found in the folder.")
         else:

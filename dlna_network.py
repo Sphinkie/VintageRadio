@@ -204,7 +204,7 @@ class DLNANetwork:
             return None
 
         # The text inside <Result> is itself XML – parse it
-        print (result_el.text)
+        # print (result_el.text)
         didl_root = ET.fromstring(result_el.text)
         return didl_root
 

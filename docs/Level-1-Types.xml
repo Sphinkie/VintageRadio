@@ -1,0 +1,21 @@
+<DIDL-Lite 	xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/" 
+			xmlns:dc="http://purl.org/dc/elements/1.1/" 
+			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/" 
+			xmlns:sec="http://www.sec.co.kr/" 
+			xmlns:dlna="urn:schemas-dlna-org:metadata-1-0/">
+			
+	<container id="21" parentID="0" restricted="1">
+		<dc:title>Music</dc:title>
+		<upnp:class>object.container</upnp:class>
+	</container>
+	<container id="32" parentID="0" restricted="1">
+		<dc:title>Photo</dc:title>
+		<upnp:class>object.container.storageFolder</upnp:class>
+		<upnp:storageUsed>-1</upnp:storageUsed>
+	</container>
+	<container id="33" parentID="0" restricted="1">
+		<dc:title>Video</dc:title>
+		<upnp:class>object.container.storageFolder</upnp:class>
+		<upnp:storageUsed>-1</upnp:storageUsed>
+	</container>
+</DIDL-Lite>

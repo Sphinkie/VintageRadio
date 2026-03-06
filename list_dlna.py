@@ -1,11 +1,10 @@
 1  # list_dlna.py
 import os
 import configparser
-import vlc
-import time
 from pathlib import Path
 from typing import List, Tuple, Optional
 from dlna_network import DLNANetwork
+from dlna_music import DLNAMusic
 
 # --------------------------------------------------------------------- #
 # Configuration handling (preferred_dlna.ini)
@@ -16,8 +15,8 @@ CONFIG_SECTION = "server"
 # --------------------------------------------------------------------- #
 # Dynamic Configuration (future GPI/O)
 # --------------------------------------------------------------------- #
-MODE = "By Genre"   # fre: "Par genre"
-MODE_ID = "1"       # 1: By Genre
+MODE = "By Genre"  # fre: "Par genre"
+MODE_ID = "1"  # 1: By Genre
 GENRE = "Blues"
 GENRE_ID = "2"  # (Blues)
 
@@ -88,6 +87,7 @@ def resolve_control(url: str) -> Optional[str]:
 # --------------------------------------------------------------------- #
 def main():
     net = DLNANetwork()
+    musics = DLNAMusic()
 
     # 1️⃣ Try to load a previously saved server
     control_url: Optional[str] = None
@@ -179,41 +179,36 @@ def main():
     # 2️⃣ “By Genre” (configurable)
     container_id = find_child_id(music_container_id, MODE)
     if container_id is None:
-        print("Could not locate a '" + MODE + "' container under 'Music'.")
+        print(f"Could not locate a '{MODE}' container under 'Music'.")
         return
 
     # 3️⃣ “Blues” (configurable)
     genre_id = find_child_id(container_id, GENRE)
     if genre_id is None:
-        print("Could not locate a 'Blues' container under 'By Genre'.")
+        print(f"Could not locate a '{GENRE}' container under '{MODE}'.")
         return
 
     # -------------------------------------------------------------
-    # Finally list MP3 files inside the Blues container
+    # List MP3 files inside the container
     # -------------------------------------------------------------
     didl_blues = net.browse(control_url, object_id=genre_id)
     if didl_blues is None:  # DDL
-        print("Failed to browse the 'Blues' container.")
+        print(f"Failed to browse the '{GENRE}' container.")
         return
 
-    mp3_urls = net.extract_mp3_items(didl_blues)
-    if mp3_urls is None:   # DDL
-        print("No MP3 files were found in the 'Blues' folder.")
-        return
+    # -------------------------------------------------------------
+    # Play MP3 files
+    # -------------------------------------------------------------
+    # On récupère la liste des MP3
+    musics.discover_tracks(net.extract_mp3_items(didl_blues))
 
-    print("\n--- MP3 files found in 'Blues' ---")
-    for url in mp3_urls:
-        print(url)
+    print(f"\n--- MP3 files found in '{GENRE}':")
+    musics.list_all()
 
-    print("\n--- Start playing ---")
-    for url in mp3_urls:
-        # Create a VLC instance and media player
-        player = vlc.MediaPlayer(url)
-        # Start playback (returns immediately)
-        player.play()
-        # Wait until the track ends
-        while player.get_state() != vlc.State.Ended:
-            time.sleep(0.5)          # poll every half-second
+    print("\n--- Start playing...")
+    # musics.play_all()
+    musics.play_random(False, 0.5)
+
 
 # -------------------------------------------------------------
 # Launch Main Program

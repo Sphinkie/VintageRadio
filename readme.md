@@ -1,18 +1,25 @@
 # VintageRadio pour Raspberry
 
-Description : work in progress
+> work in progress
+
+## Description 
+
+A command-line python program for RaspberryPi that plays music served by a DLNA NAS (Synology).
 
 ## Tips
 
 ### Sur Raspberry:
 
 - Apairer la sortie audio avec une enceinte bluetooth si souhaité.
-- commandes
+- commandes utiles:
 ```
 apt instal python3-vlc
 git clone https://github.com/Sphinkie/VintageRadio
 cd Programmes/VintageRadio
 python list_dlna.py
+...
+# update with:
+git pull
 ```
 
 ### Sur Windows:

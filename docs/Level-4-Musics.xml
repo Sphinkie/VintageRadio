@@ -1,0 +1,57 @@
+<!-- Exemple de résultat (pour 1 mp3)  -->
+<DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/"
+           xmlns:dc="http://purl.org/dc/elements/1.1/"
+           xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"
+           xmlns:sec="http://www.sec.co.kr/"
+           xmlns:dlna="urn:schemas-dlna-org:metadata-1-0/">
+		   
+	<item id="28$2857$@2913" parentID="28$2857" restricted="1">
+		<dc:title>Ain&apos;t No Grave Can Hold My Body Down</dc:title>
+		<upnp:class>object.item.audioItem.musicTrack</upnp:class>
+		<dc:date>2010-01-01</dc:date>
+		<upnp:album>American VI: Ain&apos;t No Grave</upnp:album>
+		<upnp:albumArtist>Johnny Cash</upnp:albumArtist>
+		<upnp:artist>Johnny Cash</upnp:artist>
+		<dc:creator>Johnny Cash</dc:creator>
+		<upnp:genre>Blues</upnp:genre>
+		<upnp:albumArtURI dlna:profileID="JPEG_TN">http://192.168.0.101:50002/transcoder/jpegtnscaler.cgi/ebdart/2913.jpg</upnp:albumArtURI>
+		<res protocolInfo="http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01;DLNA.ORG_FLAGS=01700000000000000000000000000000"
+		     size="4208621"
+		     bitrate="24000"
+		     duration="0:02:52.000"
+		     nrAudioChannels="2"
+		     sampleFrequency="44100">http://192.168.0.101:50002/m/MP3/2913.mp3</res>
+	</item>
+	
+	<item id="28$2857$@2914" parentID="28$2857" restricted="1">
+		<dc:date>1966-01-01</dc:date>
+		<upnp:album>With the Muddy Waters Blues Band 1966</upnp:album>
+		<upnp:albumArtist>Big Mama Thornton</upnp:albumArtist>
+		<upnp:artist>Big Mama Thornton</upnp:artist>
+		<dc:creator>Big Mama Thornton</dc:creator>
+		<upnp:genre>Blues</upnp:genre>
+		<upnp:author>Willie Mae Thornton</upnp:author>
+		<upnp:originalTrackNumber>3</upnp:originalTrackNumber>
+		<upnp:albumArtURI dlna:profileID="JPEG_TN">http://192.168.0.101:50002/transcoder/jpegtnscaler.cgi/ebdart/2896.jpg</upnp:albumArtURI>
+		<res protocolInfo="http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01;DLNA.ORG_FLAGS=01700000000000000000000000000000"
+		     size="5556224"
+		     bitrate="32000"
+		     duration="0:02:52.000"
+		     nrAudioChannels="2"
+		     sampleFrequency="44100">http://192.168.0.101:50002/m/MP3/2896.mp3</res>
+	</item>
+	
+	<item id="28$2857$@4892" parentID="28$2857" restricted="1">
+		<dc:date>1969-01-01</dc:date>
+		<upnp:album>music</upnp:album>
+		<upnp:artist>The Rolling Stones</upnp:artist>
+		<dc:creator>The Rolling Stones</dc:creator>
+		<upnp:genre>Blues</upnp:genre>
+		<res protocolInfo="http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01;DLNA.ORG_FLAGS=01700000000000000000000000000000"
+		     size="6030557"
+		     bitrate="33500"
+		     duration="0:02:59.000"
+		     nrAudioChannels="2"
+		     sampleFrequency="48000">http://192.168.0.101:50002/m/MP3/4892.mp3</res>
+	</item>
+</DIDL-Lite>

@@ -1,0 +1,44 @@
+<DIDL-Lite 	xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/" 
+			xmlns:dc="http://purl.org/dc/elements/1.1/" 
+			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/" 
+			xmlns:sec="http://www.sec.co.kr/" 
+			xmlns:dlna="urn:schemas-dlna-org:metadata-1-0/">
+			
+	<container id="22" parentID="21" restricted="1">
+		<dc:title>By Folder</dc:title>
+		<upnp:class>object.container.storageFolder</upnp:class>
+		<upnp:storageUsed>-1</upnp:storageUsed>
+	</container>
+	<container id="23" parentID="21" restricted="1">
+		<dc:title>All music</dc:title>
+		<upnp:class>object.container</upnp:class>
+	</container>
+	<container id="24" parentID="21" restricted="1">
+		<dc:title>Playlist</dc:title>
+		<upnp:class>object.container</upnp:class>
+	</container>
+	<container id="25" parentID="21" restricted="1">
+		<dc:title>Smart Playlist</dc:title>
+		<upnp:class>object.container</upnp:class>
+	</container>
+	<container id="26" parentID="21" restricted="1">
+		<dc:title>By Album</dc:title>
+		<upnp:class>object.container</upnp:class>
+	</container>
+	<container id="27" parentID="21" restricted="1">
+		<dc:title>By Artist</dc:title>
+		<upnp:class>object.container</upnp:class>
+	</container>
+	<container id="28" parentID="21" restricted="1">
+		<dc:title>By Genre</dc:title>
+		<upnp:class>object.container</upnp:class>
+	</container>
+	<container id="29" parentID="21" restricted="1">
+		<dc:title>Artist/Album</dc:title>
+		<upnp:class>object.container</upnp:class>
+	</container>
+	<container id="30" parentID="21" restricted="1">
+		<dc:title>By Album Artist</dc:title>
+		<upnp:class>object.container</upnp:class>
+	</container>
+</DIDL-Lite>

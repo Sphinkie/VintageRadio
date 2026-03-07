@@ -7,6 +7,7 @@
 # ==================================================================
 import json
 from pathlib import Path
+from lib.dlna_logger import get_logger
 
 REQUEST_PATH = Path("user_request.json")  # <-- location of the JSON file
 
@@ -28,6 +29,7 @@ class DLNAUserRequest:
         self.previous_genre = self.default_genre
         self.hasChanged = True
         self.new_request = {"mode": self.default_mode, "genre":self.default_mode}
+        self.log = get_logger(__name__)
 
     # ----------------------------------------------------------------------- #
     # Lit la demande de l'utilisateur dans un fichier json.
@@ -38,7 +40,7 @@ class DLNAUserRequest:
         Missing keys fall back to the defaults values.
         """
         if not REQUEST_PATH.is_file():
-            print("No file – just use the defaults")
+            self.log.warning("No file – just use the defaults")
 
         try:
             with REQUEST_PATH.open("r", encoding="utf-8") as fp:
@@ -47,14 +49,13 @@ class DLNAUserRequest:
             self.new_request["mode"] = data.get("mode", self.default_mode)
             self.new_request["genre"] = data.get("genre", self.default_genre)
         except Exception as e:  # pragma: no cover
-            print(f"️Could not parse {REQUEST_PATH}: {e}")
+            self.log.fatal(f"️Could not parse {REQUEST_PATH}: {e}")
 
     # -----------------------------------------------------------------
     # Recharge le fichier json. A appeler sous forme de callback.
     # -----------------------------------------------------------------
     def refresh_user_request(self):
-        """ Return True if the user request has changed"""
-        print("Callback called")
+        self.log.debug("refresh_user_request invoked")
         self.previous_mode = self.new_request["mode"]
         self.previous_genre = self.new_request["genre"]
         self.load_user_request()
@@ -63,7 +64,7 @@ class DLNAUserRequest:
         self.hasChanged = (self.new_request["mode"] != self.previous_mode
                            or self.new_request["genre"] != self.previous_genre)
         if self.hasChanged:
-            print(f"\nDetected user request change: {self.new_request['mode']} > {self.new_request['genre']}")
+            self.log.info(f"\nDetected user request change: {self.new_request['mode']} > {self.new_request['genre']}")
 
     # -----------------------------------------------------------------
     # Indique si le fichier a changé lors la dernière lecture

@@ -5,10 +5,12 @@
 # VintageRadio - Librairie.
 # David de Lorenzo (2026)
 # ==================================================================
+import sys
 import time
 import random
-import sys
 import signal
+import asyncio
+from lib.dlna_logger import get_logger
 
 try:
     import vlc
@@ -33,9 +35,10 @@ class DLNAMusic:
         self._stop_requested = False
         self.renderer = vlc.MediaPlayer()
         #  Optional hook that the caller can set to be notified after each track
-        self.after_track_callback = None
+        self.refresh_request_callback = None
         # On ajoute un handler pour le CTR-C
         self.install_signal_handler()
+        self.log = get_logger(__name__)
 
     # --------------------------------------------------------------------- #
     # Installe un Handler qui stoppe VLC proprement en cas de CTRL-C.
@@ -159,3 +162,21 @@ class DLNAMusic:
         # Give the renderer a moment to settle before the next URI
         if delay_between:
             time.sleep(delay_between)
+
+    # --------------------------------------------------------------------- #
+    # Joue une piste en mode asynchrone
+    # --------------------------------------------------------------------- #
+    async def play_random_async(self):
+        # schedule the callback 10s later, but don’t await it yet
+        self.log.debug("[Playing")
+        self.play_random()
+        self.log.debug("Finished]")
+
+    # --------------------------------------------------------------------- #
+    # Invoque la callback après un délai de 10 secondes.
+    # --------------------------------------------------------------------- #
+    async def delayed_callback(self):
+        self.log.debug("delayed_callback invoked")
+        await asyncio.sleep(10)
+        self.log.debug("delay is past")
+        self.refresh_request_callback()

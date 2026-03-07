@@ -1,6 +1,6 @@
 # coding: UTF-8
 # ==================================================================
-# dlna_listing.py
+# lib/dlna_listing.py
 # ==================================================================
 # VintageRadio - Helpers.
 # David de Lorenzo (2026)
@@ -43,6 +43,7 @@ def pick_server_interactively(servers: List[Tuple[str, str]]) -> Optional[str]:
 def resolve_control(url: str) -> Optional[str]:
     return DLNANetwork.get_content_directory_control_url(url)
 
+
 # --------------------------------------------------------------------- #
 # Si le serveur préféré est dans la liste des serveurs découverts: il est sélectionné.
 # Sinon l'utilisateur en choisit un.
@@ -51,8 +52,8 @@ def resolve_control(url: str) -> Optional[str]:
 def choose_server(servers, preferred_server_url: str):
     server_control_url: Optional[str] = None
     if not servers:
-            print("No DLNA servers were discovered on the LAN.")
-            return
+        print("No DLNA servers were discovered on the LAN.")
+        return
     # If the user answered a server that matches the saved one, reuse it; otherwise ask.
     if preferred_server_url:
         # Look for the same description URL among the fresh results

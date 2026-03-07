@@ -9,7 +9,8 @@ import http.client
 import xml.etree.ElementTree as ET
 from urllib.parse import urlparse
 from typing import List, Optional, Tuple
-import logging
+from lib.dlna_logger import get_logger
+
 
 SSDP_ADDR = "239.255.255.250"
 SSDP_PORT = 1900
@@ -35,7 +36,7 @@ class DLNANetwork:
     # --------------------------------------------------------------------- #
     def __init__(self, timeout: float = 5.0):
         self.timeout = timeout
-        self.logger = logging.getLogger(__name__)
+        self.log = get_logger(__name__)
 
     # --------------------------------------------------------------------- #
     # 1️⃣  SSDP discovery
@@ -78,7 +79,7 @@ class DLNANetwork:
     # Parse SSDP Discovery response.
     # --------------------------------------------------------------------- #
     @staticmethod
-    def _parse_ssdp_response(self, resp: str) -> dict:
+    def _parse_ssdp_response(resp: str) -> dict:
         """Very small header parser – SSDP responses are HTTP‑like."""
         lines = resp.split('\r\n')
         hdr = {}
@@ -221,7 +222,7 @@ class DLNANetwork:
             return None
 
         # The text inside <Result> is itself XML – parse it
-        self.logger.debug("Reception: %s", result_el.text)
+        # self.log.debug("Reception: %s", result_el.text)  # VERBOSE
         didl_root = ET.fromstring(result_el.text)
         return didl_root
 

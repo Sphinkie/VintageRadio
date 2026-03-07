@@ -6,8 +6,8 @@
 # David de Lorenzo (2026)
 # ==================================================================
 from lib.dlna_network import DLNANetwork
+from lib.dlna_logger import get_logger
 from typing import List, Optional
-import logging
 
 
 # ----------------------------------------------------------------------- #
@@ -23,7 +23,8 @@ class DLNAWrapper:
         self.net = DLNANetwork()
         self.didl_container = None
         self.server_control_url = None
-        self.logger = logging.getLogger(__name__)
+        self.music_container_id = None
+        self.log = get_logger(__name__)
 
     # --------------------------------------------------------------------- #
     # On définit le Serveur DLNA à utiliser
@@ -48,22 +49,34 @@ class DLNAWrapper:
         return None
 
     # --------------------------------------------------------------------- #
+    # Détermine l'identifiant du Container MUSIC
+    # We assume “Music” is a direct child of the root (Music / Photo / Video).
+    # --------------------------------------------------------------------- #
+    def find_music_container(self):
+        ROOT_ID = "0"
+        self.music_container_id = self.find_child_id(ROOT_ID, "Music")
+        if self.music_container_id is None:
+            self.music_container_id = self.find_child_id(ROOT_ID, "Musique")
+        if self.music_container_id is None:
+            print("Could not locate a 'Music' container on the server.")
+
+    # --------------------------------------------------------------------- #
     # Demande au reseau de rechercher la liste des serveurs DLNA disponibles.
     # --------------------------------------------------------------------- #
     def discover_servers(self):
         self.net.discover_servers()
 
     # --------------------------------------------------------------------- #
-    # Demande la liste des fichiers MP3 d'un container.
+    # Demande la liste des infos MP3 d'un container.
     # --------------------------------------------------------------------- #
     def get_file_urls(self, container_id: str):
         self.didl_container = self.net.browse(self.server_control_url, object_id=container_id)
-        self.logger.debug("Container content: %s \n", self.didl_container)
+        self.log.debug("Container content: %s \n", self.didl_container)
         if self.didl_container is None:
             print(f"Failed to browse the container {container_id}.")
 
     # --------------------------------------------------------------------- #
-    # Demande la liste des fichiers MP3 d'un container.
+    # Demande la liste des URL des MP3 d'un container.
     # --------------------------------------------------------------------- #
     def get_mp3_items(self) -> List[str]:
         return self.net.extract_mp3_items(self.didl_container)

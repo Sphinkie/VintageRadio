@@ -1,5 +1,10 @@
+# coding: UTF-8
+# ==================================================================
 # dlna_user_request.py
-
+# ==================================================================
+# VintageRadio - Librairie.
+# David de Lorenzo (2026)
+# ==================================================================
 import json
 from pathlib import Path
 
@@ -7,24 +12,19 @@ REQUEST_PATH = Path("user_request.json")  # <-- location of the JSON file
 
 
 # ----------------------------------------------------------------------- #
-# Cette classe gère les musiques situées sur le serveur DLNA.
+# Cette classe lit le fichier Json contenant la demande de l'auditeur
 # ----------------------------------------------------------------------- #
 class DLNAUserRequest:
-    """
-    Interactions with musical files.
-    """
+    """ Interactions with json user request file. """
 
     # --------------------------------------------------------------------- #
     # Constructeur
     # --------------------------------------------------------------------- #
     def __init__(self):
         """ Constructor. """
-        # --------------------------------------------------------------------- #
-        # Default User Request / Previous User Request
-        # --------------------------------------------------------------------- #
         self.previous_mode = "By Genre"  # fre: "Par genre"
         self.previous_genre = "Jazz"
-        self.hasChanged = False
+        self.hasChanged = True
         self.new_request = dict()
 
     # ----------------------------------------------------------------------- #
@@ -84,9 +84,9 @@ class DLNAUserRequest:
     # -----------------------------------------------------------------
     def get(self, key) -> str:
         """ Return the value of the corresponding key 'mode' or 'genre' """
-        if key == "mode":
-            return self.previous_mode
-        elif key == "genre":
-            return self.previous_genre
-        else:
-            return self.new_request.get(key)
+        # if key == "mode":
+        #     return self.previous_mode
+        #elif key == "genre":
+        #     return self.previous_genre
+        # else:
+        return self.new_request.get(key)

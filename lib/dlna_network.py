@@ -1,4 +1,9 @@
+# ==================================================================
 # dlna_network.py
+# ==================================================================
+# VintageRadio - Librairie.
+# David de Lorenzo (2026)
+# ==================================================================
 import socket
 import http.client
 import xml.etree.ElementTree as ET
@@ -106,7 +111,7 @@ class DLNANetwork:
         conn.close()
         root = ET.fromstring(xml_data)
         ns = {'upnp': 'urn:schemas-upnp-org:device-1-0'}  # dictionary des namespace
-        print(root.tag)  # Display  namespace
+        # print(root.tag)  # Display  namespace
         # Walk the service list looking for ContentDirectory. {*} means any namespace
         for service in root.iterfind('.//{*}service'):
             service_type = service.findtext('{*}serviceType')

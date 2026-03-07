@@ -1,4 +1,7 @@
 {
   "mode": "By Genre",
-  "genre" : "Country"
+  "genre" : "Blues",
+  "genre1" : "Country",
+  "genre2" : "Jazz",
+  "genre4" : "Classique"
 }

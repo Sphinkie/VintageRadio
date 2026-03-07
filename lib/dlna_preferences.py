@@ -1,0 +1,41 @@
+# coding: UTF-8
+# ==================================================================
+# dlna_preferences.py
+# ==================================================================
+# VintageRadio - Librairie.
+# David de Lorenzo (2026)
+# ==================================================================
+import configparser
+from pathlib import Path
+from typing import List, Tuple, Optional
+
+# --------------------------------------------------------------------- #
+# Configuration handling (preferred_dlna.ini)
+# --------------------------------------------------------------------- #
+CONFIG_FILE = Path("preferred_dlna.ini")
+CONFIG_SECTION = "server"
+
+
+# --------------------------------------------------------------------- #
+# Lecture des préférences
+# --------------------------------------------------------------------- #
+def load_preferred_server() -> Optional[str]:
+    """Return the saved server control URL, or None if the file is missing."""
+    if not CONFIG_FILE.is_file():
+        print("file not found: ", CONFIG_FILE)
+        return None
+    cfg = configparser.ConfigParser()
+    cfg.read(CONFIG_FILE)
+    return cfg.get(CONFIG_SECTION, "control_url", fallback=None)
+
+
+# --------------------------------------------------------------------- #
+# Ecriture des préférences
+# --------------------------------------------------------------------- #
+def save_preferred(url: str) -> None:
+    """Persist the chosen server's control URL for next runs."""
+    cfg = configparser.ConfigParser()
+    cfg[CONFIG_SECTION] = {"control_url": url}
+    with CONFIG_FILE.open("w") as fp:
+        cfg.write(fp)
+    print(CONFIG_FILE, " written")

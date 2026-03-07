@@ -1,0 +1,13 @@
+# What each file currently does
+
+| Module	                  | Main responsibilities                                                                                                                                                                                                                                                                                                 |
+|--------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| 
+| dlna_listing.py	         | • Load a previously saved server URL (or discover a new one). <br>• Resolve the ContentDirectory control URL.                                                                                                                                                                                                         |
+| dlna_preferences.py	     | • Contains the latest DLNA server used, which is supposed to be the preferred server.                                                                                                                                                                                                                                 |
+| dlna_user_request.py	    | • Monitor a json file that contains the genre of music that the user wants to ear. This file can change at any moment.                                                                                                                                                                                                |
+| dlna_network_wrapper.py	 | • Allows the main program to have macro functions to interract with the DLNA server.                                                                                                                                                                                                                                  |
+| dlna_network.py	         | • Handles SSDP discovery of DLNA MediaServers.  <br>• Retrieves the device description XML and extracts the ContentDirectory control URL. <br>• Sends SOAP Browse requests and parses the resulting DIDL‑Lite XML. <br>• Provides a helper (extract_mp3_items) that returns a flat list of MP3 URLs from a container. | 
+| dlna_music.py            | • Stores the list of MP3 URLs. <br>• Can shuffle the playlist and play a mp3 clip.                                                                                                                                                                                                                                    | 
+
+
+

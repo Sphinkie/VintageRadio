@@ -9,6 +9,7 @@ import http.client
 import xml.etree.ElementTree as ET
 from urllib.parse import urlparse
 from typing import List, Optional, Tuple
+import logging
 
 SSDP_ADDR = "239.255.255.250"
 SSDP_PORT = 1900
@@ -34,6 +35,7 @@ class DLNANetwork:
     # --------------------------------------------------------------------- #
     def __init__(self, timeout: float = 5.0):
         self.timeout = timeout
+        self.logger = logging.getLogger(__name__)
 
     # --------------------------------------------------------------------- #
     # 1️⃣  SSDP discovery
@@ -76,7 +78,7 @@ class DLNANetwork:
     # Parse SSDP Discovery response.
     # --------------------------------------------------------------------- #
     @staticmethod
-    def _parse_ssdp_response(resp: str) -> dict:
+    def _parse_ssdp_response(self, resp: str) -> dict:
         """Very small header parser – SSDP responses are HTTP‑like."""
         lines = resp.split('\r\n')
         hdr = {}
@@ -111,7 +113,7 @@ class DLNANetwork:
         conn.close()
         root = ET.fromstring(xml_data)
         ns = {'upnp': 'urn:schemas-upnp-org:device-1-0'}  # dictionary des namespace
-        # print(root.tag)  # Display  namespace
+        # root.tag contains namespace
         # Walk the service list looking for ContentDirectory. {*} means any namespace
         for service in root.iterfind('.//{*}service'):
             service_type = service.findtext('{*}serviceType')
@@ -119,10 +121,10 @@ class DLNANetwork:
                 ctrl_url = service.findtext('{*}controlURL')
                 # Resolve relative URLs against the base description URL
                 if ctrl_url.startswith('http'):
-                    # print("XMl contains control url:", ctrl_url)
+                    # XMl contains control url
                     return ctrl_url
                 else:
-                    # print("control url:", ctrl_url, "needs base url prefix.")
+                    # control url needs base url prefix
                     base = f"{parsed.scheme}://{parsed.netloc}"
                     return base + (ctrl_url if ctrl_url.startswith('/') else '/' + ctrl_url)
         return None
@@ -219,15 +221,15 @@ class DLNANetwork:
             return None
 
         # The text inside <Result> is itself XML – parse it
-        # print (result_el.text)
+        self.logger.debug("Reception: %s", result_el.text)
         didl_root = ET.fromstring(result_el.text)
         return didl_root
 
     # --------------------------------------------------------------------- #
     # 4️⃣  Helper to collect MP3 URLs from a DIDL‑Lite container
     # --------------------------------------------------------------------- #
-    @staticmethod
-    def extract_mp3_items(didl_root: ET.Element) -> List[str]:
+    # @staticmethod
+    def extract_mp3_items(self, didl_root: ET.Element) -> List[str]:
         """
         Walk a DIDL‑Lite tree and return the list of URLs for items whose
         `@protocolInfo` indicates an audio/mpeg (MP3) resource.

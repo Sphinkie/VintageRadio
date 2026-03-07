@@ -7,6 +7,7 @@
 # ==================================================================
 from lib.dlna_network import DLNANetwork
 from typing import List, Optional
+import logging
 
 
 # ----------------------------------------------------------------------- #
@@ -22,6 +23,7 @@ class DLNAWrapper:
         self.net = DLNANetwork()
         self.didl_container = None
         self.server_control_url = None
+        self.logger = logging.getLogger(__name__)
 
     # --------------------------------------------------------------------- #
     # On définit le Serveur DLNA à utiliser
@@ -56,7 +58,7 @@ class DLNAWrapper:
     # --------------------------------------------------------------------- #
     def get_file_urls(self, container_id: str):
         self.didl_container = self.net.browse(self.server_control_url, object_id=container_id)
-        print(f"\nContainer content:\n",self.didl_container)
+        self.logger.debug("Container content: %s \n", self.didl_container)
         if self.didl_container is None:
             print(f"Failed to browse the container {container_id}.")
 

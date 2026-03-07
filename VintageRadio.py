@@ -11,12 +11,24 @@ from lib.dlna_preferences import *
 from lib.dlna_user_request import DLNAUserRequest
 from lib.dlna_network_wrapper import DLNAWrapper
 from typing import Optional
+import logging
 
 
 # --------------------------------------------------------------------- #
 # Main orchestration
 # --------------------------------------------------------------------- #
 def main():
+    # -----------------------------------------------------------------
+    # module‑level logger
+    # -----------------------------------------------------------------
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)  # ensure DEBUG messages are emitted
+    # Simple console handler – you can add a FileHandler if you want persistent logs
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(
+        logging.Formatter('%(asctime)s %(levelname)s %(name)s: %(message)s')
+    )
+    logger.addHandler(console_handler)
     # -----------------------------------------------------------------
     # Initialisation
     # -----------------------------------------------------------------
@@ -32,7 +44,7 @@ def main():
     # -----------------------------------------------------------------
     server_control_url: Optional[str] = None
     preferred_server_url = load_preferred_server()
-    # print(preferred_desc_url)
+    logger.debug("preferred server url: %s", preferred_server_url)
 
     # -----------------------------------------------------------------
     # If we have a saved description URL, verify that it is still reachable
@@ -104,7 +116,7 @@ def main():
             wrapper.get_file_urls(genre_id)
             musics.discover_tracks(wrapper.get_mp3_items())
             musics.shuffle_playlist()
-            musics.list_all()
+            # musics.list_all()
 
         # -------------------------------------------------------------
         # 4️⃣ Play MP3 files

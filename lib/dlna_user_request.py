@@ -22,37 +22,32 @@ class DLNAUserRequest:
     # --------------------------------------------------------------------- #
     def __init__(self):
         """ Constructor. """
-        self.previous_mode = "By Genre"  # fre: "Par genre"
-        self.previous_genre = "Jazz"
+        self.default_mode = "By Genre"  # fre: "Par genre"
+        self.default_genre = "Jazz"
+        self.previous_mode = self.default_mode
+        self.previous_genre = self.default_genre
         self.hasChanged = True
-        self.new_request = dict()
+        self.new_request = {"mode": self.default_mode, "genre":self.default_mode}
 
     # ----------------------------------------------------------------------- #
     # Lit la demande de l'utilisateur dans un fichier json.
     # ----------------------------------------------------------------------- #
-    def load_user_request(self) -> dict:
+    def load_user_request(self):
         """
-        Reads user_request.json and returns a dict with at least the keys
-        ``mode`` and ``genre``.  Missing keys fall back to the defaults
-        defined in the original script.
+        Reads user_request.json and store a dict with at least the keys ``mode`` and ``genre``.
+        Missing keys fall back to the defaults values.
         """
-        defaults = {"mode": self.previous_mode, "genre": self.previous_genre}
-
         if not REQUEST_PATH.is_file():
             print("No file – just use the defaults")
-            return defaults
 
         try:
             with REQUEST_PATH.open("r", encoding="utf-8") as fp:
                 data = json.load(fp)
             # Normalise keys (allow upper‑case or missing entries)
-            self.new_request["mode"] = data.get("mode", defaults["mode"])
-            self.new_request["genre"] = data.get("genre", defaults["genre"])
-            # return {"mode": mode, "genre": genre}
-            return self.new_request
+            self.new_request["mode"] = data.get("mode", self.default_mode)
+            self.new_request["genre"] = data.get("genre", self.default_genre)
         except Exception as e:  # pragma: no cover
             print(f"️Could not parse {REQUEST_PATH}: {e}")
-            return defaults
 
     # -----------------------------------------------------------------
     # Recharge le fichier json. A appeler sous forme de callback.
@@ -62,15 +57,13 @@ class DLNAUserRequest:
         print("Callback called")
         self.previous_mode = self.new_request["mode"]
         self.previous_genre = self.new_request["genre"]
-        self.new_request = self.load_user_request()
+        self.load_user_request()
         # Only change the variables if the file actually differs.
         # This avoids unnecessary prints when the user hasn't edited the file.
         self.hasChanged = (self.new_request["mode"] != self.previous_mode
                            or self.new_request["genre"] != self.previous_genre)
         if self.hasChanged:
             print(f"\nDetected user request change: {self.new_request['mode']} > {self.new_request['genre']}")
-            # self.previous_mode = self.new_request["mode"]
-            # self.previous_genre = self.new_request["genre"]
 
     # -----------------------------------------------------------------
     # Indique si le fichier a changé lors la dernière lecture
@@ -84,9 +77,4 @@ class DLNAUserRequest:
     # -----------------------------------------------------------------
     def get(self, key) -> str:
         """ Return the value of the corresponding key 'mode' or 'genre' """
-        # if key == "mode":
-        #     return self.previous_mode
-        #elif key == "genre":
-        #     return self.previous_genre
-        # else:
         return self.new_request.get(key)

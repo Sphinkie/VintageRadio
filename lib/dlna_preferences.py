@@ -7,7 +7,7 @@
 # ==================================================================
 import configparser
 from pathlib import Path
-from typing import List, Tuple, Optional
+from typing import Optional
 
 # --------------------------------------------------------------------- #
 # Configuration handling (preferred_dlna.ini)

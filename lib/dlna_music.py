@@ -76,40 +76,56 @@ class DLNAMusic:
         return
 
     # --------------------------------------------------------------------- #
-    # Joue un fichier MP3.
-    # Note: La fonction est bloquante: on y reste jusqu'à la fin du morceau.
+    # Démarre un fichier MP3.
     # --------------------------------------------------------------------- #
-    def play_track(self, track_url):
-        """Send a Play request for a single track to the renderer."""
+    def start(self, track_url):
+        """ Send a Play request for a single track to the renderer."""
         # Create a VLC instance and media player
         self.renderer = vlc.MediaPlayer(track_url)
         # Start playback (returns immediately)
         self.renderer.play()
-        # Wait until the track ends
-        while self.renderer.get_state() != vlc.State.Ended:
-            time.sleep(0.5)  # poll every half-second
 
     # --------------------------------------------------------------------- #
-    # Stoppe le fichier MP3.
+    # Retourne True si un fichier est Ended, False si le fichier est playing.
+    # --------------------------------------------------------------------- #
+    def isStopped(self) -> bool:
+        """ returns False if a file is playing."""
+        return (self.renderer.get_state() == vlc.State.Ended)
+
+    # --------------------------------------------------------------------- #
+    # Stoppe le fichier MP3 et attend un court délai.
     # --------------------------------------------------------------------- #
     def stop(self):
         """Stop playback and signal any running shuffle loop to exit."""
         self._stop_requested = True
         # Send the actual STOP command to the renderer:
         self.renderer.stop()
+        # Give the renderer a moment to settle before the next URI
+        # Seconds to wait between tracks
+        # (useful if the renderer needs a short pause before accepting the next URI)
+        delay_between = 0.5
+        if delay_between:
+            time.sleep(delay_between)
+
+    # --------------------------------------------------------------------- #
+    # Joue un fichier MP3 et attend la fin.
+    # Note: La fonction est bloquante: on y reste jusqu'à la fin du morceau.
+    # --------------------------------------------------------------------- #
+    def play_track(self, track_url):
+        """Send a Play request for a single track to the renderer."""
+        self.start(track_url)
+        # Wait until the track ends
+        while self.renderer.get_state() != vlc.State.Ended:
+            time.sleep(0.5)  # poll every half-second
+        # Give the renderer a moment to settle before the next URI
+        time.sleep(0.5)
 
     # --------------------------------------------------------------------- #
     # Play All files in DLNA order.
     # --------------------------------------------------------------------- #
     def play_all(self):
         for url in self.tracks:
-            # Create a VLC instance and media player
-            self.renderer = vlc.MediaPlayer(url)
-            # Start playback (returns immediately)
-            self.renderer.play()
-            # Wait until the track ends
-            while self.renderer.get_state() != vlc.State.Ended:
-                time.sleep(0.5)  # poll every half-second
+            self.play_track(url)
         return
 
     # ----------------------------------------------------------------------
@@ -132,45 +148,23 @@ class DLNAMusic:
     # Play a track from the shuffled tracklist.
     # Note: La fonction est bloquante: on y reste jusqu'à la fin du morceau.
     # ----------------------------------------------------------------------
-    def play_random(self, delay_between=0):
-        """
-        Play all discovered MP3 tracks in a random sequence.
-
-        Parameters
-        ----------
-        delay_between : float, optional
-            Seconds to wait between tracks (useful if the renderer needs a short
-            pause before accepting the next URI). Default is 0.
-
-        Notes
-        ----------
-        * The method respects ``self._stop_requested`` – calling ``self.stop()``
-          from another thread will break out of the loop promptly.
-        """
-
-        # Utile ici ?
-        if self._stop_requested:
-            # Reset flag for possible future playback sessions
-            self._stop_requested = False
-            return
-
+    def play_random(self):
+        """ Play all discovered MP3 tracks in a random sequence. """
         uri = self.shuffled_tracklist[self.current_pos]
         # Play the track
         self.play_track(uri)
         self.current_pos += 1
 
-        # Give the renderer a moment to settle before the next URI
-        if delay_between:
-            time.sleep(delay_between)
-
     # --------------------------------------------------------------------- #
-    # Joue une piste en mode asynchrone
+    # Démarre une piste en mode asynchrone.
     # --------------------------------------------------------------------- #
     async def play_random_async(self):
         # schedule the callback 10s later, but don’t await it yet
-        self.log.debug("[Playing")
-        self.play_random()
-        self.log.debug("Finished]")
+        self.log.debug("[Start playing %d", self.current_pos)
+        uri = self.shuffled_tracklist[self.current_pos]
+        # Start the track
+        self.start(uri)
+        self.current_pos += 1
 
     # --------------------------------------------------------------------- #
     # Invoque la callback après un délai de 10 secondes.
@@ -178,5 +172,4 @@ class DLNAMusic:
     async def delayed_callback(self):
         self.log.debug("delayed_callback invoked")
         await asyncio.sleep(10)
-        self.log.debug("delay is past")
         self.refresh_request_callback()

@@ -64,10 +64,10 @@ class DLNAUserRequest:
         self.hasChanged = (self.new_request["mode"] != self.previous_mode
                            or self.new_request["genre"] != self.previous_genre)
         if self.hasChanged:
-            self.log.info(f"\nDetected user request change: {self.new_request['mode']} > {self.new_request['genre']}")
+            self.log.info(f"Detected user request change: {self.new_request['mode']} > {self.new_request['genre']}")
 
     # -----------------------------------------------------------------
-    # Indique si le fichier a changé lors la dernière lecture
+    # Indique si le fichier a changé lors la dernière lecture.
     # -----------------------------------------------------------------
     def has_changed(self) -> bool:
         """ Return True if the user request has changed"""
@@ -79,3 +79,10 @@ class DLNAUserRequest:
     def get(self, key) -> str:
         """ Return the value of the corresponding key 'mode' or 'genre' """
         return self.new_request.get(key)
+
+    # -----------------------------------------------------------------
+    # Acquitte le flag has_changed.
+    # -----------------------------------------------------------------
+    def set_has_changed(self):
+        """ Set has_changed to False. """
+        self.hasChanged = False

@@ -58,7 +58,7 @@ def setup():
     # -----------------------------------------------------------------
     # At this point we have a valid control URL
     # -----------------------------------------------------------------
-    log.info(f"\nUsing ContentDirectory control URL: {server_control_url}")
+    log.info(f"Using ContentDirectory control URL: {server_control_url}")
     assert server_control_url is not None
     wrapper.set_server(server_control_url)
 
@@ -74,49 +74,60 @@ def setup():
 # -----------------------------------------------------------------
 async def loop():
     log = logging.getLogger(__name__)
-    log.debug(">> Loop")
+    log.debug("Start Loop")
+    lecture_task = None
+    refresh_task = None
 
-    if user_request.has_changed():
-        # -------------------------------------------------------------
-        # 1️⃣ Détermine l'identifiant du container correspondant au mode demandé (ex: "By Genre")
-        # -------------------------------------------------------------
-        container_id = wrapper.find_child_id(wrapper.music_container_id, user_request.get('mode'))
-        if container_id is None:
-            log.fatal(f"Could not locate a '{user_request.get('mode')}' container under 'Music'.")
-            return
+    while True:
+        if user_request.has_changed():
+            # -------------------------------------------------------------
+            # 1️⃣ Détermine l'identifiant du container correspondant au mode demandé (ex: "By Genre")
+            # -------------------------------------------------------------
+            container_id = wrapper.find_child_id(wrapper.music_container_id, user_request.get('mode'))
+            if container_id is None:
+                log.fatal(f"Could not locate a '{user_request.get('mode')}' container under 'Music'.")
+                return
+
+            # -------------------------------------------------------------
+            # 2️⃣ Détermine l'identifiant du container correspondant au genre demandé (ex: "Blues")
+            # -------------------------------------------------------------
+            genre_id = wrapper.find_child_id(container_id, user_request.get('genre'))
+            if genre_id is None:
+                log.fatal(f"Could not locate a '{user_request.get('genre')}' container under '{user_request.get('mode')}'.")
+                return
+
+            # -------------------------------------------------------------
+            # 3️⃣ List the MP3 files of the container, and send them to the Music object.
+            # -------------------------------------------------------------
+            log.info(f"Current genre is '{user_request.get('genre')}'")
+            wrapper.get_file_urls(genre_id)
+            musics.discover_tracks(wrapper.get_mp3_items())
+            musics.shuffle_playlist()
+            # musics.list_all()
+            # On acquitte la prise en compte du changement.
+            user_request.set_has_changed()
 
         # -------------------------------------------------------------
-        # 2️⃣ Détermine l'identifiant du container correspondant au genre demandé (ex: "Blues")
+        # 4️⃣ Play MP3 files
         # -------------------------------------------------------------
-        genre_id = wrapper.find_child_id(container_id, user_request.get('genre'))
-        if genre_id is None:
-            log.fatal(f"Could not locate a '{user_request.get('genre')}' container under '{user_request.get('mode')}'.")
-            return
-
+        if lecture_task is None:
+            log.debug("- Start playing a new file")
+            lecture_task = asyncio.create_task(musics.play_random_async())
+            # --------------------------------------------------------------------
+            # Reload user request (json file)
+            # --------------------------------------------------------------------
+            refresh_task = asyncio.create_task(musics.delayed_callback())  # fire-and-forget
+            await lecture_task
         # -------------------------------------------------------------
-        # 3️⃣ List the MP3 files of the container, and send them to the Music object.
+        # 5️⃣ Check if the MP3 file is still playing
         # -------------------------------------------------------------
-        log.info(f"Current genre is '{user_request.get('genre')}'")
-        wrapper.get_file_urls(genre_id)
-        musics.discover_tracks(wrapper.get_mp3_items())
-        musics.shuffle_playlist()
-        # musics.list_all()
-
-    # --------------------------------------------------------------------
-    # Reload user request (json file)
-    # --------------------------------------------------------------------
-    asyncio.create_task(musics.delayed_callback())  # fire and forget
-
-    # -------------------------------------------------------------
-    # 4️⃣ Play MP3 files
-    # -------------------------------------------------------------
-    log.debug("- Start playing...")
-    # musics.play_random(0.5)
-    lecture = asyncio.create_task(musics.play_random_async())
-
-    # --------------------------------------------------------------------
-    await lecture
-    log.debug("End Loop")
+        else:
+            if musics.isStopped():
+                lecture_task = None
+                log.debug("End playing]")
+        # --------------------------------------------------------------------
+        # await refresh
+        await asyncio.sleep(0.5)
 
 # ---------------------------------------------------------
 # Programme Principal

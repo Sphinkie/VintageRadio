@@ -71,7 +71,7 @@ class DLNAWrapper:
     # --------------------------------------------------------------------- #
     def get_file_urls(self, container_id: str):
         self.didl_container = self.net.browse(self.server_control_url, object_id=container_id)
-        self.log.debug("Container content: %s \n", self.didl_container)
+        self.log.debug("Container content: %s", self.didl_container)
         if self.didl_container is None:
             print(f"Failed to browse the container {container_id}.")
 

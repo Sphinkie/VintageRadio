@@ -21,17 +21,17 @@ class KeyboardController:
     # --------------------------------------------------------------------- #
     # Constructeur
     # --------------------------------------------------------------------- #
-    def __init__(self, event_queue: asyncio.Queue):
+    def __init__(self, event_queue: asyncio.Queue):  # , loop: asyncio.AbstractEventLoop):
         self.event_queue = event_queue
+        self.loop = None
         self.listener = None
-        self.running = False
 
     # --------------------------------------------------------------------- #
     # Start listening keyboard.
     # --------------------------------------------------------------------- #
-    def start(self):
+    def start(self, loop: asyncio.AbstractEventLoop):
         """Démarrer l'écouteur de clavier dans un thread séparé."""
-        self.running = True
+        self.loop = loop
         self.listener = keyboard.Listener(
             on_press=self._on_press,
             suppress=False  # laisser les touches passer au terminal
@@ -43,15 +43,14 @@ class KeyboardController:
     # Stop listening keyboard.
     # --------------------------------------------------------------------- #
     def stop(self):
-        """Arrêter l'écouteur."""
-        self.running = False
+        """Arrêter l'écouteur de clavier."""
         if self.listener:
             self.listener.stop()
             self.listener.join(timeout=1)
         log.debug("Keyboard listener stopped")
 
     # --------------------------------------------------------------------- #
-    # Appui sur une touche: n (play next) | p (pause) | q (quit) | a (again)
+    # Appui sur une touche: n (play next) | q (quit) | a (again)
     # TODO a tester
     # --------------------------------------------------------------------- #
     def _on_press(self, key):
@@ -62,27 +61,22 @@ class KeyboardController:
                 if char == 'n':  # Touche 'n' pour PlayNext
                     asyncio.run_coroutine_threadsafe(
                         self.event_queue.put('PLAY_NEXT'),
-                        asyncio.get_event_loop()
+                        self.loop
                     )
                     log.debug("Key 'n' pressed → PLAY_NEXT queued")
-                elif char == 'p':  # Touche 'p' pour Pause/Play
-                    asyncio.run_coroutine_threadsafe(
-                        self.event_queue.put('TOGGLE_PAUSE'),
-                        asyncio.get_event_loop()
-                    )
-                    log.debug("Key 'p' pressed → TOGGLE_PAUSE queued")
-                elif char == 'q':  # Quitter
-                    asyncio.run_coroutine_threadsafe(
-                        self.event_queue.put('QUIT'),
-                        asyncio.get_event_loop()
-                    )
-                    log.debug("Key 'q' pressed → QUIT queued")
                 elif char == 'a':  # Play Again
                     asyncio.run_coroutine_threadsafe(
                         self.event_queue.put('PLAY_AGAIN'),
-                        asyncio.get_event_loop()
+                        self.loop
                     )
                     log.debug("Key 'a' pressed → PLAY_AGAIN queued")
+                elif char == 'q':  # Quitter
+                    asyncio.run_coroutine_threadsafe(
+                        self.event_queue.put('QUIT'),
+                        self.loop
+                    )
+                    log.debug("Key 'q' pressed → QUIT queued")
 
         except Exception as e:
             log.error("Error processing key press: %s", e)
+

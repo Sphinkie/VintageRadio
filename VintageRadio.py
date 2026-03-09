@@ -17,7 +17,8 @@ from typing import Optional
 
 
 # --------------------------------------------------------------------- #
-# TODO Attend 2 secondes et affiche les infos du clip.
+# Attend 2 secondes et affiche les infos du clip.
+# TODO : mettre ailleurs
 # --------------------------------------------------------------------- #
 async def show_clip_info():
     await asyncio.sleep(2)
@@ -30,9 +31,6 @@ async def show_clip_info():
 # --------------------------------------------------------------------- #
 def setup():
     log.info("Start Setup")
-    # -----------------------------------------------------------------
-    # On ajoute un callback pour actualiser les modes et genre demandés
-    musics.refresh_request_callback = user_request.refresh_user_request
 
     # -----------------------------------------------------------------
     # 1️⃣ Try to load a previously saved server
@@ -71,6 +69,13 @@ def setup():
     # -------------------------------------------------------------
     user_request.load_user_request()
     wrapper.find_music_container()
+    # -------------------------------------------------------------
+    # Listener du clavier
+    # -------------------------------------------------------------
+    # Get the current running loop
+    loop = asyncio.get_running_loop()
+    # Start keyboard control within the eventLoop
+    keyboard_ctrl.start(loop)
     log.info("End Setup")
 
 
@@ -87,34 +92,35 @@ async def loop():
     # --------------------------------------------------------------------
     # refresh_task = asyncio.create_task(musics.delayed_callback())  # fire-and-forget
     # self.refresh_task = asyncio.create_task(self.repeating_reread(5))
-    refresh_task = asyncio.create_task(user_request.repeating_reread(5))  # TODO fire-and-forget
+    refresh_task = asyncio.create_task(user_request.repeating_reread(5))  # fire-and-forget
 
     try:
         while True:
-            # -------------------------------------------------------------
-            # 1: Attendre une commande du clavier (non-bloquant)
-            # -------------------------------------------------------------
+            # ----------------------------------------------------------------- #
+            # [1] Attendre une commande du clavier (non-bloquant)
+            # ----------------------------------------------------------------- #
             try:
                 cmd = await asyncio.wait_for(kbd_queue.get(), timeout=0.5)
             except asyncio.TimeoutError:
                 cmd = None       
-            # -------------------------------------------------------------
-            # 2: Traitement des commandes clavier
-            # -------------------------------------------------------------                
+            # ----------------------------------------------------------------- #
+            # [2] Traitement des commandes clavier
+            # ----------------------------------------------------------------- #
             if cmd == 'PLAY_NEXT':
                 log.info("PLAY_NEXT command received")
                 # Appeler la même fonction que le GPIO trigger
-                print("await musics.skip_to_next()")
+                await musics.skip_to_next()
             elif cmd == 'PLAY_AGAIN':
                 log.info("PLAY_AGAIN command received")                
+                # Appeler la même fonction que le GPIO trigger
                 print("await musics.play_again()")
             elif cmd == 'QUIT':
                 log.info("Quit command received")
                 # Sort de la boucle principale
                 break
-            # -------------------------------------------------------------
-            # 3: Nouvelle requete ?
-            # -------------------------------------------------------------                
+            # ----------------------------------------------------------------- #
+            # [3] Nouvelle requete utilisateur ?
+            # ----------------------------------------------------------------- #
             if user_request.has_changed():
                 # -------------------------------------------------------------
                 # Détermine l'identifiant du container correspondant au mode demandé (ex: "By Genre")
@@ -146,7 +152,7 @@ async def loop():
             # 4: Play MP3 files
             # -------------------------------------------------------------
             if lecture_task is None:
-                log.debug("- Start playing a new file")
+                log.debug("Start playing a new file")
                 lecture_task = asyncio.create_task(musics.play_random_async())
                 await lecture_task
                 display_task = asyncio.create_task(show_clip_info())
@@ -161,10 +167,10 @@ async def loop():
             # Boucle rythmée à 1 seconde.
             # --------------------------------------------------------------------
             await asyncio.sleep(1)
+    # --------------------------------------------------------------------
+    # Sortie de la boucle
+    # --------------------------------------------------------------------
     finally:
-        # --------------------------------------------------------------------
-        # Sortie de la boucle
-        # --------------------------------------------------------------------
         log.warning("End loop")
         keyboard_ctrl.stop()
         refresh_task.cancel()
@@ -183,7 +189,7 @@ async def main():
 
 
 # -------------------------------------------------------------
-# Launch Main Program
+# Launch Main Program (EventLoop)
 # -------------------------------------------------------------
 if __name__ == "__main__":
     # -----------------------------------------------------------------
@@ -191,14 +197,15 @@ if __name__ == "__main__":
     # -----------------------------------------------------------------
     log = get_logger(__name__)
     # ---------------------------------------------------------
-    # Initialisations
+    # Initialisations des objets
     # ---------------------------------------------------------
     wrapper = DLNAWrapper()
     musics = DLNAMusic()
     user_request = DLNAUserRequest()
+    # Create the queue
     kbd_queue = asyncio.Queue()
+    # Initialize keyboard control with the loop
     keyboard_ctrl = KeyboardController(kbd_queue)
-    keyboard_ctrl.start()
     # ---------------------------------------------------------
     # Lancement de l'Event Loop
     # ---------------------------------------------------------

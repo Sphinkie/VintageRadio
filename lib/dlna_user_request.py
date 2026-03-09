@@ -56,7 +56,7 @@ class DLNAUserRequest:
     # Recharge le fichier json.
     # -----------------------------------------------------------------
     def refresh_user_request(self):
-        log.debug("refresh_user_request invoked")
+        # log.debug("refresh_user_request invoked")
         self.previous_mode = self.new_request["mode"]
         self.previous_genre = self.new_request["genre"]
         self.load_user_request()
@@ -90,13 +90,13 @@ class DLNAUserRequest:
 
     # -----------------------------------------------------------------
     # Relit périodiquement le fichier de user request.
-    # Intervalle typique = 5s
+    # Intervalle typique = 5s. On attend PUIS on lit le fichier.
     # -----------------------------------------------------------------
     async def repeating_reread(self, interval):
         """ Periodic task: re-read user request json file. """
         try:
             while True:
-                self.refresh_user_request()
                 await asyncio.sleep(interval)
+                self.refresh_user_request()
         except asyncio.CancelledError:
             log.warning("repeating refresh_user_request cancelled.")

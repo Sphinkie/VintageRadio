@@ -35,10 +35,10 @@ class DLNAMusic:
         self.tracks = []
         self.shuffled_tracklist = []
         self.current_pos = 0
+        # STOP EVENT pour stopper le clip en cours
+        self._stop_event = None
         self._stop_requested = False
         self.renderer = vlc.MediaPlayer()
-        #  Optional hook that the caller can set to be notified after each track
-        self.refresh_request_callback = None
         # On ajoute un handler pour le CTR-C
         self.install_signal_handler()
 
@@ -95,7 +95,7 @@ class DLNAMusic:
         return (self.renderer.get_state() == vlc.State.Ended)
 
     # --------------------------------------------------------------------- #
-    # Stoppe le fichier MP3 et attend un court délai.
+    # Stoppe le fichier MP3 courant et attend un court délai.
     # --------------------------------------------------------------------- #
     def stop(self):
         """Stop playback and signal any running shuffle loop to exit."""
@@ -132,7 +132,6 @@ class DLNAMusic:
 
     # ----------------------------------------------------------------------
     # Gestion de la randomization.
-    # TODO : A voir quand appeler
     # ----------------------------------------------------------------------
     def shuffle_playlist(self):
         """
@@ -161,7 +160,7 @@ class DLNAMusic:
     # Démarre une piste en mode asynchrone.
     # --------------------------------------------------------------------- #
     async def play_random_async(self):
-        # Si on a atteint la dernier piste on re-shuffle
+        # TODO: TEST : Si on a atteint la dernière piste, on re-shuffle
         if self.current_pos > len(self.shuffled_tracklist):
             self.shuffle_playlist()
             self.current_pos = 0
@@ -170,14 +169,6 @@ class DLNAMusic:
         # Start the track
         self.start_track(uri)
         self.current_pos += 1
-
-    # --------------------------------------------------------------------- #
-    # Invoque la callback après un délai de 10 secondes.
-    # --------------------------------------------------------------------- #
-    async def delayed_callback(self):
-        log.debug("delayed_callback invoked")
-        await asyncio.sleep(10)
-        self.refresh_request_callback()
 
     # --------------------------------------------------------------------- #
     # Renvoie l'identifiant du clip en cours
@@ -192,11 +183,14 @@ class DLNAMusic:
 
     # --------------------------------------------------------------------- #
     # Joue le clip suivant
+    # todo 
     # --------------------------------------------------------------------- #
     async def skip_to_next(self):
         """Interrompt le clip en cours et joue le suivant."""
         log.debug("skip_to_next called")
         # Arrêter la lecture en cours
+        self.stop()
+        """
         self._stop_event.set()
         if self._playback_task and not self._playback_task.done():
             self._playback_task.cancel()
@@ -204,7 +198,8 @@ class DLNAMusic:
                 await self._playback_task
             except asyncio.CancelledError:
                 pass
+        """
         # Charger et jouer le suivant
-        log.info("Skipping to next track: %s", next_track)
+        log.info("Skipping to next track")
         # TODO : pas net
         self._playback_task = asyncio.create_task(self.play_random_async())

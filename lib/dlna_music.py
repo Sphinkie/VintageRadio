@@ -10,6 +10,8 @@ import time
 import random
 import signal
 import asyncio
+from urllib.parse import urlsplit
+
 from lib.dlna_logger import get_logger
 
 try:
@@ -78,7 +80,7 @@ class DLNAMusic:
     # --------------------------------------------------------------------- #
     # Démarre un fichier MP3.
     # --------------------------------------------------------------------- #
-    def start(self, track_url):
+    def start_track(self, track_url):
         """ Send a Play request for a single track to the renderer."""
         # Create a VLC instance and media player
         self.renderer = vlc.MediaPlayer(track_url)
@@ -113,7 +115,7 @@ class DLNAMusic:
     # --------------------------------------------------------------------- #
     def play_track(self, track_url):
         """Send a Play request for a single track to the renderer."""
-        self.start(track_url)
+        self.start_track(track_url)
         # Wait until the track ends
         while self.renderer.get_state() != vlc.State.Ended:
             time.sleep(0.5)  # poll every half-second
@@ -163,7 +165,7 @@ class DLNAMusic:
         self.log.debug("[Start playing %d", self.current_pos)
         uri = self.shuffled_tracklist[self.current_pos]
         # Start the track
-        self.start(uri)
+        self.start_track(uri)
         self.current_pos += 1
 
     # --------------------------------------------------------------------- #
@@ -173,3 +175,18 @@ class DLNAMusic:
         self.log.debug("delayed_callback invoked")
         await asyncio.sleep(10)
         self.refresh_request_callback()
+
+    # --------------------------------------------------------------------- #
+    # Renvoie l'identifiant du clip en cours
+    # Example:
+    #   from http://192.168.0.101:50002/m/MP3/2913.mp3 the returned id is 2913
+    # --------------------------------------------------------------------- #
+    def get_playing_id (self):
+        current_url = self.shuffled_tracklist[self.current_pos]
+        u = urlsplit(current_url)
+        filename = u.path.split('/').pop()
+        return filename.split('.')[0]
+
+
+
+

@@ -18,6 +18,15 @@ import logging
 
 
 # --------------------------------------------------------------------- #
+# TODO Attend 2 secondes et affiche les infos du clip.
+# --------------------------------------------------------------------- #
+async def show_clip_info():
+    await asyncio.sleep(2)
+    id = musics.get_playing_id()
+    print(f"NOW PLAYING {id}")
+
+
+# --------------------------------------------------------------------- #
 # Main initialisation
 # --------------------------------------------------------------------- #
 def setup():
@@ -69,6 +78,7 @@ def setup():
     wrapper.find_music_container()
     log.info("End Setup")
 
+
 # -----------------------------------------------------------------
 # Boucle principale
 # -----------------------------------------------------------------
@@ -76,7 +86,14 @@ async def loop():
     log = logging.getLogger(__name__)
     log.debug("Start Loop")
     lecture_task = None
-    refresh_task = None
+
+    # --------------------------------------------------------------------
+    # Tache périodique No 1
+    # Reload user request (json file) every 5 seconds.
+    # --------------------------------------------------------------------
+    # refresh_task = asyncio.create_task(musics.delayed_callback())  # fire-and-forget
+    # self.refresh_task = asyncio.create_task(self.repeating_reread(5))
+    refresh_task = asyncio.create_task(user_request.repeating_reread(5))  # TODO fire-and-forget
 
     while True:
         if user_request.has_changed():
@@ -93,7 +110,8 @@ async def loop():
             # -------------------------------------------------------------
             genre_id = wrapper.find_child_id(container_id, user_request.get('genre'))
             if genre_id is None:
-                log.fatal(f"Could not locate a '{user_request.get('genre')}' container under '{user_request.get('mode')}'.")
+                log.fatal(
+                    f"Could not locate a '{user_request.get('genre')}' container under '{user_request.get('mode')}'.")
                 return
 
             # -------------------------------------------------------------
@@ -105,7 +123,7 @@ async def loop():
             musics.shuffle_playlist()
             # musics.list_all()
             # On acquitte la prise en compte du changement.
-            user_request.set_has_changed()
+            user_request.ack_has_changed()
 
         # -------------------------------------------------------------
         # 4️⃣ Play MP3 files
@@ -113,11 +131,8 @@ async def loop():
         if lecture_task is None:
             log.debug("- Start playing a new file")
             lecture_task = asyncio.create_task(musics.play_random_async())
-            # --------------------------------------------------------------------
-            # Reload user request (json file)
-            # --------------------------------------------------------------------
-            refresh_task = asyncio.create_task(musics.delayed_callback())  # fire-and-forget
             await lecture_task
+            display_task = asyncio.create_task(show_clip_info())
         # -------------------------------------------------------------
         # 5️⃣ Check if the MP3 file is still playing
         # -------------------------------------------------------------
@@ -126,8 +141,15 @@ async def loop():
                 lecture_task = None
                 log.debug("End playing]")
         # --------------------------------------------------------------------
-        # await refresh
         await asyncio.sleep(0.5)
+
+    # --------------------------------------------------------------------
+    # Sortie de la boucle
+    # --------------------------------------------------------------------
+    log.warning("End loop")
+    refresh_task.cancel()
+    await refresh_task
+
 
 # ---------------------------------------------------------
 # Programme Principal
@@ -137,6 +159,7 @@ async def main():
     setup()
     # On lance la boucle
     await loop()
+
 
 # -------------------------------------------------------------
 # Launch Main Program
@@ -149,6 +172,6 @@ if __name__ == "__main__":
     musics = DLNAMusic()
     user_request = DLNAUserRequest()
     # ---------------------------------------------------------
-    # Programme
+    # Lancement de l'Event Loop
     # ---------------------------------------------------------
     asyncio.run(main())

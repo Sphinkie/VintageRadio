@@ -6,6 +6,8 @@
 # David de Lorenzo (2026)
 # ==================================================================
 import json
+import asyncio
+import logging
 from pathlib import Path
 from lib.dlna_logger import get_logger
 
@@ -52,7 +54,7 @@ class DLNAUserRequest:
             self.log.fatal(f"️Could not parse {REQUEST_PATH}: {e}")
 
     # -----------------------------------------------------------------
-    # Recharge le fichier json. A appeler sous forme de callback.
+    # Recharge le fichier json.
     # -----------------------------------------------------------------
     def refresh_user_request(self):
         self.log.debug("refresh_user_request invoked")
@@ -83,6 +85,20 @@ class DLNAUserRequest:
     # -----------------------------------------------------------------
     # Acquitte le flag has_changed.
     # -----------------------------------------------------------------
-    def set_has_changed(self):
-        """ Set has_changed to False. """
+    def ack_has_changed(self):
+        """ Acknowlegment: Set has_changed to False. """
         self.hasChanged = False
+
+    # -----------------------------------------------------------------
+    # Relit périodiquement le fichier de user request.
+    # Intervalle typique = 5s
+    # -----------------------------------------------------------------
+    async def repeating_reread(self, interval):
+        """ Periodic task: re-read user request json file. """
+        try:
+            while True:
+                self.refresh_user_request()
+                await asyncio.sleep(interval)
+        except asyncio.CancelledError:
+            self.log.warning("repeating refresh_user_request cancelled.")
+

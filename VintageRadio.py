@@ -109,11 +109,14 @@ async def loop():
             if cmd == 'PLAY_NEXT':
                 log.info("PLAY_NEXT command received")
                 # Appeler la même fonction que le GPIO trigger
-                await musics.skip_to_next()
+                musics.stop()
+                # La musique suivante va commencer automatiquement.
             elif cmd == 'PLAY_AGAIN':
                 log.info("PLAY_AGAIN command received")                
                 # Appeler la même fonction que le GPIO trigger
-                print("await musics.play_again()")
+                musics.rewind()
+                musics.stop()
+                # La musique va recommencer automatiquement.
             elif cmd == 'QUIT':
                 log.info("Quit command received")
                 # Sort de la boucle principale

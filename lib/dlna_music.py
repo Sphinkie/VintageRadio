@@ -92,7 +92,10 @@ class DLNAMusic:
     # --------------------------------------------------------------------- #
     def isStopped(self) -> bool:
         """ returns False if a file is playing."""
-        return (self.renderer.get_state() == vlc.State.Ended)
+        log.debug(self.renderer.get_state())
+        ended = (self.renderer.get_state() == vlc.State.Ended)
+        stopped = (self.renderer.get_state() == vlc.State.Stopped)
+        return ended or stopped
 
     # --------------------------------------------------------------------- #
     # Stoppe le fichier MP3 courant et attend un court délai.
@@ -160,7 +163,7 @@ class DLNAMusic:
     # Démarre une piste en mode asynchrone.
     # --------------------------------------------------------------------- #
     async def play_random_async(self):
-        # TODO: TEST : Si on a atteint la dernière piste, on re-shuffle
+        # TODO: A TESTER : Si on a atteint la dernière piste, on re-shuffle
         if self.current_pos > len(self.shuffled_tracklist):
             self.shuffle_playlist()
             self.current_pos = 0
@@ -182,8 +185,16 @@ class DLNAMusic:
         return filename.split('.')[0]
 
     # --------------------------------------------------------------------- #
+    # Se repositionne sur le clip en cours
+    # --------------------------------------------------------------------- #
+    def rewind(self):
+        self.current_pos -= 1
+        if self.current_pos < 0:
+            self.current_pos = 0
+
+    # --------------------------------------------------------------------- #
     # Joue le clip suivant
-    # todo 
+    # todo : virer
     # --------------------------------------------------------------------- #
     async def skip_to_next(self):
         """Interrompt le clip en cours et joue le suivant."""
@@ -199,7 +210,7 @@ class DLNAMusic:
             except asyncio.CancelledError:
                 pass
         """
-        # Charger et jouer le suivant
+        # Charger et jouer le clip suivant
         log.info("Skipping to next track")
         # TODO : pas net
         self._playback_task = asyncio.create_task(self.play_random_async())

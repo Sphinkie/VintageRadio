@@ -161,7 +161,10 @@ class DLNAMusic:
     # Démarre une piste en mode asynchrone.
     # --------------------------------------------------------------------- #
     async def play_random_async(self):
-        # schedule the callback 10s later, but don’t await it yet
+        # Si on a atteint la dernier piste on re-shuffle
+        if self.current_pos > len(self.shuffled_tracklist):
+            self.shuffle_playlist()
+            self.current_pos = 0
         log.debug("[Start playing %d", self.current_pos)
         uri = self.shuffled_tracklist[self.current_pos]
         # Start the track
@@ -181,8 +184,27 @@ class DLNAMusic:
     # Example:
     #   from http://192.168.0.101:50002/m/MP3/2913.mp3 the returned id is 2913
     # --------------------------------------------------------------------- #
-    def get_playing_id (self):
+    def get_playing_id(self):
         current_url = self.shuffled_tracklist[self.current_pos]
         u = urlsplit(current_url)
         filename = u.path.split('/').pop()
         return filename.split('.')[0]
+
+    # --------------------------------------------------------------------- #
+    # Joue le clip suivant
+    # --------------------------------------------------------------------- #
+    async def skip_to_next(self):
+        """Interrompt le clip en cours et joue le suivant."""
+        log.debug("skip_to_next called")
+        # Arrêter la lecture en cours
+        self._stop_event.set()
+        if self._playback_task and not self._playback_task.done():
+            self._playback_task.cancel()
+            try:
+                await self._playback_task
+            except asyncio.CancelledError:
+                pass
+        # Charger et jouer le suivant
+        log.info("Skipping to next track: %s", next_track)
+        # TODO : pas net
+        self._playback_task = asyncio.create_task(self.play_random_async())

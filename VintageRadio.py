@@ -6,7 +6,7 @@
 # David de Lorenzo (2026)
 # ==================================================================
 import asyncio
-
+from lib.keyboard_control import KeyboardController
 from lib.dlna_music import DLNAMusic
 from lib.dlna_listing import *
 from lib.dlna_preferences import *
@@ -14,7 +14,6 @@ from lib.dlna_user_request import DLNAUserRequest
 from lib.dlna_network_wrapper import DLNAWrapper
 from lib.dlna_logger import get_logger
 from typing import Optional
-import logging
 
 
 # --------------------------------------------------------------------- #
@@ -30,10 +29,6 @@ async def show_clip_info():
 # Main initialisation
 # --------------------------------------------------------------------- #
 def setup():
-    # -----------------------------------------------------------------
-    # Initialisation du logger
-    # -----------------------------------------------------------------
-    log = get_logger(__name__)
     log.info("Start Setup")
     # -----------------------------------------------------------------
     # On ajoute un callback pour actualiser les modes et genre demandés
@@ -83,7 +78,6 @@ def setup():
 # Boucle principale
 # -----------------------------------------------------------------
 async def loop():
-    log = logging.getLogger(__name__)
     log.debug("Start Loop")
     lecture_task = None
 
@@ -95,60 +89,87 @@ async def loop():
     # self.refresh_task = asyncio.create_task(self.repeating_reread(5))
     refresh_task = asyncio.create_task(user_request.repeating_reread(5))  # TODO fire-and-forget
 
-    while True:
-        if user_request.has_changed():
+    try:
+        while True:
             # -------------------------------------------------------------
-            # 1️⃣ Détermine l'identifiant du container correspondant au mode demandé (ex: "By Genre")
+            # 1: Attendre une commande du clavier (non-bloquant)
             # -------------------------------------------------------------
-            container_id = wrapper.find_child_id(wrapper.music_container_id, user_request.get('mode'))
-            if container_id is None:
-                log.fatal(f"Could not locate a '{user_request.get('mode')}' container under 'Music'.")
-                return
+            try:
+                cmd = await asyncio.wait_for(kbd_queue.get(), timeout=0.5)
+            except asyncio.TimeoutError:
+                cmd = None       
+            # -------------------------------------------------------------
+            # 2: Traitement des commandes clavier
+            # -------------------------------------------------------------                
+            if cmd == 'PLAY_NEXT':
+                log.info("PLAY_NEXT command received")
+                # Appeler la même fonction que le GPIO trigger
+                print("await musics.skip_to_next()")
+            elif cmd == 'PLAY_AGAIN':
+                log.info("PLAY_AGAIN command received")                
+                print("await musics.play_again()")
+            elif cmd == 'QUIT':
+                log.info("Quit command received")
+                # Sort de la boucle principale
+                break
+            # -------------------------------------------------------------
+            # 3: Nouvelle requete ?
+            # -------------------------------------------------------------                
+            if user_request.has_changed():
+                # -------------------------------------------------------------
+                # Détermine l'identifiant du container correspondant au mode demandé (ex: "By Genre")
+                # -------------------------------------------------------------
+                container_id = wrapper.find_child_id(wrapper.music_container_id, user_request.get('mode'))
+                if container_id is None:
+                    log.fatal(f"Could not locate a '{user_request.get('mode')}' container under 'Music'.")
+                    return
+                # -------------------------------------------------------------
+                # Détermine l'identifiant du container correspondant au genre demandé (ex: "Blues")
+                # -------------------------------------------------------------
+                genre_id = wrapper.find_child_id(container_id, user_request.get('genre'))
+                if genre_id is None:
+                    log.fatal(
+                        f"Could not locate a '{user_request.get('genre')}' container under '{user_request.get('mode')}'.")
+                    return
+                # -------------------------------------------------------------
+                # List the MP3 files of the container, and send them to the Music object.
+                # -------------------------------------------------------------
+                log.info(f"Current genre is '{user_request.get('genre')}'")
+                wrapper.get_file_urls(genre_id)
+                musics.discover_tracks(wrapper.get_mp3_items())
+                musics.shuffle_playlist()
+                # musics.list_all()
+                # On acquitte la prise en compte du changement.
+                user_request.ack_has_changed()
 
             # -------------------------------------------------------------
-            # 2️⃣ Détermine l'identifiant du container correspondant au genre demandé (ex: "Blues")
+            # 4: Play MP3 files
             # -------------------------------------------------------------
-            genre_id = wrapper.find_child_id(container_id, user_request.get('genre'))
-            if genre_id is None:
-                log.fatal(
-                    f"Could not locate a '{user_request.get('genre')}' container under '{user_request.get('mode')}'.")
-                return
-
+            if lecture_task is None:
+                log.debug("- Start playing a new file")
+                lecture_task = asyncio.create_task(musics.play_random_async())
+                await lecture_task
+                display_task = asyncio.create_task(show_clip_info())
             # -------------------------------------------------------------
-            # 3️⃣ List the MP3 files of the container, and send them to the Music object.
+            # 5: Check if the MP3 file is still playing
             # -------------------------------------------------------------
-            log.info(f"Current genre is '{user_request.get('genre')}'")
-            wrapper.get_file_urls(genre_id)
-            musics.discover_tracks(wrapper.get_mp3_items())
-            musics.shuffle_playlist()
-            # musics.list_all()
-            # On acquitte la prise en compte du changement.
-            user_request.ack_has_changed()
-
-        # -------------------------------------------------------------
-        # 4️⃣ Play MP3 files
-        # -------------------------------------------------------------
-        if lecture_task is None:
-            log.debug("- Start playing a new file")
-            lecture_task = asyncio.create_task(musics.play_random_async())
-            await lecture_task
-            display_task = asyncio.create_task(show_clip_info())
-        # -------------------------------------------------------------
-        # 5️⃣ Check if the MP3 file is still playing
-        # -------------------------------------------------------------
-        else:
-            if musics.isStopped():
-                lecture_task = None
-                log.debug("End playing]")
+            else:
+                if musics.isStopped():
+                    lecture_task = None
+                    log.debug("End playing]")
+            # --------------------------------------------------------------------
+            # Boucle rythmée à 1 seconde.
+            # --------------------------------------------------------------------
+            await asyncio.sleep(1)
+    finally:
         # --------------------------------------------------------------------
-        await asyncio.sleep(0.5)
-
-    # --------------------------------------------------------------------
-    # Sortie de la boucle
-    # --------------------------------------------------------------------
-    log.warning("End loop")
-    refresh_task.cancel()
-    await refresh_task
+        # Sortie de la boucle
+        # --------------------------------------------------------------------
+        log.warning("End loop")
+        keyboard_ctrl.stop()
+        refresh_task.cancel()
+        await refresh_task
+        log.info("Shutdown complete")
 
 
 # ---------------------------------------------------------
@@ -165,12 +186,19 @@ async def main():
 # Launch Main Program
 # -------------------------------------------------------------
 if __name__ == "__main__":
+    # -----------------------------------------------------------------
+    # Initialisation du logger
+    # -----------------------------------------------------------------
+    log = get_logger(__name__)
     # ---------------------------------------------------------
     # Initialisations
     # ---------------------------------------------------------
     wrapper = DLNAWrapper()
     musics = DLNAMusic()
     user_request = DLNAUserRequest()
+    kbd_queue = asyncio.Queue()
+    keyboard_ctrl = KeyboardController(kbd_queue)
+    keyboard_ctrl.start()
     # ---------------------------------------------------------
     # Lancement de l'Event Loop
     # ---------------------------------------------------------

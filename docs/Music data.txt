@@ -1,0 +1,26 @@
+	
+id="28$2857$@2913" 
+parentID="28$2857"
+
+title       = Ain't No Grave Can Hold My Body Down
+date        = 2010
+album       = American VI: Ain't No Grave
+albumArtist = Johnny Cash
+artist      = Johnny Cash
+creator     = Johnny Cash
+genre       = Blues
+albumArtURI = "http://192.168.0.101:50002/transcoder/jpegtnscaler.cgi/ebdart/2913.jpg"
+
+
+author              = Willie Mae Thornton
+originalTrackNumber = 3
+
+size            = "4208621"
+bitrate         = "24000"
+duration        = "0:02:52.000"
+nrAudioChannels = "2"
+sampleFrequency = "44100"
+
+http://192.168.0.101:50002/m/MP3/2913.mp3
+
+

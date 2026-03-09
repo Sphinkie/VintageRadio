@@ -9,6 +9,8 @@ from lib.dlna_network import DLNANetwork
 from lib.dlna_logger import get_logger
 from typing import List, Optional
 
+log = get_logger(__name__)
+
 
 # ----------------------------------------------------------------------- #
 # Cette classe encapsule les requetes HTTP au serveur DLNA.
@@ -24,7 +26,6 @@ class DLNAWrapper:
         self.didl_container = None
         self.server_control_url = None
         self.music_container_id = None
-        self.log = get_logger(__name__)
 
     # --------------------------------------------------------------------- #
     # On définit le Serveur DLNA à utiliser
@@ -33,7 +34,7 @@ class DLNAWrapper:
         self.server_control_url = server_ctrl_url
 
     # --------------------------------------------------------------------- #
-    # Helper to find a child container by its title (case‑insensitive)
+    # Find a child container by its title (case‑insensitive)
     # Note : DIDL‑Lite(Digital Item Description Language) is the standard
     # XML schema that DLNA / UPnP servers use to describe the media
     # objects they expose (containers, tracks, images, etc.).
@@ -49,16 +50,24 @@ class DLNAWrapper:
         return None
 
     # --------------------------------------------------------------------- #
+    # Find child Container avec fallback multi-langues
+    # --------------------------------------------------------------------- #
+    def find_container(self, parent_id, possible_names):
+        for name in possible_names:
+            child_id = self.find_child_id(parent_id, name)
+            if child_id:
+                return child_id
+        return None
+
+    # --------------------------------------------------------------------- #
     # Détermine l'identifiant du Container MUSIC
     # We assume “Music” is a direct child of the root (Music / Photo / Video).
     # --------------------------------------------------------------------- #
     def find_music_container(self):
         ROOT_ID = "0"
-        self.music_container_id = self.find_child_id(ROOT_ID, "Music")
+        self.music_container_id = self.find_container(ROOT_ID, ["Music", "Musique", "Música", "Musik"])
         if self.music_container_id is None:
-            self.music_container_id = self.find_child_id(ROOT_ID, "Musique")
-        if self.music_container_id is None:
-            print("Could not locate a 'Music' container on the server.")
+            log.error("Could not locate a 'Music' container on the server.")
 
     # --------------------------------------------------------------------- #
     # Demande au reseau de rechercher la liste des serveurs DLNA disponibles.
@@ -71,7 +80,7 @@ class DLNAWrapper:
     # --------------------------------------------------------------------- #
     def get_file_urls(self, container_id: str):
         self.didl_container = self.net.browse(self.server_control_url, object_id=container_id)
-        self.log.debug("Container content: %s", self.didl_container)
+        log.debug("Container content: %s", self.didl_container)
         if self.didl_container is None:
             print(f"Failed to browse the container {container_id}.")
 

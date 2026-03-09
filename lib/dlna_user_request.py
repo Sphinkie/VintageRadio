@@ -7,10 +7,10 @@
 # ==================================================================
 import json
 import asyncio
-import logging
 from pathlib import Path
 from lib.dlna_logger import get_logger
 
+log = get_logger(__name__)
 REQUEST_PATH = Path("user_request.json")  # <-- location of the JSON file
 
 
@@ -30,8 +30,7 @@ class DLNAUserRequest:
         self.previous_mode = self.default_mode
         self.previous_genre = self.default_genre
         self.hasChanged = True
-        self.new_request = {"mode": self.default_mode, "genre":self.default_mode}
-        self.log = get_logger(__name__)
+        self.new_request = {"mode": self.default_mode, "genre": self.default_mode}
 
     # ----------------------------------------------------------------------- #
     # Lit la demande de l'utilisateur dans un fichier json.
@@ -42,7 +41,7 @@ class DLNAUserRequest:
         Missing keys fall back to the defaults values.
         """
         if not REQUEST_PATH.is_file():
-            self.log.warning("No file – just use the defaults")
+            log.warning("No file – just use the defaults")
 
         try:
             with REQUEST_PATH.open("r", encoding="utf-8") as fp:
@@ -51,13 +50,13 @@ class DLNAUserRequest:
             self.new_request["mode"] = data.get("mode", self.default_mode)
             self.new_request["genre"] = data.get("genre", self.default_genre)
         except Exception as e:  # pragma: no cover
-            self.log.fatal(f"️Could not parse {REQUEST_PATH}: {e}")
+            log.fatal(f"️Could not parse {REQUEST_PATH}: {e}")
 
     # -----------------------------------------------------------------
     # Recharge le fichier json.
     # -----------------------------------------------------------------
     def refresh_user_request(self):
-        self.log.debug("refresh_user_request invoked")
+        log.debug("refresh_user_request invoked")
         self.previous_mode = self.new_request["mode"]
         self.previous_genre = self.new_request["genre"]
         self.load_user_request()
@@ -66,7 +65,7 @@ class DLNAUserRequest:
         self.hasChanged = (self.new_request["mode"] != self.previous_mode
                            or self.new_request["genre"] != self.previous_genre)
         if self.hasChanged:
-            self.log.info(f"Detected user request change: {self.new_request['mode']} > {self.new_request['genre']}")
+            log.info(f"Detected user request change: {self.new_request['mode']} > {self.new_request['genre']}")
 
     # -----------------------------------------------------------------
     # Indique si le fichier a changé lors la dernière lecture.
@@ -100,5 +99,4 @@ class DLNAUserRequest:
                 self.refresh_user_request()
                 await asyncio.sleep(interval)
         except asyncio.CancelledError:
-            self.log.warning("repeating refresh_user_request cancelled.")
-
+            log.warning("repeating refresh_user_request cancelled.")

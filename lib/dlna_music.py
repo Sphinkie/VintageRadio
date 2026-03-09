@@ -11,13 +11,14 @@ import random
 import signal
 import asyncio
 from urllib.parse import urlsplit
-
 from lib.dlna_logger import get_logger
 
 try:
     import vlc
 except ImportError:
     sys.exit("python-vlc not found – install with: sudo apt-get install python3-vlc ")
+
+log = get_logger(__name__)
 
 
 # ----------------------------------------------------------------------- #
@@ -40,7 +41,6 @@ class DLNAMusic:
         self.refresh_request_callback = None
         # On ajoute un handler pour le CTR-C
         self.install_signal_handler()
-        self.log = get_logger(__name__)
 
     # --------------------------------------------------------------------- #
     # Installe un Handler qui stoppe VLC proprement en cas de CTRL-C.
@@ -162,7 +162,7 @@ class DLNAMusic:
     # --------------------------------------------------------------------- #
     async def play_random_async(self):
         # schedule the callback 10s later, but don’t await it yet
-        self.log.debug("[Start playing %d", self.current_pos)
+        log.debug("[Start playing %d", self.current_pos)
         uri = self.shuffled_tracklist[self.current_pos]
         # Start the track
         self.start_track(uri)
@@ -172,7 +172,7 @@ class DLNAMusic:
     # Invoque la callback après un délai de 10 secondes.
     # --------------------------------------------------------------------- #
     async def delayed_callback(self):
-        self.log.debug("delayed_callback invoked")
+        log.debug("delayed_callback invoked")
         await asyncio.sleep(10)
         self.refresh_request_callback()
 
@@ -186,7 +186,3 @@ class DLNAMusic:
         u = urlsplit(current_url)
         filename = u.path.split('/').pop()
         return filename.split('.')[0]
-
-
-
-

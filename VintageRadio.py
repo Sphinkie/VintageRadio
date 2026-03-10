@@ -27,6 +27,25 @@ async def show_clip_info():
 
 
 # --------------------------------------------------------------------- #
+# Define the callback for the Keyboard
+# --------------------------------------------------------------------- #
+def on_key_press(action):
+    if action == 'QUIT':
+        print(">>> Quitting...")
+        exit(0)
+    elif action == 'NEXT':
+        print("PLAY Next track ")
+        # Trigger your skip logic here
+        # La musique suivante va commencer automatiquement.
+        musics.stop()
+    elif action == 'AGAIN':
+        print(">>> PLAY Track again")
+        musics.rewind()
+        musics.stop()
+        # La musique va recommencer automatiquement.
+
+
+# --------------------------------------------------------------------- #
 # Main initialisation
 # --------------------------------------------------------------------- #
 def setup():
@@ -73,9 +92,10 @@ def setup():
     # Listener du clavier
     # -------------------------------------------------------------
     # Get the current running loop
-    loop = asyncio.get_running_loop()
+    # loop = asyncio.get_running_loop()
     # Start keyboard control within the eventLoop
-    keyboard_ctrl.start(loop)
+    #keyboard_ctrl.start(loop)
+    keyboard_ctrl.start()
     log.info("End Setup")
 
 
@@ -99,28 +119,28 @@ async def loop():
             # ----------------------------------------------------------------- #
             # [1] Attendre une commande du clavier (non-bloquant)
             # ----------------------------------------------------------------- #
-            try:
-                cmd = await asyncio.wait_for(kbd_queue.get(), timeout=0.5)
-            except asyncio.TimeoutError:
-                cmd = None       
+            # try:
+            #    cmd = await asyncio.wait_for(kbd_queue.get(), timeout=0.5)
+            #except asyncio.TimeoutError:
+            #    cmd = None
             # ----------------------------------------------------------------- #
             # [2] Traitement des commandes clavier
             # ----------------------------------------------------------------- #
-            if cmd == 'PLAY_NEXT':
-                log.info("PLAY_NEXT command received")
-                # Appeler la même fonction que le GPIO trigger
-                musics.stop()
-                # La musique suivante va commencer automatiquement.
-            elif cmd == 'PLAY_AGAIN':
-                log.info("PLAY_AGAIN command received")                
-                # Appeler la même fonction que le GPIO trigger
-                musics.rewind()
-                musics.stop()
-                # La musique va recommencer automatiquement.
-            elif cmd == 'QUIT':
-                log.info("Quit command received")
-                # Sort de la boucle principale
-                break
+            #if cmd == 'PLAY_NEXT':
+            #    log.info("PLAY_NEXT command received")
+            #    # Appeler la même fonction que le GPIO trigger
+            #    musics.stop()
+            #    # La musique suivante va commencer automatiquement.
+            #elif cmd == 'PLAY_AGAIN':
+            #    log.info("PLAY_AGAIN command received")
+            #    # Appeler la même fonction que le GPIO trigger
+            #    musics.rewind()
+            #    musics.stop()
+            #    # La musique va recommencer automatiquement.
+            #elif cmd == 'QUIT':
+            #    log.info("Quit command received")
+            #    # Sort de la boucle principale
+            #    break
             # ----------------------------------------------------------------- #
             # [3] Nouvelle requete utilisateur ?
             # ----------------------------------------------------------------- #
@@ -206,9 +226,10 @@ if __name__ == "__main__":
     musics = DLNAMusic()
     user_request = DLNAUserRequest()
     # Create the queue
-    kbd_queue = asyncio.Queue()
+    # kbd_queue = asyncio.Queue()
     # Initialize keyboard control with the loop
-    keyboard_ctrl = KeyboardController(kbd_queue)
+    # keyboard_ctrl = KeyboardController(kbd_queue)
+    keyboard_ctrl = KeyboardController(on_key_press)
     # ---------------------------------------------------------
     # Lancement de l'Event Loop
     # ---------------------------------------------------------

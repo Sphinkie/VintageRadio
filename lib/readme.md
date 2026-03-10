@@ -10,4 +10,16 @@
 | dlna_music.py            | • Stores the list of MP3 URLs. <br>• Can shuffle the playlist and play a mp3 clip.                                                                                                                                                                                                                                    | 
 
 
+# Problematiques
+
+## pynput requires a graphical display (X server) to capture keyboard input
+
+- On peut remplacer pyinput par termios and tty. OK en mode console, masi ne fonctionne plus sous Windows.
+- il faut implémenter du cross-platform.
+   - option 1 : conditionnal imports (Uses only built-in Python modules)
+   - option 2 : librairie crossplatfom readchar
+   Lumo recommande l'option 1 dans notre cas.
+
+
+
 

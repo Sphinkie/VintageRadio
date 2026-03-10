@@ -1,82 +1,149 @@
 # coding: UTF-8
 # ==================================================================
-# lib/keyboard_control.py
+# keyboard_control.py
 # ==================================================================
-# VintageRadio - Librairie.
-# Lumo (2026)
+# VintageRadio - Keyboard input handler (cross-platform)
+# David de Lorenzo (2026)
 # ==================================================================
-import asyncio
-from pynput import keyboard
-from lib.dlna_logger import get_logger
+import sys
+import threading
+from typing import Optional, Callable
 
-log = get_logger(__name__)
+# Detect operating system for conditional imports
+IS_WINDOWS = sys.platform.startswith('win')
+
+if IS_WINDOWS:
+    # Windows-specific imports
+    import msvcrt
+else:
+    # Unix/Linux/macOS imports
+    import termios
+    import tty
 
 
-# ------------------------------------------------------------------------- #
-# Cette classe simule les boutons GPIO par des touches du clavier.
-# ------------------------------------------------------------------------- #
+# ----------------------------------------------------------------------- #
+# Cette classe gère les touches du clavier (Windows/Raspberry)
+# et simule les boutons GPIO par des touches du clavier.
+# ----------------------------------------------------------------------- #
 class KeyboardController:
-    """Écoute le clavier et envoie des commandes à l'event loop."""
+    """
+    Cross-platform keyboard input handler.
+    Uses termios/tty on Unix-like systems (Raspberry Pi, Linux, macOS)
+    and msvcrt on Windows.
+    Callback is invoked whenever a recognized key is pressed.
+    """
 
     # --------------------------------------------------------------------- #
     # Constructeur
     # --------------------------------------------------------------------- #
-    def __init__(self, event_queue: asyncio.Queue):  # , loop: asyncio.AbstractEventLoop):
-        self.event_queue = event_queue
-        self.loop = None
-        self.listener = None
+    def __init__(self, callback: Callable[[str], None]):
+        """
+        Initialize the keyboard controller.
+        
+        Args:
+            callback: Function to call when a key is pressed.
+                     Receives the action string ('NEXT', 'SKIP', 'QUIT').
+        """
+        self.callback = callback
+        self.running = False
+        self.thread: Optional[threading.Thread] = None
 
     # --------------------------------------------------------------------- #
     # Start listening keyboard.
     # --------------------------------------------------------------------- #
-    def start(self, loop: asyncio.AbstractEventLoop):
-        """Démarrer l'écouteur de clavier dans un thread séparé."""
-        self.loop = loop
-        self.listener = keyboard.Listener(
-            on_press=self._on_press,
-            suppress=False  # laisser les touches passer au terminal
-        )
-        self.listener.start()
-        log.debug("Keyboard listener started")
+    def start(self):
+        """Start listening for keyboard input in a background thread."""
+        self.running = True
+        self.thread = threading.Thread(target=self._listen, daemon=True)
+        self.thread.start()
 
     # --------------------------------------------------------------------- #
     # Stop listening keyboard.
     # --------------------------------------------------------------------- #
     def stop(self):
-        """Arrêter l'écouteur de clavier."""
-        if self.listener:
-            self.listener.stop()
-            self.listener.join(timeout=1)
-        log.debug("Keyboard listener stopped")
+        """Stop the listener thread and restore terminal settings."""
+        self.running = False
+        if self.thread:
+            self.thread.join(timeout=1.0)
 
     # --------------------------------------------------------------------- #
-    # Appui sur une touche: n (play next) | q (quit) | a (again)
-    # TODO a tester
+    # Redirige vers le Listener Windows ou Raspberry.
     # --------------------------------------------------------------------- #
-    def _on_press(self, key):
-        """Callback appelé à chaque pression de touche."""
+    def _listen(self):
+        """Route to the appropriate platform-specific listener."""
+        if IS_WINDOWS:
+            self._listen_windows()
+        else:
+            self._listen_unix()
+
+    # --------------------------------------------------------------------- #
+    # Listener pour Raspberry.
+    # --------------------------------------------------------------------- #
+    def _listen_unix(self):
+        """
+        Unix/Linux implementation using termios/tty.
+        Reads single characters from stdin in raw mode (no line buffering).
+        """
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        
         try:
-            if hasattr(key, 'char'):
-                char = key.char.lower()
-                if char == 'n':  # Touche 'n' pour PlayNext
-                    asyncio.run_coroutine_threadsafe(
-                        self.event_queue.put('PLAY_NEXT'),
-                        self.loop
-                    )
-                    log.debug("Key 'n' pressed → PLAY_NEXT queued")
-                elif char == 'a':  # Play Again
-                    asyncio.run_coroutine_threadsafe(
-                        self.event_queue.put('PLAY_AGAIN'),
-                        self.loop
-                    )
-                    log.debug("Key 'a' pressed → PLAY_AGAIN queued")
-                elif char == 'q':  # Quitter
-                    asyncio.run_coroutine_threadsafe(
-                        self.event_queue.put('QUIT'),
-                        self.loop
-                    )
-                    log.debug("Key 'q' pressed → QUIT queued")
-
+            # Set terminal to raw mode (immediate keypress, no echo)
+            tty.setraw(fd)
+            
+            while self.running:
+                ch = sys.stdin.read(1)
+                if ch:
+                    self._handle_key(ch)
+                    
         except Exception as e:
-            log.error("Error processing key press: %s", e)
+            print(f"Keyboard error (Unix): {e}", file=sys.stderr)
+        finally:
+            # Restore terminal settings
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
 
+    # --------------------------------------------------------------------- #
+    # Listener pour Windows.
+    # --------------------------------------------------------------------- #
+    def _listen_windows(self):
+        """
+        Windows implementation using msvcrt.
+        Uses kbhit() to check for keypresses without blocking.
+        """
+        while self.running:
+            if msvcrt.kbhit():
+                ch = msvcrt.getch().decode('utf-8', errors='ignore')
+                self._handle_key(ch)
+
+    # --------------------------------------------------------------------- #
+    # Handler commun des touches reçues.
+    # --------------------------------------------------------------------- #
+    def _handle_key(self, ch: str):
+        """
+        Common key handling logic across platforms.
+        Maps raw keypresses to action strings.
+        
+        Args:
+            ch: Single character from keyboard input.
+        """
+        ch_lower = ch.lower()
+        
+        if ch_lower == 'n':
+            self.callback('NEXT')
+        elif ch_lower == 'a':
+            self.callback('AGAIN')
+        elif ch_lower == 'q':
+            self.callback('QUIT')
+        # Add more key mappings here if needed
+        # elif ch_lower == ' ':
+        #     self.callback('PAUSE')
+        
+        
+"""
+# In VintageRadio.py
+
+
+try:
+    # Your main async loop
+    await loop()
+"""

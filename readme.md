@@ -37,3 +37,6 @@ python VintageRadio.py
   (ou faire `pip install python-vlc`).
 
 - Utilise la librairie Python `libvlc.dll`.
+
+- Ajouter la DLl de VLC au path
+   `setx Path "%Path%;C:\Program Files\VideoLAN\VLC"`

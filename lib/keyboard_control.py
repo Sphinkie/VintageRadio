@@ -140,6 +140,8 @@ class KeyboardController:
             self.callback('NEXT')
         elif ch_lower == 'a':
             self.callback('AGAIN')
+        elif ch_lower == 'd':
+            self.callback('DISCOVER')
         elif ch_lower == 'q':
             # Set the event to signal the main loop
             self.quit_event.set()

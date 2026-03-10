@@ -42,6 +42,9 @@ def on_key_press(action):
         musics.rewind()
         musics.stop()
         # La musique va recommencer automatiquement.
+    elif action == 'DISCOVER':
+        log.info("DISCOVERY command received")
+        wrapper.discover_servers()
 
 
 # --------------------------------------------------------------------- #
@@ -61,18 +64,18 @@ def setup():
     # -----------------------------------------------------------------
     if preferred_server_url:
         log.debug(f"Trying previously saved server: {preferred_server_url}")
-        ctrl = resolve_control(preferred_server_url)
+        ctrl = DLNAWrapper.resolve_control(preferred_server_url)
         if ctrl:
             server_control_url = ctrl
             log.info("Saved server is reachable.")
         else:
             log.warning("Saved server could not be reached or does not expose ContentDirectory.")
     # -----------------------------------------------------------------
-    # If we still have no usable server, discover a new
+    # If we still have no usable server, discover a new.
     # -----------------------------------------------------------------
     if not server_control_url:
-        servers = wrapper.discover_servers()
-        server_control_url = choose_server(servers, preferred_server_url)
+        wrapper.discover_servers()
+        server_control_url = wrapper.choose_server(preferred_server_url)
         if server_control_url:
             save_preferred_server(server_control_url)
     # -----------------------------------------------------------------
@@ -98,23 +101,22 @@ async def loop():
     log.debug("Start Loop")
     lecture_task = None
 
-    # --------------------------------------------------------------------
-    # Tache périodique No 1
-    # Reload user request (json file) every 5 seconds.
-    # --------------------------------------------------------------------
+    # -------------------------------------------------------------------------- #
+    # Tache périodique No 1 : Reload user request (json file) every 5 seconds.
+    # -------------------------------------------------------------------------- #
     refresh_task = asyncio.create_task(user_request.repeating_reread(5))  # fire-and-forget
 
     try:
         while True:
             # ----------------------------------------------------------------- #
-            # Check if a QUIT event was received
+            # [1] Check if a QUIT event was received
             # ----------------------------------------------------------------- #
             if quit_event.is_set():
                 log.debug("Exiting loop")
                 break
 
             # ----------------------------------------------------------------- #
-            # [1] A-t-on une nouvelle requete de l'utilisateur ?
+            # [2] A-t-on une nouvelle requete de l'utilisateur ?
             # ----------------------------------------------------------------- #
             if user_request.has_changed():
                 # -------------------------------------------------------------
@@ -123,7 +125,7 @@ async def loop():
                 container_id = wrapper.find_child_id(wrapper.music_container_id, user_request.get('mode'))
                 if container_id is None:
                     log.fatal(f"Could not locate a '{user_request.get('mode')}' container under 'Music'.")
-                    return
+                    break
                 # -------------------------------------------------------------
                 # Détermine l'identifiant du container correspondant au genre demandé (ex: "Blues")
                 # -------------------------------------------------------------
@@ -131,7 +133,7 @@ async def loop():
                 if genre_id is None:
                     log.fatal(
                         f"Could not locate a '{user_request.get('genre')}' container under '{user_request.get('mode')}'.")
-                    return
+                    break
                 # -------------------------------------------------------------
                 # List the MP3 files of the container, and send them to the Music object.
                 # -------------------------------------------------------------
@@ -144,7 +146,7 @@ async def loop():
                 user_request.ack_has_changed()
 
             # -------------------------------------------------------------
-            # 2: Play MP3 files
+            # [3] Play MP3 files
             # -------------------------------------------------------------
             if lecture_task is None:
                 log.debug("Start playing a new file")
@@ -152,14 +154,14 @@ async def loop():
                 await lecture_task
                 display_task = asyncio.create_task(show_clip_info())
             # -------------------------------------------------------------
-            # 3: Check if the MP3 file is still playing
+            # [4] Check if the MP3 file is still playing
             # -------------------------------------------------------------
             else:
                 if musics.isStopped():
                     lecture_task = None
                     log.debug("End playing]")
             # --------------------------------------------------------------------
-            # Boucle rythmée à 1 seconde.
+            # [5] Boucle rythmée à 1 seconde.
             # --------------------------------------------------------------------
             await asyncio.sleep(1)
     # --------------------------------------------------------------------

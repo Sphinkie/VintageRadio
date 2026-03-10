@@ -39,7 +39,9 @@ class DLNANetwork:
         self.timeout = timeout
 
     # --------------------------------------------------------------------- #
-    # SSDP discovery
+    # SSDP discovery. Renvoie une liste de couples (url, uuid):
+    # ('http://192.168.0.32:50001/desc/device.xml',
+    #  'uuid:00113281-0ddb-0011-db0d-db0d81321100::urn:schemas-upnp-org:device:MediaServer:1')
     # --------------------------------------------------------------------- #
     def discover_servers(self) -> List[Tuple[str, str]]:
         """
@@ -70,10 +72,10 @@ class DLNANetwork:
                 if loc and usn:
                     servers.append((loc, usn))
         except socket.timeout:
-            log.info("Server discovery passed")
             pass  # normal end of discovery window
         finally:
             sock.close()
+        log.info("%d servers found", len(servers))
         return servers
 
     # --------------------------------------------------------------------- #

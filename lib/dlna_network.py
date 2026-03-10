@@ -11,6 +11,7 @@ from urllib.parse import urlparse
 from typing import List, Optional, Tuple
 from lib.dlna_logger import get_logger
 
+log = get_logger(__name__)
 
 SSDP_ADDR = "239.255.255.250"
 SSDP_PORT = 1900
@@ -36,10 +37,9 @@ class DLNANetwork:
     # --------------------------------------------------------------------- #
     def __init__(self, timeout: float = 5.0):
         self.timeout = timeout
-        self.log = get_logger(__name__)
 
     # --------------------------------------------------------------------- #
-    # 1️⃣  SSDP discovery
+    # SSDP discovery
     # --------------------------------------------------------------------- #
     def discover_servers(self) -> List[Tuple[str, str]]:
         """
@@ -51,6 +51,7 @@ class DLNANetwork:
             *location_url* – the URL of the device description XML  
             *usn*          – unique service name (used as an identifier)
         """
+        log.info("Start server discovery (for 5s)")
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.settimeout(self.timeout)
@@ -69,10 +70,10 @@ class DLNANetwork:
                 if loc and usn:
                     servers.append((loc, usn))
         except socket.timeout:
+            log.info("Server discovery passed")
             pass  # normal end of discovery window
         finally:
             sock.close()
-
         return servers
 
     # --------------------------------------------------------------------- #

@@ -8,12 +8,14 @@
 import configparser
 from pathlib import Path
 from typing import Optional
+from lib.dlna_logger import get_logger
 
 # --------------------------------------------------------------------- #
 # Configuration handling (preferred_dlna.ini)
 # --------------------------------------------------------------------- #
 CONFIG_FILE = Path("preferred_dlna.ini")
 CONFIG_SECTION = "server"
+log = get_logger(__name__)
 
 
 # --------------------------------------------------------------------- #
@@ -22,7 +24,7 @@ CONFIG_SECTION = "server"
 def load_preferred_server() -> Optional[str]:
     """Return the saved server control URL, or None if the file is missing."""
     if not CONFIG_FILE.is_file():
-        print("file not found: ", CONFIG_FILE)
+        log.warning("file %s not found", CONFIG_FILE)
         return None
     cfg = configparser.ConfigParser()
     cfg.read(CONFIG_FILE)
@@ -32,10 +34,10 @@ def load_preferred_server() -> Optional[str]:
 # --------------------------------------------------------------------- #
 # Ecriture des préférences
 # --------------------------------------------------------------------- #
-def save_preferred(url: str) -> None:
+def save_preferred_server(url: str) -> None:
     """Persist the chosen server's control URL for next runs."""
     cfg = configparser.ConfigParser()
     cfg[CONFIG_SECTION] = {"control_url": url}
     with CONFIG_FILE.open("w") as fp:
         cfg.write(fp)
-    print(CONFIG_FILE, " written")
+    log.info("%s written", CONFIG_FILE)

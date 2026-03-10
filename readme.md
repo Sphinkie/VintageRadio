@@ -17,17 +17,14 @@ Faire CTRL-C pour stopper
 ```bash
 sudo apt update
 sudo apt install python3-pip python3-vlc
-sudo apt install python3-pynput
-sudo apt install python3-pynput
 pip3 install -r requirements.txt   # (optional, if you add extra deps)
 git clone https://github.com/Sphinkie/VintageRadio
-cd Programmes/VintageRadio
-python list_dlna.py
 ...
 # update with:
 git pull
 ...
 # run with
+cd Programmes/VintageRadio
 python VintageRadio.py
 ```
 

@@ -70,6 +70,7 @@ class KeyboardController:
         self.running = False
         if self.thread:
             self.thread.join(timeout=1.0)
+        log.debug("Stop keyboard listening thread")
 
     # --------------------------------------------------------------------- #
     # Redirige vers le Listener Windows ou Raspberry.

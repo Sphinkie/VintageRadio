@@ -27,7 +27,7 @@ async def show_clip_info():
 
 
 # --------------------------------------------------------------------- #
-# Define the callback for the Keyboard
+# Callback for the Keyboard
 # --------------------------------------------------------------------- #
 def on_key_press(action):
     if action == 'QUIT':
@@ -55,12 +55,12 @@ def setup():
     # -----------------------------------------------------------------
     server_control_url: Optional[str] = None
     preferred_server_url = load_preferred_server()
-    log.debug("preferred server url: %s", preferred_server_url)
+    log.info("preferred server url: %s", preferred_server_url)
     # -----------------------------------------------------------------
     # If we have a saved description URL, verify that it is still reachable
     # -----------------------------------------------------------------
     if preferred_server_url:
-        log.info(f"Trying previously saved server: {preferred_server_url}")
+        log.debug(f"Trying previously saved server: {preferred_server_url}")
         ctrl = resolve_control(preferred_server_url)
         if ctrl:
             server_control_url = ctrl
@@ -74,12 +74,11 @@ def setup():
         servers = wrapper.discover_servers()
         server_control_url = choose_server(servers, preferred_server_url)
         if server_control_url:
-            save_preferred(server_control_url)
+            save_preferred_server(server_control_url)
     # -----------------------------------------------------------------
     # At this point we have a valid control URL
     # -----------------------------------------------------------------
     log.info(f"Using ContentDirectory control URL: {server_control_url}")
-    assert server_control_url is not None
     wrapper.set_server(server_control_url)
     # -------------------------------------------------------------
     # Première lecture du fichier de demande
@@ -168,7 +167,6 @@ async def loop():
     # --------------------------------------------------------------------
     finally:
         log.warning("End loop")
-        keyboard_ctrl.stop()
         refresh_task.cancel()
         await refresh_task
         log.info("Shutdown complete")
@@ -180,8 +178,10 @@ async def loop():
 async def main():
     # On exécute le Setup
     setup()
-    # On lance la boucle
-    await loop()
+    # On lance la boucle (si on a un serveur DLNA)
+    if wrapper.server_control_url:
+        await loop()
+    keyboard_ctrl.stop()
 
 
 # -------------------------------------------------------------

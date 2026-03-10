@@ -65,6 +65,7 @@ class DLNAWrapper:
     # --------------------------------------------------------------------- #
     def find_music_container(self):
         ROOT_ID = "0"
+        if self.server_control_url is None: return
         self.music_container_id = self.find_container(ROOT_ID, ["Music", "Musique", "Música", "Musik"])
         if self.music_container_id is None:
             log.error("Could not locate a 'Music' container on the server.")

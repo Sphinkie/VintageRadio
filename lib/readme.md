@@ -9,7 +9,7 @@
 | dlna_network.py	         | • Handles SSDP discovery of DLNA MediaServers.  <br>• Retrieves the device description XML and extracts the ContentDirectory control URL. <br>• Sends SOAP Browse requests and parses the resulting DIDL‑Lite XML. <br>• Provides a helper (extract_mp3_items) that returns a flat list of MP3 URLs from a container. | 
 | dlna_music.py            | • Stores the list of MP3 URLs. <br>• Can shuffle the playlist and play a mp3 clip.                                                                                                                                                                                                                                    | 
 | dlna_logger.py            | Offre un service de logs, commun à tous les modules. | 
-| keyboard_control.py      | Un listener de clavier (compatible Windows et Rasberry) pour envoyer quelques commandes à l'applpcation. | 
+| keyboard_control.py      | Un listener de clavier (compatible Windows et Raspberry) pour envoyer quelques commandes à l'applpcation. | 
 
 
 

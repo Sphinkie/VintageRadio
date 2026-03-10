@@ -8,18 +8,25 @@
 | dlna_network_wrapper.py	 | • Allows the main program to have macro functions to interract with the DLNA server.                                                                                                                                                                                                                                  |
 | dlna_network.py	         | • Handles SSDP discovery of DLNA MediaServers.  <br>• Retrieves the device description XML and extracts the ContentDirectory control URL. <br>• Sends SOAP Browse requests and parses the resulting DIDL‑Lite XML. <br>• Provides a helper (extract_mp3_items) that returns a flat list of MP3 URLs from a container. | 
 | dlna_music.py            | • Stores the list of MP3 URLs. <br>• Can shuffle the playlist and play a mp3 clip.                                                                                                                                                                                                                                    | 
+| dlna_logger.py            | Offre un service de logs, commun à tous les modules. | 
+| keyboard_control.py      | Un listener de clavier (compatible Windows et Rasberry) pour envoyer quelques commandes à l'applpcation. | 
+
 
 
 # Problematiques
 
 ## pynput requires a graphical display (X server) to capture keyboard input
 
-- On peut remplacer pyinput par termios and tty. OK en mode console, masi ne fonctionne plus sous Windows.
-- il faut implémenter du cross-platform.
+- On peut remplacer pyinput par termios and tty. OK en mode console, mais ne fonctionne plus sous Windows.
+- Il faut implémenter du cross-platform.
    - option 1 : conditionnal imports (Uses only built-in Python modules)
-   - option 2 : librairie crossplatfom readchar
+   - option 2 : librairie cross-platfom `readchar`
    Lumo recommande l'option 1 dans notre cas.
 
+
+## PyCharm ne redirige pas les touches vers l'app
+
+Aller dans le menu `Run -> Edit Configuration -> Modify options` et cocher **Emulate terminal in output console**.
 
 
 

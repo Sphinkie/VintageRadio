@@ -36,8 +36,8 @@ class DLNAMusic:
         self.shuffled_tracklist = []
         self.current_pos = 0
         # STOP EVENT pour stopper le clip en cours
-        self._stop_event = None
-        self._stop_requested = False
+        #self._stop_event = None
+        #self._stop_requested = False
         self.renderer = vlc.MediaPlayer()
         # On ajoute un handler pour le CTR-C
         self.install_signal_handler()
@@ -47,10 +47,10 @@ class DLNAMusic:
     # --------------------------------------------------------------------- #
     def install_signal_handler(self):
         # -----------------------
-        # Handler
+        # Handler for CTRL-C
         # -----------------------
         def handler(sig, frame):
-            print("\n--- Stop playing... (exit)")
+            log.info("Stop playing... (exit)")
             self.stop()
             sys.exit(0)
 
@@ -72,7 +72,7 @@ class DLNAMusic:
     # Affiche la liste des URLs reçues.
     # --------------------------------------------------------------------- #
     def list_all(self):
-        print(f"\n--- MP3 files found:")
+        print(f"MP3 url found:")
         for url in self.tracks:
             print(url)
         return
@@ -92,7 +92,7 @@ class DLNAMusic:
     # --------------------------------------------------------------------- #
     def isStopped(self) -> bool:
         """ returns False if a file is playing."""
-        log.debug(self.renderer.get_state())
+        # log.debug(self.renderer.get_state())
         ended = (self.renderer.get_state() == vlc.State.Ended)
         stopped = (self.renderer.get_state() == vlc.State.Stopped)
         return ended or stopped
@@ -192,25 +192,3 @@ class DLNAMusic:
         if self.current_pos < 0:
             self.current_pos = 0
 
-    # --------------------------------------------------------------------- #
-    # Joue le clip suivant
-    # todo : virer
-    # --------------------------------------------------------------------- #
-    async def skip_to_next(self):
-        """Interrompt le clip en cours et joue le suivant."""
-        log.debug("skip_to_next called")
-        # Arrêter la lecture en cours
-        self.stop()
-        """
-        self._stop_event.set()
-        if self._playback_task and not self._playback_task.done():
-            self._playback_task.cancel()
-            try:
-                await self._playback_task
-            except asyncio.CancelledError:
-                pass
-        """
-        # Charger et jouer le clip suivant
-        log.info("Skipping to next track")
-        # TODO : pas net
-        self._playback_task = asyncio.create_task(self.play_random_async())

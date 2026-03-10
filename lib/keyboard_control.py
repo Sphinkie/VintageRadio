@@ -3,11 +3,13 @@
 # keyboard_control.py
 # ==================================================================
 # VintageRadio - Keyboard input handler (cross-platform)
-# David de Lorenzo (2026)
+# Lumo (2026)
 # ==================================================================
 import sys
+import asyncio
 import threading
 from typing import Optional, Callable
+from lib.dlna_logger import get_logger
 
 # Detect operating system for conditional imports
 IS_WINDOWS = sys.platform.startswith('win')
@@ -20,6 +22,7 @@ else:
     import termios
     import tty
 
+log = get_logger(__name__)
 
 # ----------------------------------------------------------------------- #
 # Cette classe gère les touches du clavier (Windows/Raspberry)
@@ -36,23 +39,25 @@ class KeyboardController:
     # --------------------------------------------------------------------- #
     # Constructeur
     # --------------------------------------------------------------------- #
-    def __init__(self, callback: Callable[[str], None]):
+    def __init__(self, callback: Callable[[str], None], quit_event: asyncio.Event):
         """
         Initialize the keyboard controller.
         
         Args:
             callback: Function to call when a key is pressed.
-                     Receives the action string ('NEXT', 'SKIP', 'QUIT').
+                     Receives the action string ('NEXT', 'AGAIN', 'QUIT').
         """
         self.callback = callback
         self.running = False
         self.thread: Optional[threading.Thread] = None
+        self.quit_event = quit_event  # Store the event
 
     # --------------------------------------------------------------------- #
     # Start listening keyboard.
     # --------------------------------------------------------------------- #
     def start(self):
         """Start listening for keyboard input in a background thread."""
+        log.debug("Start keyboard listening thread")
         self.running = True
         self.thread = threading.Thread(target=self._listen, daemon=True)
         self.thread.start()
@@ -94,6 +99,7 @@ class KeyboardController:
             while self.running:
                 ch = sys.stdin.read(1)
                 if ch:
+                    log.debug(f"Keyboard (Unix): {ch}")
                     self._handle_key(ch)
                     
         except Exception as e:
@@ -113,6 +119,7 @@ class KeyboardController:
         while self.running:
             if msvcrt.kbhit():
                 ch = msvcrt.getch().decode('utf-8', errors='ignore')
+                log.debug(f"Keyboard (Windows): {ch}")
                 self._handle_key(ch)
 
     # --------------------------------------------------------------------- #
@@ -133,17 +140,7 @@ class KeyboardController:
         elif ch_lower == 'a':
             self.callback('AGAIN')
         elif ch_lower == 'q':
+            # Set the event to signal the main loop
+            self.quit_event.set()
+            # C'est alors même inutile d'appeler la callback
             self.callback('QUIT')
-        # Add more key mappings here if needed
-        # elif ch_lower == ' ':
-        #     self.callback('PAUSE')
-        
-        
-"""
-# In VintageRadio.py
-
-
-try:
-    # Your main async loop
-    await loop()
-"""

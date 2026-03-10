@@ -31,15 +31,14 @@ async def show_clip_info():
 # --------------------------------------------------------------------- #
 def on_key_press(action):
     if action == 'QUIT':
-        print(">>> Quitting...")
-        exit(0)
+        log.info("QUIT command received")
     elif action == 'NEXT':
-        print("PLAY Next track ")
+        log.info("PLAY NEXT command received")
         # Trigger your skip logic here
         # La musique suivante va commencer automatiquement.
         musics.stop()
     elif action == 'AGAIN':
-        print(">>> PLAY Track again")
+        log.info("PLAY AGAIN command received")
         musics.rewind()
         musics.stop()
         # La musique va recommencer automatiquement.
@@ -82,20 +81,14 @@ def setup():
     log.info(f"Using ContentDirectory control URL: {server_control_url}")
     assert server_control_url is not None
     wrapper.set_server(server_control_url)
-
     # -------------------------------------------------------------
     # Première lecture du fichier de demande
-    # -------------------------------------------------------------
     user_request.load_user_request()
+    # Récupération du Container parent : MUSIC
     wrapper.find_music_container()
-    # -------------------------------------------------------------
-    # Listener du clavier
-    # -------------------------------------------------------------
-    # Get the current running loop
-    # loop = asyncio.get_running_loop()
-    # Start keyboard control within the eventLoop
-    #keyboard_ctrl.start(loop)
+    # Lance le Listener du clavier dans un thread.
     keyboard_ctrl.start()
+    # -------------------------------------------------------------
     log.info("End Setup")
 
 
@@ -110,39 +103,19 @@ async def loop():
     # Tache périodique No 1
     # Reload user request (json file) every 5 seconds.
     # --------------------------------------------------------------------
-    # refresh_task = asyncio.create_task(musics.delayed_callback())  # fire-and-forget
-    # self.refresh_task = asyncio.create_task(self.repeating_reread(5))
     refresh_task = asyncio.create_task(user_request.repeating_reread(5))  # fire-and-forget
 
     try:
         while True:
             # ----------------------------------------------------------------- #
-            # [1] Attendre une commande du clavier (non-bloquant)
+            # Check if a QUIT event was received
             # ----------------------------------------------------------------- #
-            # try:
-            #    cmd = await asyncio.wait_for(kbd_queue.get(), timeout=0.5)
-            #except asyncio.TimeoutError:
-            #    cmd = None
+            if quit_event.is_set():
+                log.debug("Exiting loop")
+                break
+
             # ----------------------------------------------------------------- #
-            # [2] Traitement des commandes clavier
-            # ----------------------------------------------------------------- #
-            #if cmd == 'PLAY_NEXT':
-            #    log.info("PLAY_NEXT command received")
-            #    # Appeler la même fonction que le GPIO trigger
-            #    musics.stop()
-            #    # La musique suivante va commencer automatiquement.
-            #elif cmd == 'PLAY_AGAIN':
-            #    log.info("PLAY_AGAIN command received")
-            #    # Appeler la même fonction que le GPIO trigger
-            #    musics.rewind()
-            #    musics.stop()
-            #    # La musique va recommencer automatiquement.
-            #elif cmd == 'QUIT':
-            #    log.info("Quit command received")
-            #    # Sort de la boucle principale
-            #    break
-            # ----------------------------------------------------------------- #
-            # [3] Nouvelle requete utilisateur ?
+            # [1] A-t-on une nouvelle requete de l'utilisateur ?
             # ----------------------------------------------------------------- #
             if user_request.has_changed():
                 # -------------------------------------------------------------
@@ -172,7 +145,7 @@ async def loop():
                 user_request.ack_has_changed()
 
             # -------------------------------------------------------------
-            # 4: Play MP3 files
+            # 2: Play MP3 files
             # -------------------------------------------------------------
             if lecture_task is None:
                 log.debug("Start playing a new file")
@@ -180,7 +153,7 @@ async def loop():
                 await lecture_task
                 display_task = asyncio.create_task(show_clip_info())
             # -------------------------------------------------------------
-            # 5: Check if the MP3 file is still playing
+            # 3: Check if the MP3 file is still playing
             # -------------------------------------------------------------
             else:
                 if musics.isStopped():
@@ -225,11 +198,10 @@ if __name__ == "__main__":
     wrapper = DLNAWrapper()
     musics = DLNAMusic()
     user_request = DLNAUserRequest()
-    # Create the queue
-    # kbd_queue = asyncio.Queue()
-    # Initialize keyboard control with the loop
-    # keyboard_ctrl = KeyboardController(kbd_queue)
-    keyboard_ctrl = KeyboardController(on_key_press)
+    # Create a Quit Event
+    quit_event = asyncio.Event()
+    # Initialise le Keyboard Listener thread
+    keyboard_ctrl = KeyboardController(on_key_press, quit_event)
     # ---------------------------------------------------------
     # Lancement de l'Event Loop
     # ---------------------------------------------------------

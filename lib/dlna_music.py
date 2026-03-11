@@ -180,7 +180,8 @@ class DLNAMusic:
     #   from http://192.168.0.101:50002/m/MP3/2913.mp3 the returned id is 2913
     # --------------------------------------------------------------------- #
     def get_playing_id(self):
-        current_url = self.shuffled_tracklist[self.current_pos]
+        pos = max(0, self.current_pos - 1)
+        current_url = self.shuffled_tracklist[pos]
         u = urlsplit(current_url)
         filename = u.path.split('/').pop()
         return filename.split('.')[0]

@@ -229,22 +229,3 @@ class DLNANetwork:
         didl_root = ET.fromstring(result_el.text)
         return didl_root
 
-    # --------------------------------------------------------------------- #
-    # 4️⃣  Helper to collect MP3 URLs from a DIDL‑Lite container
-    # --------------------------------------------------------------------- #
-    # @staticmethod
-    def extract_mp3_items(self, didl_root: ET.Element) -> List[str]:
-        """
-        Walk a DIDL‑Lite tree and return the list of URLs for items whose
-        `@protocolInfo` indicates an audio/mpeg (MP3) resource.
-        """
-        mp3_urls: List[str] = []
-        # Namespace used by most DLNA servers for DIDL‑Lite
-        ns = {"didl": "urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/"}
-        for item in didl_root.findall('.//{*}item'):
-            for res in item.findall('{*}res'):
-                protocol = res.attrib.get('protocolInfo', '')
-                if 'audio/mpeg' in protocol.lower():
-                    if res.text:
-                        mp3_urls.append(res.text.strip())
-        return mp3_urls

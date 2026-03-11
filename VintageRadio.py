@@ -21,8 +21,11 @@ from typing import Optional
 # --------------------------------------------------------------------- #
 async def show_clip_info():
     await asyncio.sleep(2)
-    id = musics.get_playing_id()
-    print(f"NOW PLAYING {id}")
+    id = musics.get_playing_id()    
+    info = wrapper.get_clip_info(id)
+    if info:
+        title, artist, date, genre = info
+        print(f"NOW PLAYING {title} by {artist} ({date}) - {genre}")
 
 
 # --------------------------------------------------------------------- #

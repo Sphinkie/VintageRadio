@@ -8,6 +8,7 @@
 from lib.dlna_network import DLNANetwork
 from lib.dlna_logger import get_logger
 from typing import List, Optional
+import xml.etree.ElementTree as ET
 
 log = get_logger(__name__)
 
@@ -26,6 +27,7 @@ class DLNAWrapper:
         self.didl_container = None
         self.server_control_url = None
         self.music_container_id = None
+        self.latest_container_id = None
         self.server_list = None
 
     # --------------------------------------------------------------------- #
@@ -69,7 +71,8 @@ class DLNAWrapper:
         for container in didl.findall('.//{*}container'):
             dc_title = container.find('{*}title')
             if dc_title is not None and dc_title.text and dc_title.text.strip().lower() == title.lower():
-                return container.attrib.get('id')
+                self.latest_container_id = container.attrib.get('id')
+                return self.latest_container_id
         return None
 
     # --------------------------------------------------------------------- #
@@ -82,11 +85,73 @@ class DLNAWrapper:
             log.fatal(f"Failed to browse the container {container_id}.")
 
     # --------------------------------------------------------------------- #
-    # Demande la liste des URL des MP3 d'un container.
+    # Retourne des infos sur le clip demandé.
+    # --------------------------------------------------------------------- #
+    def get_clip_info(self, item_id: str) -> Optional[tuple]:
+        """
+        Extract metadata from a DIDL-Lite item element.
+        
+        Args:
+            item_id: The ID of the item to look up
+            
+        Returns:
+            Tuple of (title, artist, date, genre)
+            Empty strings if field is missing
+            None if item not found
+        """    
+        item_full_id = self.latest_container_id + "$@" + item_id
+        log.debug("Searching for item id: %s", item_full_id)
+        for items in self.didl_container.findall('.//{*}item'):
+                id = items.attrib.get('id', '')
+                if id == item_full_id:
+                    # Found the item - extract metadata fields
+                    title = self._extract_field(items, '{*}title')
+                    artist = self._extract_field(items, '{*}creator')
+                    date = self._extract_field(items, '{*}date').split('-')[0]
+                    genre = self._extract_field(items, '{*}genre')                   
+                    log.debug("Clip found")
+                    return (title, artist, date, genre)
+        # Not found
+        return None
+
+    # --------------------------------------------------------------------- #
+    # Demande la liste des URL des MP3 du DIDL container.
     # --------------------------------------------------------------------- #
     def get_mp3_items(self) -> List[str]:
-        return self.net.extract_mp3_items(self.didl_container)
+        """
+        Walk a DIDL-Lite tree and return the list of URLs
+        for items whose `@protocolInfo` indicates an audio/mpeg (MP3) resource.
+        """
+        mp3_urls: List[str] = []
+        # Namespace used by most DLNA servers for DIDL‑Lite
+        ns = {"didl": "urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/"}
+        for items in self.didl_container.findall('.//{*}item'):
+            for res in items.findall('{*}res'):
+                protocol = res.attrib.get('protocolInfo', '')
+                if 'audio/mpeg' in protocol.lower():
+                    if res.text:
+                        mp3_urls.append(res.text.strip())
+        return mp3_urls
 
+    # --------------------------------------------------------------------- #
+    # Helper to extract a field from DIDL-Lite XML
+    # --------------------------------------------------------------------- #
+    def _extract_field(self, element: ET.Element, tag_name: str) -> str:
+        """
+        Safely extract text content from an XML element.
+        
+        Args:
+            element: The parent XML element
+            tag_name: The tag to search for (supports wildcard namespace {*})
+            
+        Returns:
+            Text content or empty string if not found
+        """
+        field = element.find(tag_name)
+        if field is not None and field.text:
+            return field.text.strip()
+        return ""
+    
     # --------------------------------------------------------------------- #
     # Transforme une "Description URL" en "ContentDirectory Control URL"
     # --------------------------------------------------------------------- #

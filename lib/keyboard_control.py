@@ -51,6 +51,8 @@ class KeyboardController:
         self.running = False
         self.thread: Optional[threading.Thread] = None
         self.quit_event = quit_event  # Store the event
+        self.fd: Optional[int] = None
+        self.old_settings = None
 
     # --------------------------------------------------------------------- #
     # Start listening keyboard.
@@ -70,7 +72,19 @@ class KeyboardController:
         self.running = False
         if self.thread:
             self.thread.join(timeout=1.0)
+        self._restore_terminal()
         log.debug("Stop keyboard listening thread")
+
+    # --------------------------------------------------------------------- #
+    # Restaure les paramètres du terminal Unix quand on sort.
+    # --------------------------------------------------------------------- #
+    def _restore_terminal(self):
+        """Restaure les paramètres du terminal."""
+        if self.fd is not None and self.old_settings is not None:
+            try:
+                termios.tcsetattr(self.fd, termios.TCSADRAIN, self.old_settings)
+            except:
+                pass  # Ignore les erreurs de restauration
 
     # --------------------------------------------------------------------- #
     # Redirige vers le Listener Windows ou Raspberry.
@@ -90,9 +104,9 @@ class KeyboardController:
         Unix/Linux implementation using termios/tty.
         Reads single characters from stdin in raw mode (no line buffering).
         """
-        fd = sys.stdin.fileno()
-        old_settings = termios.tcgetattr(fd)
-        
+        self.fd = sys.stdin.fileno()
+        self.old_settings = termios.tcgetattr(self.fd)
+
         try:
             # Set terminal to raw mode (immediate keypress, no echo)
             tty.setraw(fd)
@@ -107,7 +121,7 @@ class KeyboardController:
             print(f"Keyboard error (Unix): {e}", file=sys.stderr)
         finally:
             # Restore terminal settings
-            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+           self._restore_terminal()
 
     # --------------------------------------------------------------------- #
     # Listener pour Windows.

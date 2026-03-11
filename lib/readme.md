@@ -28,4 +28,10 @@
 Aller dans le menu `Run -> Edit Configuration -> Modify options` et cocher **Emulate terminal in output console**.
 
 
+## Raspberry: pas d'echo sur le terminal SSH
 
+Tapez ceci pour rétablir le mode normal sur le terminal bloqué:
+
+```
+stty sane
+```

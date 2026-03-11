@@ -18,8 +18,9 @@ def get_logger(name: str = __name__) -> logging.Logger:
         logger.setLevel(logging.DEBUG)  # ensure DEBUG is enabled
         # Create console handler
         handler = logging.StreamHandler(sys.stdout)  # or FileHandler('radio.log')
+        # On ajoute un CarriageReturn pour la console Linux.
         formatter = logging.Formatter(
-            "%(asctime)s %(levelname)s %(name)s: %(message)s"
+            "%(asctime)s %(levelname)s %(name)s: %(message)s \r"
         )
         handler.setFormatter(formatter)
         logger.addHandler(handler)

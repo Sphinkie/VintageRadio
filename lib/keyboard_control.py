@@ -24,6 +24,7 @@ else:
 
 log = get_logger(__name__)
 
+
 # ----------------------------------------------------------------------- #
 # Cette classe gère les touches du clavier (Windows/Raspberry)
 # et simule les boutons GPIO par des touches du clavier.
@@ -109,19 +110,19 @@ class KeyboardController:
 
         try:
             # Set terminal to raw mode (immediate keypress, no echo)
-            tty.setraw(fd)
-            
+            tty.setraw(self.fd)
+
             while self.running:
                 ch = sys.stdin.read(1)
                 if ch:
                     log.debug(f"Keyboard (Unix): {ch}")
                     self._handle_key(ch)
-                    
+
         except Exception as e:
             print(f"Keyboard error (Unix): {e}", file=sys.stderr)
         finally:
             # Restore terminal settings
-           self._restore_terminal()
+            self._restore_terminal()
 
     # --------------------------------------------------------------------- #
     # Listener pour Windows.
@@ -149,7 +150,7 @@ class KeyboardController:
             ch: Single character from keyboard input.
         """
         ch_lower = ch.lower()
-        
+
         if ch_lower == 'n':
             self.callback('NEXT')
         elif ch_lower == 'a':

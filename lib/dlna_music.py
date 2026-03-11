@@ -5,11 +5,11 @@
 # VintageRadio - Librairie.
 # David de Lorenzo (2026)
 # ==================================================================
+import os
 import sys
 import time
 import random
 import signal
-import asyncio
 from urllib.parse import urlsplit
 from lib.dlna_logger import get_logger
 
@@ -35,12 +35,12 @@ class DLNAMusic:
         self.tracks = []
         self.shuffled_tracklist = []
         self.current_pos = 0
-        # STOP EVENT pour stopper le clip en cours
-        #self._stop_event = None
-        #self._stop_requested = False
+        # Création d'une instance VLC
         self.renderer = vlc.MediaPlayer()
         # On ajoute un handler pour le CTR-C
         self.install_signal_handler()
+        # Seed avec des octets aléatoires du système
+        random.seed(os.urandom(256))
 
     # --------------------------------------------------------------------- #
     # Installe un Handler qui stoppe VLC proprement en cas de CTRL-C.
@@ -144,6 +144,7 @@ class DLNAMusic:
         if not self.tracks:
             raise RuntimeError("No tracks loaded – call discover_tracks() first.")
         # Create a fresh shuffled copy  (at each iteration if repeat=True)
+        log.info("Shuffle playlist")
         self.shuffled_tracklist = self.tracks[:]  # shallow copy
         random.shuffle(self.shuffled_tracklist)  # in‑place randomisation
         self.current_pos = 0

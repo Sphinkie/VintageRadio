@@ -35,34 +35,6 @@ class DLNAWrapper:
         self.server_control_url = server_ctrl_url
 
     # --------------------------------------------------------------------- #
-    # Find a child container by its title (case‑insensitive)
-    # Note : DIDL‑Lite(Digital Item Description Language) is the standard
-    # XML schema that DLNA / UPnP servers use to describe the media
-    # objects they expose (containers, tracks, images, etc.).
-    # --------------------------------------------------------------------- #
-    def find_child_id(self, parent_id: str, title: str) -> Optional[str]:
-        didl = self.net.browse(self.server_control_url, object_id=parent_id)
-        if didl is None:
-            return None
-        for container in didl.findall('.//{*}container'):
-            dc_title = container.find('{*}title')
-            if dc_title is not None and dc_title.text and dc_title.text.strip().lower() == title.lower():
-                return container.attrib.get('id')
-        return None
-
-    # --------------------------------------------------------------------- #
-    # Find child Container avec fallback multi-langues
-    # --------------------------------------------------------------------- #
-    def find_container(self, parent_id, possible_names):
-        for name in possible_names:
-            print ("test", name)
-            child_id = self.find_child_id(parent_id, name)
-            if child_id:
-                print("found ", name)
-                return child_id
-        return None
-
-    # --------------------------------------------------------------------- #
     # Détermine l'identifiant du Container MUSIC
     # We assume “Music” is a direct child of the root (Music / Photo / Video).
     # --------------------------------------------------------------------- #
@@ -72,6 +44,33 @@ class DLNAWrapper:
         self.music_container_id = self.find_container(ROOT_ID, ["Music", "Musique", "Música", "Musik"])
         if self.music_container_id is None:
             log.fatal("Could not locate a 'Music' container on the server.")
+
+    # --------------------------------------------------------------------- #
+    # Find child Container avec fallback multi-langues
+    # --------------------------------------------------------------------- #
+    def find_container(self, parent_id, possible_names):
+        for name in possible_names:
+            child_id = self.find_child_id(parent_id, name)
+            if child_id:
+                return child_id
+        return None
+
+    # --------------------------------------------------------------------- #
+    # Find a child container by its title (case‑insensitive)
+    # Note : DIDL‑Lite(Digital Item Description Language) is the standard
+    # XML schema that DLNA / UPnP servers use to describe the media
+    # objects they expose (containers, tracks, images, etc.).
+    # --------------------------------------------------------------------- #
+    def find_child_id(self, parent_id: str, title: str) -> Optional[str]:
+        didl = self.net.browse(self.server_control_url, object_id=parent_id)
+        if didl is None:
+            log.debug("didl is none")
+            return None
+        for container in didl.findall('.//{*}container'):
+            dc_title = container.find('{*}title')
+            if dc_title is not None and dc_title.text and dc_title.text.strip().lower() == title.lower():
+                return container.attrib.get('id')
+        return None
 
     # --------------------------------------------------------------------- #
     # Demande la liste des infos MP3 d'un container.
@@ -96,15 +95,19 @@ class DLNAWrapper:
         return DLNANetwork.get_content_directory_control_url(url)
 
     # --------------------------------------------------------------------- #
-    # Demande au reseau de rechercher la liste des serveurs DLNA disponibles.
+    # Demande au réseau de rechercher la liste des serveurs DLNA disponibles.
     # --------------------------------------------------------------------- #
     def discover_servers(self):
         self.server_list = self.net.discover_servers()
+        # Affichage des hostnames dans le log
+        for (desc_url, usn) in self.server_list:
+            host = desc_url.split("/", 3)[2]  # hostname extraction
+            log.info("> %s",host)
 
     # --------------------------------------------------------------------- #
     # Si le serveur préféré est dans la liste des serveurs découverts, il est sélectionné.
     # Sinon l'utilisateur en choisit un.
-    # La fonction retourne l'url du serveur s'il faut le mémoriser dans les nouvelles préférences.
+    # La fonction retourne la Description URL du serveur pour le mémoriser dans les préférences.
     # --------------------------------------------------------------------- #
     def choose_server(self, preferred_server_url: str):
         server_control_url: Optional[str] = None
@@ -122,16 +125,18 @@ class DLNAWrapper:
             # Ask the user which server to use
             chosen_server = self.pick_server_interactively()
             if not chosen_server:
-                print("No server selected – exiting.")
+                log.fatal("No server selected – exiting.")
                 return
             server_control_url = DLNAWrapper.resolve_control(chosen_server)
             if not server_control_url:
-                print("Chosen server does not expose a ContentDirectory service.")
+                log.fatal("Chosen server does not expose a ContentDirectory service.")
                 return
             return chosen_server
 
     # --------------------------------------------------------------------- #
-    # Helper to turn a human‑readable server description into a control URL
+    # Affiche le menu de choix du server DLNA parmi ceux qui ont été
+    # trouvé, et demande à l'utilisateur d'en choisir un.
+    # Retourne l'URL choisie (ou None).
     # --------------------------------------------------------------------- #
     def pick_server_interactively(self) -> Optional[str]:
         """
@@ -154,5 +159,5 @@ class DLNAWrapper:
             if choice.isdigit():
                 i = int(choice)
                 if 1 <= i <= len(self.server_list):
-                    return self.server_list[i - 1][0]  # return the description URL
+                    return self.server_list[i - 1][0]  # return the Description URL
             print("Invalid selection – try again.")

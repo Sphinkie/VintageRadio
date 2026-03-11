@@ -9,7 +9,6 @@ import configparser
 from pathlib import Path
 from typing import List, Tuple, Optional
 from lib.dlna_logger import get_logger
-from lib.dlna_network_wrapper import DLNAWrapper
 
 # --------------------------------------------------------------------- #
 # Configuration handling (preferred_dlna.ini)
@@ -20,27 +19,29 @@ log = get_logger(__name__)
 
 
 # --------------------------------------------------------------------- #
-# Lecture des préférences
+# Lecture des préférences.
+# Retourne la "Description URL" du Serveur DLNA.
 # --------------------------------------------------------------------- #
 def load_preferred_server() -> Optional[str]:
     """Return the saved server control URL, or None if the file is missing."""
     if not CONFIG_FILE.is_file():
-        log.warning("file %s not found", CONFIG_FILE)
+        log.warning("file '%s' not found", CONFIG_FILE)
         return None
     cfg = configparser.ConfigParser()
     cfg.read(CONFIG_FILE)
-    return cfg.get(CONFIG_SECTION, "control_url", fallback=None)
+    return cfg.get(CONFIG_SECTION, "desc_url", fallback=None)
 
 
 # --------------------------------------------------------------------- #
 # Ecriture des préférences
 # --------------------------------------------------------------------- #
-def save_preferred_server(url: str) -> None:
+def save_preferred_server(desc_url: str) -> None:
     """Persist the chosen server's control URL for next runs."""
     cfg = configparser.ConfigParser()
-    cfg[CONFIG_SECTION] = {"control_url": url}
+    cfg[CONFIG_SECTION] = {"desc_url": desc_url}
     with CONFIG_FILE.open("w") as fp:
         cfg.write(fp)
-    log.info("%s written", CONFIG_FILE)
+        pass
+    log.info("file '%s' written", CONFIG_FILE)
 
 

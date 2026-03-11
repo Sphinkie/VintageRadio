@@ -8,7 +8,6 @@
 import asyncio
 from lib.keyboard_control import KeyboardController
 from lib.dlna_music import DLNAMusic
-from lib.dlna_listing import *
 from lib.dlna_preferences import *
 from lib.dlna_user_request import DLNAUserRequest
 from lib.dlna_network_wrapper import DLNAWrapper
@@ -31,7 +30,7 @@ async def show_clip_info():
 # --------------------------------------------------------------------- #
 def on_key_press(action):
     if action == 'QUIT':
-        log.info("QUIT command received")
+        log.warning("QUIT command received")
     elif action == 'NEXT':
         log.info("PLAY NEXT command received")
         # Trigger your skip logic here
@@ -57,16 +56,16 @@ def setup():
     # 1️⃣ Try to load a previously saved server
     # -----------------------------------------------------------------
     server_control_url: Optional[str] = None
-    preferred_server_url = load_preferred_server()
-    log.info("preferred server url: %s", preferred_server_url)
+    preferred_server_desc_url = load_preferred_server()
+    log.info("preferred server url: %s", preferred_server_desc_url)
     # -----------------------------------------------------------------
     # If we have a saved description URL, verify that it is still reachable
     # -----------------------------------------------------------------
-    if preferred_server_url:
-        log.debug(f"Trying previously saved server: {preferred_server_url}")
-        ctrl = DLNAWrapper.resolve_control(preferred_server_url)
-        if ctrl:
-            server_control_url = ctrl
+    if preferred_server_desc_url:
+        log.debug(f"Trying previously saved server: {preferred_server_desc_url}")
+        preferred_server_ctrl_url = DLNAWrapper.resolve_control(preferred_server_desc_url)
+        if preferred_server_ctrl_url:
+            server_control_url = preferred_server_ctrl_url
             log.info("Saved server is reachable.")
         else:
             log.warning("Saved server could not be reached or does not expose ContentDirectory.")
@@ -75,9 +74,10 @@ def setup():
     # -----------------------------------------------------------------
     if not server_control_url:
         wrapper.discover_servers()
-        server_control_url = wrapper.choose_server(preferred_server_url)
-        if server_control_url:
-            save_preferred_server(server_control_url)
+        server_desc_url = wrapper.choose_server(preferred_server_desc_url)
+        if server_desc_url:
+            save_preferred_server(server_desc_url)
+            server_control_url = DLNAWrapper.resolve_control(server_desc_url)
     # -----------------------------------------------------------------
     # At this point we have a valid control URL
     # -----------------------------------------------------------------
@@ -119,6 +119,7 @@ async def loop():
             # [2] A-t-on une nouvelle requete de l'utilisateur ?
             # ----------------------------------------------------------------- #
             if user_request.has_changed():
+                log.info("User request change detected")
                 # -------------------------------------------------------------
                 # Détermine l'identifiant du container correspondant au mode demandé (ex: "By Genre")
                 # -------------------------------------------------------------
@@ -171,7 +172,7 @@ async def loop():
         log.warning("End loop")
         refresh_task.cancel()
         await refresh_task
-        log.info("Shutdown complete")
+        log.warning("Shutdown complete")
 
 
 # ---------------------------------------------------------

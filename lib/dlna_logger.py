@@ -15,7 +15,7 @@ def get_logger(name: str = __name__) -> logging.Logger:
 
     # Configure only the first time the logger is created
     if not logger.handlers:
-        logger.setLevel(logging.INFO)  # ensure DEBUG is enabled
+        logger.setLevel(logging.DEBUG)  # ensure DEBUG is enabled
         # Create console handler
         handler = logging.StreamHandler(sys.stdout)  # or FileHandler('radio.log')
         formatter = logging.Formatter(

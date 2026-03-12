@@ -5,7 +5,6 @@
 # VintageRadio - Librairie.
 # David de Lorenzo (2026)
 # ==================================================================
-from typing import List
 
 
 # ----------------------------------------------------------------------- #
@@ -38,7 +37,7 @@ class Display:
         if Display.display_target >= 0:
             Display.flush()
             for text in texts:
-                print(text)
+                print(text + "\r")
 
     @staticmethod
     # --------------------------------------------------------------------- #
@@ -46,7 +45,7 @@ class Display:
     # --------------------------------------------------------------------- #
     def add_line(text: str):
         if Display.display_target >= 0:
-            print(text)
+            print(text + "\r")
 
     # --------------------------------------------------------------------- #
     # Affichage d'un texte en couleur rouge
@@ -62,7 +61,7 @@ class Display:
     @staticmethod
     def flush():
         if Display.display_target >= 0:
-            print("---------")
+            print("--------------\r")
 
     # --------------------------------------------------------------------- #
     # Affichage d'un texte et attente de réponse.

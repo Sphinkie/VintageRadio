@@ -6,8 +6,9 @@
 # David de Lorenzo (2026)
 # ==================================================================
 import asyncio
+import argparse
 from lib.dlna_music import DLNAMusic
-from lib.dlna_logger import get_logger
+from lib.dlna_logger import get_logger, set_logging
 from lib.dlna_network_wrapper import DLNAWrapper
 from lib.user_display import Display
 from lib.user_request import UserRequest
@@ -47,6 +48,20 @@ def on_key_press(action):
     elif action == 'DISCOVER':
         log.info("DISCOVERY command received")
         wrapper.discover_servers()
+
+
+def parse_args() -> argparse.Namespace:
+    """Parse command-line arguments."""
+    parser = argparse.ArgumentParser(
+        description='VintageRadio - DLNA Music Player for Raspberry Pi'
+    )
+    parser.add_argument(
+        '-v', '--verbose',
+        action='count',
+        default=0,
+        help='Increase verbosity (-v for INFO, -vv for DEBUG)'
+    )
+    return parser.parse_args()
 
 
 # --------------------------------------------------------------------- #
@@ -196,9 +211,11 @@ async def main():
 # Launch Main Program (EventLoop)
 # -------------------------------------------------------------
 if __name__ == "__main__":
+    args = parse_args()
     # -----------------------------------------------------------------
     # Initialisation du logger
     # -----------------------------------------------------------------
+    set_logging(args.verbose)
     log = get_logger(__name__)
     # ---------------------------------------------------------
     # Initialisations des objets
@@ -211,6 +228,7 @@ if __name__ == "__main__":
     quit_event = asyncio.Event()
     # Initialise le Keyboard Listener thread
     keyboard_ctrl = KeyboardController(on_key_press, quit_event)
+    Display.show("VINTAGE RADIO")
     # ---------------------------------------------------------
     # Lancement de l'Event Loop
     # ---------------------------------------------------------

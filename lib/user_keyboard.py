@@ -1,6 +1,6 @@
 # coding: UTF-8
 # ==================================================================
-# keyboard_control.py
+# lib/user_keyboard.py
 # ==================================================================
 # VintageRadio - Keyboard input handler (cross-platform)
 # Lumo (2026)

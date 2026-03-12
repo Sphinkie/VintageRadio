@@ -1,10 +1,11 @@
 # coding: UTF-8
 # ==================================================================
-# lib/dlna_display.py
+# lib/user_display.py
 # ==================================================================
 # VintageRadio - Librairie.
 # David de Lorenzo (2026)
 # ==================================================================
+from typing import List
 
 
 # ----------------------------------------------------------------------- #
@@ -12,7 +13,7 @@
 # l'utilisateur. Il y a une mode console, et un mode (final) où l'affichage
 # se fait sur un écran LCD ou ePaper.
 # ----------------------------------------------------------------------- #
-class DLNADisplay:
+class Display:
     """ Interactions with physical display. """
     display_target = 0
 
@@ -25,17 +26,43 @@ class DLNADisplay:
         Param target: allowed values 'tty' | 'raspberry'
         """
         if target == 'raspberry':
-            DLNADisplay.display_target = 1
+            Display.display_target = 1
         else:
-            DLNADisplay.display_target = 0
-        
+            Display.display_target = 0
+
     # --------------------------------------------------------------------- #
-    # Affichage d'un texte
+    # Efface l'afficheur et affiche un certain nombre de textes
     # --------------------------------------------------------------------- #
     @staticmethod
-    def show(text: str, color: str = "black"):
-        if DLNADisplay.display_target >= 0:
+    def show(*texts):
+        if Display.display_target >= 0:
+            Display.flush()
+            for text in texts:
+                print(text)
+
+    @staticmethod
+    # --------------------------------------------------------------------- #
+    # Affiche une ligne à la suite de la précédente
+    # --------------------------------------------------------------------- #
+    def add_line(text: str):
+        if Display.display_target >= 0:
             print(text)
+
+    # --------------------------------------------------------------------- #
+    # Affichage d'un texte en couleur rouge
+    # --------------------------------------------------------------------- #
+    @staticmethod
+    def warning(text: str):
+        if Display.display_target >= 0:
+            print("🚦 ⚡ " + text)
+
+    # --------------------------------------------------------------------- #
+    # Efface l'afficheur
+    # --------------------------------------------------------------------- #
+    @staticmethod
+    def flush():
+        if Display.display_target >= 0:
+            print("---------")
 
     # --------------------------------------------------------------------- #
     # Affichage d'un texte et attente de réponse.

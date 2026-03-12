@@ -6,8 +6,8 @@
 # David de Lorenzo (2026)
 # ==================================================================
 from lib.dlna_network import DLNANetwork
+from lib.user_display import Display
 from lib.dlna_logger import get_logger
-from lib.dlna_display import DLNADisplay
 from typing import List, Optional
 import xml.etree.ElementTree as ET
 
@@ -178,7 +178,7 @@ class DLNAWrapper:
     def choose_server(self, preferred_server_url: str):
         server_control_url: Optional[str] = None
         if self.server_list is None:
-            DLNADisplay.show("No DLNA servers were discovered on the LAN.", 'red')
+            Display.warning("No DLNA servers were discovered on the LAN.")
             return
 
         # If the user answered a server that matches the saved one, reuse it; otherwise ask.
@@ -210,20 +210,23 @@ class DLNAWrapper:
         and ask the user to choose one.  Returns the selected *control URL*.
         """
         if not self.server_list:
-            DLNADisplay.show("No DLNA server found on the local network.", 'red')
+            Display.warning("No DLNA server found on the local network.")
             return None
 
-        DLNADisplay.show("Discovered DLNA MediaServers:")
+        Display.flush()
+        Display.add_line("Discovered DLNA MediaServers:")
         for idx, (desc_url, usn) in enumerate(self.server_list, start=1):
             host = desc_url.split("/", 3)[2]  # crude host extraction
-            DLNADisplay.show(f"[{idx}] {host}")
+            Display.add_line(f"[{idx}] {host}")
 
         while True:
-            choice = DLNADisplay.input(f"Select a server (1‑{len(self.server_list)} or press Enter to abort): ")
+            choice = Display.input(f"Select a server (1‑{len(self.server_list)} or press Enter to abort): ")
             if not choice:
                 return None
             if choice.isdigit():
                 i = int(choice)
                 if 1 <= i <= len(self.server_list):
                     return self.server_list[i - 1][0]  # return the Description URL
-            DLNADisplay.show("Invalid selection – try again.")
+            Display.warning("Invalid selection – try again.")
+
+

@@ -6,28 +6,27 @@
 # David de Lorenzo (2026)
 # ==================================================================
 import asyncio
-from lib.dlna_preferences import *
 from lib.dlna_music import DLNAMusic
 from lib.dlna_logger import get_logger
-from lib.dlna_display import DLNADisplay
 from lib.dlna_network_wrapper import DLNAWrapper
-from lib.dlna_user_request import DLNAUserRequest
-from lib.keyboard_control import KeyboardController
+from lib.user_display import Display
+from lib.user_request import UserRequest
+from lib.user_keyboard import KeyboardController
+from lib.user_preferences import *
 from typing import Optional
 
 
 # --------------------------------------------------------------------- #
 # Attend 2 secondes et affiche les infos du clip.
-# TODO : mettre ailleurs
 # --------------------------------------------------------------------- #
 async def show_clip_info():
     await asyncio.sleep(2)
-    id = musics.get_playing_id()    
+    id = musics.get_playing_id()
     info = wrapper.get_clip_info(id)
     if info:
         title, artist, date, genre = info
-        display.show(f"NOW PLAYING {title} by {artist} ({date}) - {genre}")
-
+        # NOW PLAYING :
+        Display.show(title.upper(), f"by {artist}", f"({date})", genre)
 
 # --------------------------------------------------------------------- #
 # Callback for the Keyboard
@@ -57,7 +56,7 @@ def setup():
     log.info("Start Setup")
 
     # -----------------------------------------------------------------
-    # 1️⃣ Try to load a previously saved server
+    # Try to load a previously saved server
     # -----------------------------------------------------------------
     server_control_url: Optional[str] = None
     preferred_server_desc_url = load_preferred_server()
@@ -99,18 +98,20 @@ def setup():
 
 
 # -----------------------------------------------------------------
-# Boucle principale
+# Boucle principale asynchrone
 # -----------------------------------------------------------------
 async def loop():
     log.debug("Start Loop")
     lecture_task = None
-
     # -------------------------------------------------------------------------- #
     # Tache périodique No 1 : Reload user request (json file) every 5 seconds.
     # -------------------------------------------------------------------------- #
     refresh_task = asyncio.create_task(user_request.repeating_reread(5))  # fire-and-forget
 
     try:
+        # -------------------------------------------------------------------------- #
+        # Boucle principale
+        # -------------------------------------------------------------------------- #
         while True:
             # ----------------------------------------------------------------- #
             # [1] Check if a QUIT event was received
@@ -162,7 +163,7 @@ async def loop():
             # [4] Check if the MP3 file is still playing
             # -------------------------------------------------------------
             else:
-                if musics.isStopped():
+                if musics.is_stopped():
                     lecture_task = None
                     log.debug("End playing]")
             # --------------------------------------------------------------------
@@ -204,8 +205,8 @@ if __name__ == "__main__":
     # ---------------------------------------------------------
     wrapper = DLNAWrapper()
     musics = DLNAMusic()
-    user_request = DLNAUserRequest()
-    display = DLNADisplay('tty')
+    user_request = UserRequest()
+    display = Display('tty')
     # Create a Quit Event
     quit_event = asyncio.Event()
     # Initialise le Keyboard Listener thread

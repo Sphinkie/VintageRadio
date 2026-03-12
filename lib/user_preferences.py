@@ -1,13 +1,13 @@
 # coding: UTF-8
 # ==================================================================
-# dlna_preferences.py
+# lib/user_preferences.py
 # ==================================================================
 # VintageRadio - Librairie.
 # David de Lorenzo (2026)
 # ==================================================================
 import configparser
 from pathlib import Path
-from typing import List, Tuple, Optional
+from typing import Optional
 from lib.dlna_logger import get_logger
 
 # --------------------------------------------------------------------- #

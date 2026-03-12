@@ -12,7 +12,7 @@ import random
 import signal
 from urllib.parse import urlsplit
 from lib.dlna_logger import get_logger
-from lib.dlna_display import DLNADisplay
+from lib.user_display import Display
 
 try:
     import vlc
@@ -64,7 +64,7 @@ class DLNAMusic:
     def discover_tracks(self, mp3_urls):
         """ Populate tracks with absolute URLs of MP3 files found under container_url."""
         if mp3_urls is None:
-            DLNADisplay.show("No MP3 files were found in the folder.")
+            Display.warning("No MP3 files were found in the folder.")
         else:
             self.tracks = mp3_urls
         return
@@ -73,7 +73,7 @@ class DLNAMusic:
     # Affiche la liste des URLs reçues.
     # --------------------------------------------------------------------- #
     def list_all(self):
-        log.debug(f"MP3 url found:")
+        log.debug("MP3 url found:")
         for url in self.tracks:
             log.debug(url)
         return
@@ -91,7 +91,7 @@ class DLNAMusic:
     # --------------------------------------------------------------------- #
     # Retourne True si un fichier est Ended, False si le fichier est playing.
     # --------------------------------------------------------------------- #
-    def isStopped(self) -> bool:
+    def is_stopped(self) -> bool:
         """ returns False if a file is playing."""
         # log.debug(self.renderer.get_state())
         ended = (self.renderer.get_state() == vlc.State.Ended)
@@ -114,7 +114,7 @@ class DLNAMusic:
 
     # --------------------------------------------------------------------- #
     # Joue un fichier MP3 et attend la fin.
-    # Note: La fonction est bloquante: on y reste jusqu'à la fin du morceau.
+    # Note: La fonction est bloquante : on y reste jusqu'à la fin du morceau.
     # --------------------------------------------------------------------- #
     def play_track(self, track_url):
         """Send a Play request for a single track to the renderer."""
@@ -164,8 +164,7 @@ class DLNAMusic:
     # Démarre une piste en mode asynchrone.
     # --------------------------------------------------------------------- #
     async def play_random_async(self):
-        # TODO: A TESTER : Si on a atteint la dernière piste, on re-shuffle
-        if self.current_pos > len(self.shuffled_tracklist):
+        if self.current_pos >= len(self.shuffled_tracklist):
             self.shuffle_playlist()
             self.current_pos = 0
         log.debug("[Start playing %d", self.current_pos)
@@ -184,7 +183,6 @@ class DLNAMusic:
         current_url = self.shuffled_tracklist[pos]
         u = urlsplit(current_url)
         filename = u.path.split('/').pop()
-        # TODO fixme
         return filename.split('.')[0]
 
     # --------------------------------------------------------------------- #

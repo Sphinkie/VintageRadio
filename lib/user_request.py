@@ -1,6 +1,6 @@
 # coding: UTF-8
 # ==================================================================
-# dlna_user_request.py
+# lib/user_request.py
 # ==================================================================
 # VintageRadio - Librairie.
 # David de Lorenzo (2026)
@@ -17,7 +17,7 @@ REQUEST_PATH = Path("user_request.json")  # <-- location of the JSON file
 # ----------------------------------------------------------------------- #
 # Cette classe lit le fichier Json contenant la demande de l'auditeur
 # ----------------------------------------------------------------------- #
-class DLNAUserRequest:
+class UserRequest:
     """ Interactions with json user request file. """
 
     # --------------------------------------------------------------------- #

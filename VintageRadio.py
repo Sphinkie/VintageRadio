@@ -6,12 +6,13 @@
 # David de Lorenzo (2026)
 # ==================================================================
 import asyncio
-from lib.keyboard_control import KeyboardController
-from lib.dlna_music import DLNAMusic
 from lib.dlna_preferences import *
-from lib.dlna_user_request import DLNAUserRequest
-from lib.dlna_network_wrapper import DLNAWrapper
+from lib.dlna_music import DLNAMusic
 from lib.dlna_logger import get_logger
+from lib.dlna_display import DLNADisplay
+from lib.dlna_network_wrapper import DLNAWrapper
+from lib.dlna_user_request import DLNAUserRequest
+from lib.keyboard_control import KeyboardController
 from typing import Optional
 
 
@@ -25,7 +26,7 @@ async def show_clip_info():
     info = wrapper.get_clip_info(id)
     if info:
         title, artist, date, genre = info
-        print(f"NOW PLAYING {title} by {artist} ({date}) - {genre}")
+        display.show(f"NOW PLAYING {title} by {artist} ({date}) - {genre}")
 
 
 # --------------------------------------------------------------------- #
@@ -204,6 +205,7 @@ if __name__ == "__main__":
     wrapper = DLNAWrapper()
     musics = DLNAMusic()
     user_request = DLNAUserRequest()
+    display = DLNADisplay('tty')
     # Create a Quit Event
     quit_event = asyncio.Event()
     # Initialise le Keyboard Listener thread

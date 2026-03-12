@@ -1,12 +1,13 @@
 # coding: UTF-8
 # ==================================================================
-# dlna_network_wrapper.py
+# lib.dlna_network_wrapper.py
 # ==================================================================
 # VintageRadio - Librairie.
 # David de Lorenzo (2026)
 # ==================================================================
 from lib.dlna_network import DLNANetwork
 from lib.dlna_logger import get_logger
+from lib.dlna_display import DLNADisplay
 from typing import List, Optional
 import xml.etree.ElementTree as ET
 
@@ -177,7 +178,7 @@ class DLNAWrapper:
     def choose_server(self, preferred_server_url: str):
         server_control_url: Optional[str] = None
         if self.server_list is None:
-            print("No DLNA servers were discovered on the LAN.")
+            DLNADisplay.show("No DLNA servers were discovered on the LAN.", 'red')
             return
 
         # If the user answered a server that matches the saved one, reuse it; otherwise ask.
@@ -209,20 +210,20 @@ class DLNAWrapper:
         and ask the user to choose one.  Returns the selected *control URL*.
         """
         if not self.server_list:
-            print("No DLNA server found on the local network.")
+            DLNADisplay.show("No DLNA server found on the local network.", 'red')
             return None
 
-        print("\nDiscovered DLNA MediaServers:")
+        DLNADisplay.show("Discovered DLNA MediaServers:")
         for idx, (desc_url, usn) in enumerate(self.server_list, start=1):
             host = desc_url.split("/", 3)[2]  # crude host extraction
-            print(f"[{idx}] {host}")
+            DLNADisplay.show(f"[{idx}] {host}")
 
         while True:
-            choice = input(f"Select a server (1‑{len(self.server_list)} or press Enter to abort): ")
+            choice = DLNADisplay.input(f"Select a server (1‑{len(self.server_list)} or press Enter to abort): ")
             if not choice:
                 return None
             if choice.isdigit():
                 i = int(choice)
                 if 1 <= i <= len(self.server_list):
                     return self.server_list[i - 1][0]  # return the Description URL
-            print("Invalid selection – try again.")
+            DLNADisplay.show("Invalid selection – try again.")

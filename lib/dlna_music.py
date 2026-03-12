@@ -1,6 +1,6 @@
 # coding: UTF-8
 # ==================================================================
-# dlna_music.py
+# lib/dlna_music.py
 # ==================================================================
 # VintageRadio - Librairie.
 # David de Lorenzo (2026)
@@ -12,6 +12,7 @@ import random
 import signal
 from urllib.parse import urlsplit
 from lib.dlna_logger import get_logger
+from lib.dlna_display import DLNADisplay
 
 try:
     import vlc
@@ -63,7 +64,7 @@ class DLNAMusic:
     def discover_tracks(self, mp3_urls):
         """ Populate tracks with absolute URLs of MP3 files found under container_url."""
         if mp3_urls is None:
-            print("No MP3 files were found in the folder.")
+            DLNADisplay.show("No MP3 files were found in the folder.")
         else:
             self.tracks = mp3_urls
         return
@@ -72,9 +73,9 @@ class DLNAMusic:
     # Affiche la liste des URLs reçues.
     # --------------------------------------------------------------------- #
     def list_all(self):
-        print(f"MP3 url found:")
+        log.debug(f"MP3 url found:")
         for url in self.tracks:
-            print(url)
+            log.debug(url)
         return
 
     # --------------------------------------------------------------------- #
@@ -102,7 +103,6 @@ class DLNAMusic:
     # --------------------------------------------------------------------- #
     def stop(self):
         """Stop playback and signal any running shuffle loop to exit."""
-        self._stop_requested = True
         # Send the actual STOP command to the renderer:
         self.renderer.stop()
         # Give the renderer a moment to settle before the next URI
@@ -184,6 +184,7 @@ class DLNAMusic:
         current_url = self.shuffled_tracklist[pos]
         u = urlsplit(current_url)
         filename = u.path.split('/').pop()
+        # TODO fixme
         return filename.split('.')[0]
 
     # --------------------------------------------------------------------- #
@@ -193,4 +194,3 @@ class DLNAMusic:
         self.current_pos -= 1
         if self.current_pos < 0:
             self.current_pos = 0
-

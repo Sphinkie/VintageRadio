@@ -16,7 +16,7 @@ Faire CTRL-C pour stopper
 - Installation:
 ```bash
 sudo apt update
-sudo apt install python3-pip python3-vlc
+sudo apt install python3-pip python3-vlc python3-mutagen
 pip3 install -r requirements.txt   # (optional, if you add extra deps)
 git clone https://github.com/Sphinkie/VintageRadio
 ...
@@ -30,8 +30,8 @@ python VintageRadio.py
 
 ### Sur Windows:
 
-- appliquer le module `python vlc` dans l'environnement virtuel.
-  (ou faire `pip install python-vlc`).
+- appliquer les modules `python vlc` et `mutagen` dans l'environnement virtuel.
+  (ou faire `pip install python-vlc` et `pip install mutagen` ).
 
 - Utilise la librairie Python `libvlc.dll`.
 

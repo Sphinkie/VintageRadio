@@ -15,20 +15,9 @@ import sys
 def get_logger(name: str = __name__) -> logging.Logger:
     """Return a module-level logger configured exactly once."""
     logger = logging.getLogger(name)
-
     # Configure only the first time the logger is created
     if not logger.handlers:
-        logger.propagate = True  # Let root logger handle output
-        # logger.setLevel(logging.DEBUG)  # ensure DEBUG is enabled
-        # Create console handler
-        # handler = logging.StreamHandler(sys.stdout)  # or FileHandler('radio.log')
-        #formatter = logging.Formatter(
-        #     "%(asctime)s %(levelname)s %(name)s: %(message)s \r"
-        #)
-        # handler.setFormatter(formatter)
-        # logger.addHandler(handler)
-
-        # On recupère la config faite ailleurs
+        # On récupère la config faite ailleurs
         logger.propagate = True
     # Force line buffering for stdout to ensure immediate display
     # This is often the missing piece in async apps
@@ -53,7 +42,6 @@ def set_logging(verbose_level: int) -> None:
         2: logging.DEBUG,
     }
     level = level_map.get(verbose_level, logging.WARNING)
-
     # Configure root logger
     logging.basicConfig(
         level=level,

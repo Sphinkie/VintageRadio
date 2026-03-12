@@ -8,6 +8,7 @@
 from lib.dlna_network import DLNANetwork
 from lib.user_display import Display
 from lib.dlna_logger import get_logger
+from lib.tag_collector import get_mp3_tags
 from typing import List, Optional
 import xml.etree.ElementTree as ET
 
@@ -229,4 +230,17 @@ class DLNAWrapper:
                     return self.server_list[i - 1][0]  # return the Description URL
             Display.warning("Invalid selection – try again.")
 
+    # --------------------------------------------------------------------- #
+    # Télécharge le début du MP3 et extrait Beat et Rating
+    # --------------------------------------------------------------------- #
+    def get_track_details(self, url: str) -> dict:
+        """
+        Fetches detailed metadata including BPM and Rating.
+        """
+        bpm, rating = get_mp3_tags(url)
 
+        return {
+            'url': url,
+            'bpm': bpm,
+            'rating': rating,
+        }

@@ -71,9 +71,9 @@ def get_mp3_tags(url: str, max_bytes: int = 100000) -> Tuple[Optional[str], Opti
             return None, None
 
         # 3. Extract specific fields
-        # BPM is usually TBP (Beats Per Minute)
-        bpm_frame = tags.getall('TBP')
-        if bpm_frame: print (f"bpm_frame {bpm_frame.text}")
+        # BPM is usually TBPM (Beats Per Minute)
+        bpm_frame = tags.get('TBPM')
+        log.debug(f"bpm_frame: {bpm_frame}")
         bpm = bpm_frame.text[0] if (bpm_frame and bpm_frame.text) else None
 
         # Rating is tricky. It's often stored in:
@@ -99,9 +99,9 @@ def get_mp3_tags(url: str, max_bytes: int = 100000) -> Tuple[Optional[str], Opti
         popm_frame = tags.getall('POPM')
         if popm_frame:
             # popm_frame.rating is a single byte (0-255) to be converted to 0-5 (stars)
-            print(f"popm_frame: {popm_frame}")
-            raw_rating = popm_frame.rating
-            print(f"raw_rating: {raw_rating}")
+            log.debug(f"popm_frame: {popm_frame}")
+            raw_rating = popm_frame[0].rating
+            log.debug(f"raw_rating: {raw_rating}")
             if raw_rating > 0:
                 mp3_rating = f"{round(raw_rating / 51)} stars"  # Rough approximation (255/51 ≈ 5)
 
@@ -109,7 +109,7 @@ def get_mp3_tags(url: str, max_bytes: int = 100000) -> Tuple[Optional[str], Opti
         genre_frame = tags.get('TCON')
         # genre = genre_frame.text[0] if genre_frame and genre_frame.text else None
         # For convenience, use the ‘genres’ property (list) rather than the ‘text’ attribute.
-        genre = genre_frame.genres
+        genre = genre_frame.genres[0]
         print(f"genre {genre}")
 
         return bpm, mp3_rating

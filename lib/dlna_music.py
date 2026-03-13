@@ -36,7 +36,8 @@ class DLNAMusic:
         self.tracks = []
         self.shuffled_tracklist = []
         self.current_pos = 0
-        # Enable ReplayGain normalization
+        # Enable ReplayGain normalization.
+        # Note: tous les MP3 ont été normalisés avec mp3gain (ReplayGain)
         self._instance = vlc.Instance(
             '--quiet',
             '--audio-normalize',  # Enable replaygain

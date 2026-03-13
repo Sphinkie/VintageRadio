@@ -37,3 +37,14 @@ python VintageRadio.py
 
 - Ajouter la DLl de VLC au path
    `setx Path "%Path%;C:\Program Files\VideoLAN\VLC"`
+   
+   
+# Roadmap
+
+- Bouton ON/OFF + VOLUME
+- Bouton SUIVANT (right) / ENCORE (left) / STAR ME (push)
+- Rotatif MODE: GENRE - ANNEE - FAV - ALEA (+ BEAT ?)
+- Rotatif SOURCE : LOCAL - NAS
+- Tuning GENRE: CLASSIQUES .. BLUES .. JAZZ .. FOLK .. ROCK N'ROLL .. ROCK .. CHANSONS .. MUS.MONDE .. AUTRES
+- Tuning ANNEE: 1700 1800 1900  40's 50's 60's 70's 80's 2000
+- Tuning FAV:   -      ☆   ☆☆   ☆☆☆   ☆☆☆☆   ☆☆☆☆☆

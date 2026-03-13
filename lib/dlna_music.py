@@ -36,6 +36,14 @@ class DLNAMusic:
         self.tracks = []
         self.shuffled_tracklist = []
         self.current_pos = 0
+        # Enable ReplayGain normalization
+        self._instance = vlc.Instance(
+            '--quiet',
+            '--audio-normalize',  # Enable replaygain
+            '--replaygain-mode', 'track',  # 'track' or 'album'
+            '--replaygain-preamp', '0',  # Pre-amplification in dB
+            '--audio-filter', 'normvol'  # Additional volume normalization
+        )
         # Création d'une instance VLC
         self.renderer = vlc.MediaPlayer()
         # On ajoute un handler pour le CTR-C

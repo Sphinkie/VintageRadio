@@ -94,7 +94,8 @@ def get_mp3_tags(url: str, max_bytes: int = 100000) -> Tuple[Optional[str], Opti
         # Check for POPM (Popularimeter) - this is binary, complex to parse simply
         # If you need POPM, you'd need to parse the binary structure:
         # email, count, rating (1 byte), seek position
-        # Ex: 'POPM:Windows Media Player 9 Series': POPM(email='Windows Media Player 9 Series', rating=196),
+        # Ex: 'POPM:Windows Media Player 9 Series': POPM(email='Windows Media Player 9 Series', rating=196), 3.8☆
+        # There may be more than one "POPM" frame in each tag, but only one with the same email address.
         popm_frame = tags.getall('POPM')
         if popm_frame:
             # popm_frame.rating is a single byte (0-255) to be converted to 0-5 (stars)

@@ -14,8 +14,7 @@
 # ==================================================================
 
 import requests
-from mutagen.id3 import ID3, TBP, TRCK, COMM, TCON
-from mutagen.mp3 import MP3
+from mutagen.id3 import ID3
 from typing import Tuple, Optional
 from lib.dlna_logger import get_logger
 
@@ -32,6 +31,7 @@ def get_mp3_tags(url: str, max_bytes: int = 100000) -> Tuple[Optional[str], Opti
     are typically located (or the first 100KB if the server doesn't support ranges).
     We want the ID3v2 tag which is usually at the START of the file.
     Note that ID3v1 tags are located at the end of the file (not managed here).
+    Documentation: https://mutagen.readthedocs.io/en/latest/index.html
     Ordre des tags: TIT2(titre) TPE2(artist) TALB(album) TCON(genre) APIC(picture) POPM(rating) TPE1(artist) TDRC(année)
     Args:
         url: The full URL to the MP3 file.
@@ -72,17 +72,17 @@ def get_mp3_tags(url: str, max_bytes: int = 100000) -> Tuple[Optional[str], Opti
 
         # 3. Extract specific fields
         # BPM is usually TBP (Beats Per Minute)
-        bpm_frame = tags.get('TBP')
-        # print (f"bpm_frame {bpm_frame.text}")
-        bpm = bpm_frame.text[0] if bpm_frame and bpm_frame.text else None
+        bpm_frame = tags.getall('TBP')
+        if bpm_frame: print (f"bpm_frame {bpm_frame.text}")
+        bpm = bpm_frame.text[0] if (bpm_frame and bpm_frame.text) else None
 
         # Rating is tricky. It's often stored in:
         # - COMM (User Defined Text Information) with description "Rating"
         # - POPM (Popularimeter) - requires parsing binary data
         # - Or a custom frame like 'XSOP' or 'RATING'
-        rating = None
+        mp3_rating = None
 
-        # Check for COMM (Comments) that might contain rating
+        # Check for COMM (User Comment) that might contain rating
         # comm_frames = tags.getall('COMM')
         # print (f"COMM {COMM}")
         # for comm in comm_frames:
@@ -95,22 +95,23 @@ def get_mp3_tags(url: str, max_bytes: int = 100000) -> Tuple[Optional[str], Opti
         # If you need POPM, you'd need to parse the binary structure:
         # email, count, rating (1 byte), seek position
         # Ex: 'POPM:Windows Media Player 9 Series': POPM(email='Windows Media Player 9 Series', rating=196),
-        popm_frame = tags.get('POPM')
+        popm_frame = tags.getall('POPM')
         if popm_frame:
-            # popm_frame.rating is a single byte (0-255)
-            # Convert to 0-5 stars roughly
+            # popm_frame.rating is a single byte (0-255) to be converted to 0-5 (stars)
+            print(f"popm_frame: {popm_frame}")
             raw_rating = popm_frame.rating
-            print(f"raw_rating {raw_rating}")
+            print(f"raw_rating: {raw_rating}")
             if raw_rating > 0:
-                rating = f"{round(raw_rating / 51)} stars"  # Rough approximation (255/51 ≈ 5)
+                mp3_rating = f"{round(raw_rating / 51)} stars"  # Rough approximation (255/51 ≈ 5)
 
         # Genre is usually TCON
         genre_frame = tags.get('TCON')
-        genre = genre_frame.text[0] if genre_frame and genre_frame.text else None
+        # genre = genre_frame.text[0] if genre_frame and genre_frame.text else None
+        # For convenience, use the ‘genres’ property (list) rather than the ‘text’ attribute.
+        genre = genre_frame.genres
         print(f"genre {genre}")
-        # ID3 genre not used
 
-        return bpm, rating
+        return bpm, mp3_rating
 
     except requests.exceptions.RequestException as e:
         log.error(f"Failed to fetch tags from {url}: {e}")

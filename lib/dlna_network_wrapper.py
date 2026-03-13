@@ -235,10 +235,9 @@ class DLNAWrapper:
     # --------------------------------------------------------------------- #
     def get_track_details(self, url: str) -> dict:
         """
-        Fetches detailed metadata including BPM and Rating.
+        Fetches detailed mp3 metadata including BPM and Rating.
         """
         bpm, rating = get_mp3_tags(url)
-
         return {
             'url': url,
             'bpm': bpm,

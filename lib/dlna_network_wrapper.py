@@ -8,11 +8,13 @@
 from lib.dlna_network import DLNANetwork
 from lib.user_display import Display
 from lib.dlna_logger import get_logger
+from lib.dlna_db import DLNADatabase
 from lib.tag_collector import get_mp3_tags
 from typing import List, Optional
 import xml.etree.ElementTree as ET
 
 log = get_logger(__name__)
+ROOT_ID = "0"
 
 
 # ----------------------------------------------------------------------- #
@@ -26,6 +28,7 @@ class DLNAWrapper:
     def __init__(self):
         """ Constructor. """
         self.net = DLNANetwork()
+        self.db = DLNADatabase()  
         self.didl_container = None
         self.server_control_url = None
         self.music_container_id = None
@@ -42,12 +45,13 @@ class DLNAWrapper:
     # Détermine l'identifiant du Container MUSIC
     # We assume “Music” is a direct child of the root (Music / Photo / Video).
     # --------------------------------------------------------------------- #
-    def find_music_container(self):
-        ROOT_ID = "0"
-        if self.server_control_url is None: return
+    def find_music_container(self) -> Optional[str]:
+        if self.server_control_url is None: return None
         self.music_container_id = self.find_container(ROOT_ID, ["Music", "Musique", "Música", "Musik"])
         if self.music_container_id is None:
             log.fatal("Could not locate a 'Music' container on the server.")
+            return None
+        return self.music_container_id
 
     # --------------------------------------------------------------------- #
     # Find child Container avec fallback multi-langues
@@ -68,7 +72,7 @@ class DLNAWrapper:
     def find_child_id(self, parent_id: str, title: str) -> Optional[str]:
         didl = self.net.browse(self.server_control_url, object_id=parent_id)
         if didl is None:
-            log.debug("didl is none")
+            log.warning("didl is none")
             return None
         for container in didl.findall('.//{*}container'):
             dc_title = container.find('{*}title')
@@ -243,3 +247,179 @@ class DLNAWrapper:
             'bpm': bpm,
             'rating': rating,
         }
+
+    # --------------------------------------------------------------------- #
+    # Récupérer TOUS les MP3 et les stocker dans la base.
+    # --------------------------------------------------------------------- #
+    def scan_all_mp3_to_db(self):
+        """
+        Scan le serveur DLNA en priorité via "All Music",
+        avec fallback récursif si nécessaire.
+        """
+
+        if self.server_control_url is None:
+            log.fatal("Aucun serveur DLNA défini")
+            return 0
+
+        # --------------------------------------------------------------------- #
+        # Chercher le contenu du container "All Music"
+        # --------------------------------------------------------------------- #
+        log.info("Recherche du container 'All Music'...")
+        # On cherche le container "All Music"
+        all_music_container_id = self.find_container(self.music_container_id, ["All Music", "All Tracks", "Toutes les musiques"])
+        # On recupère toutes ses URLs de MP3 dans un XML
+        if all_music_container_id:
+            log.info(f"Container 'All Music' found : {all_music_container_id}")
+            xml_tracks = self.net.browse(self.server_control_url, object_id=all_music_container_id)
+            all_tracks = self.extract_all_mp3_from_didl(xml_tracks)
+        else:
+            # --------------------------------------------------------------------- #
+            # Fallback: parcours récursif complet
+            # --------------------------------------------------------------------- #
+            log.warning("Container 'All Music' non trouvé, utilisation du parcours récursif...")
+            xml_tracks = self.net.browse_recursive(self.server_control_url, object_id="0")
+            all_tracks = self.extract_all_mp3_from_didl(xml_tracks)
+
+        if not all_tracks:
+            log.warning("Aucune piste MP3 trouvée sur le serveur")
+            return 0
+        # --------------------------------------------------------------------- #
+        # On stocke le résultat dans la base de données
+        # --------------------------------------------------------------------- #
+        self.db.store_tracks(all_tracks)
+        log.info(f"Scan terminé: {len(all_tracks)} pistes trouvées")
+        return len(all_tracks)
+
+
+    # --------------------------------------------------------------------- #
+    # Retourner une liste d'URLs basée sur la date et la plage
+    # --------------------------------------------------------------------- #
+    def get_urls_by_date_range(
+        self, 
+        target_year: int,
+        range_start: int,
+        range_end: int
+    ) -> List[str]:
+        """
+        Retourne une liste d'URLs filtrée par plage de dates avec ordre circulaire.
+        
+        Args:
+            target_date: Date de départ (ex : 1964)
+            range_start: Année de début de plage (ex : 1960)
+            range_end: Année de fin de plage (ex : 1969)
+            
+        Returns:
+            Liste d'URLs triées selon l'ordre circulaire
+        """
+        return self.db.get_tracks_by_date_range(target_year, range_start, range_end)
+
+    # --------------------------------------------------------------------- #
+    # Nettoyer la base de données à la fermeture
+    # --------------------------------------------------------------------- #
+    def close(self):
+        """Ferme les ressources (base de données)."""
+        self.db.close()
+
+    # --------------------------------------------------------------------- #
+    # Extrait tous les MP3 d'une réponse DIDL-Lite (flat list)
+    # --------------------------------------------------------------------- #
+    def extract_all_mp3_from_didl(self, didl_root: ET.Element) -> List[dict]:
+        """
+        Extrait toutes les pistes MP3 d'un élément DIDL-Lite avec métadonnées complètes.
+
+        Args:
+            didl_root: L'élément racine DIDL-Lite (résultat de self.browse())
+
+        Returns:
+            Liste de dicts avec: url, genre, year, filename, title, artist
+        """
+        mp3_tracks = []
+
+        if didl_root is None:
+            return mp3_tracks
+
+        for item in didl_root.findall('.//{*}item'):
+            # Extraire l'ID de l'item
+            item_id = item.attrib.get('id', '')
+
+            # Extraire les métadonnées de base
+            title = self._extract_text(item, '{*}title')
+            artist = self._extract_text(item, '{*}creator')
+            album = self._extract_text(item, '{*}album')
+            genre = self._extract_text(item, '{*}genre')
+            date = self._extract_text(item, '{*}date')
+
+            # Extraire l'URL du premier res audio/mpeg
+            url = None
+            for res in item.findall('{*}res'):
+                protocol = res.attrib.get('protocolInfo', '')
+                if 'audio/mpeg' in protocol.lower() and res.text:
+                    url = res.text.strip()
+                    break
+
+            if url:
+                # Extraire le nom de fichier de l'URL
+                filename = url.split('/')[-1].split('?')[0]
+
+                mp3_tracks.append({
+                    'url': url,
+                    'filename': filename,
+                    'title': title,
+                    'artist': artist,
+                    'album': album,
+                    'genre': genre,
+                    'year': date,
+                    'item_id': item_id
+                })
+
+        log.debug(f"Extrait {len(mp3_tracks)} pistes MP3 du container DIDL")
+        return mp3_tracks
+
+    # --------------------------------------------------------------------- #
+    # Helper pour extraire du texte d'un élément XML
+    # --------------------------------------------------------------------- #
+    @staticmethod
+    def _extract_text(element: ET.Element, tag_name: str) -> str:
+        """Extrait le texte d'un élément XML, retourne chaîne vide si absent."""
+        field = element.find(tag_name)
+        if field is not None and field.text:
+            return field.text.strip()
+        return ''
+
+
+# -------------------------------------------------------------
+# TESTS
+# -------------------------------------------------------------
+if __name__ == "__main__":
+    wrapper = DLNAWrapper()
+    wrapper.set_server("http://192.168.0.101:50001/ContentDirectory/control")
+    # Trouver "All Music"
+    music_ctnr_id = wrapper.find_music_container()
+    all_music_ctnr_id = wrapper.find_container(music_ctnr_id, ["All music"])
+    print("all_music_id: ", all_music_ctnr_id)
+
+    # -------------------------------------------------------------
+    # TEST DE SCAN DE 'ALL MUSIC'
+    # -------------------------------------------------------------
+    if all_music_ctnr_id:
+        didl = wrapper.net.browse(wrapper.server_control_url, object_id=all_music_ctnr_id)
+        tracks = wrapper.extract_all_mp3_from_didl(didl)
+        print(f"Trouvé {len(tracks)} pistes")
+        # Afficher les 5 premières pistes
+        for t in tracks[:5]:
+            print(f"  {t['title']} - {t['artist']} ({t['year'][:4]})")
+
+    # -------------------------------------------------------------
+    # TEST DE REMPLISSAGE DE LA BDD (1468 tracks : 2 secondes)
+    # -------------------------------------------------------------
+    # Scanner tout le serveur et remplir la base de données
+    print("Scanning DLNA server for all MP3s...")
+    total_tracks = wrapper.scan_all_mp3_to_db()
+    print(f"Found {total_tracks} tracks")
+
+    # -------------------------------------------------------------
+    # TEST DE LISTE DES FIFTIES
+    # -------------------------------------------------------------
+    # Récupérer une liste basée sur la date
+    urls = wrapper.get_urls_by_date_range(1955, 1950, 1959)
+    print(f"Retrieved {len(urls)} URLs for date range {1950}-{1959}")

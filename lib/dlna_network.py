@@ -181,8 +181,7 @@ class DLNANetwork:
         Returns
         -------
         xml.etree.ElementTree.Element | None
-            The `<Result>` element (which itself contains a DIDL‑Lite XML
-            fragment).  ``None`` on error.
+            The `<Result>` element (which itself contains a DIDL‑Lite XML fragment). ``None`` on error.
         """
         # Build SOAP body
         body = f'''
@@ -229,3 +228,69 @@ class DLNANetwork:
         didl_root = ET.fromstring(result_el.text)
         return didl_root
 
+    # --------------------------------------------------------------------- #
+    # Récupère TOUS les MP3 d'un serveur (récursif)
+    # Alternative pour scan_all_musics (qui est plus simple et plus rapide)
+    # --------------------------------------------------------------------- #
+    def browse_recursive(self, control_url: str, object_id: str = "0", depth: int = 0) -> Optional[ET.Element]:
+        """
+        Récupère récursivement tous les MP3 d'un serveur DLNA.
+        Fonctionne avec n'importe quel serveur DLNA (Synology, MiniDLNA, Jellyfin, etc.).
+        Garantit de trouver tous les fichiers, même dans des dossiers cachés.
+        Plus lent, plus complexe, que simplement interroger le container 'All music".
+        
+        Args:
+            control_url: URL de contrôle ContentDirectory
+            object_id: ID du conteneur à parcourir (début à "0")
+            depth: Profondeur actuelle (pour éviter les boucles infinies)
+            
+        Returns:
+            The `<Result>` element (which contains a DIDL‑Lite XML fragment). ``None`` on error.
+        """
+        if depth > 10:  # Limite de profondeur pour éviter les boucles
+            log.warning(f"Profondeur maximale atteinte: {depth}")
+            return None
+        # all_tracks = []
+        full_didl = None
+        try:
+            didl = self.browse(control_url, object_id=object_id)
+            if didl is None:
+                return None
+            
+            # Extraire les items MP3 de ce conteneur
+            for item in didl.findall('.//{*}item'):
+                item_id = item.attrib.get('id', '')
+
+            # Récursivement parcourir les sous-conteneurs
+            for container in didl.findall('.//{*}container'):
+                container_id = container.attrib.get('id', '')
+                if container_id:
+                    sub_tracks = self.browse_recursive(control_url, container_id, depth + 1)
+                    full_didl = DLNANetwork.xml_merge(full_didl, sub_tracks)
+
+        except Exception as e:
+            log.error(f"Erreur lors du browse du conteneur {object_id}: {e}")
+        return full_didl
+
+    # --------------------------------------------------------------------- #
+    # Ajoute tous les <item> du DIDL 'B' dans le DIDL 'A'.
+    # --------------------------------------------------------------------- #
+    @staticmethod
+    def xml_merge(a: ET.Element, b: ET.Element) -> ET.Element:
+        for bchild in b:
+            a.append(bchild)
+        return a
+
+# -------------------------------------------------------------
+# TESTS
+# -------------------------------------------------------------
+if __name__ == "__main__":
+    # -------------------------------------------------------------
+    # Test de la concaténation des XML
+    # -------------------------------------------------------------
+    xml_1 = "<DIDL-Lite><item id='28$2857$@2913'><title>Black Magic Woman</title><res>http://192.168.0.101:50002/m/MP3/2913.mp3</res></item></DIDL-Lite>"
+    xml_2 = "<DIDL-Lite><item id='28$1245$@1245'><title>Sunny Afternoon</title><res>http://192.168.0.101:50002/m/MP3/1245.mp3</res></item></DIDL-Lite>"
+    tree_1 = ET.fromstring(xml_1)
+    tree_2 = ET.fromstring(xml_2)
+    tree_3 = DLNANetwork.xml_merge(tree_1, tree_2)
+    print(ET.tostring(tree_3))

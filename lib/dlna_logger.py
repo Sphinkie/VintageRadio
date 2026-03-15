@@ -41,7 +41,9 @@ def set_logging(verbose_level: int) -> None:
         1: logging.INFO,
         2: logging.DEBUG,
     }
+    # Default level : logging.WARNING
     level = level_map.get(verbose_level, logging.WARNING)
+    level = logging.DEBUG
     # Configure root logger
     logging.basicConfig(
         level=level,

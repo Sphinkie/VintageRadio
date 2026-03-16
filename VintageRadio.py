@@ -23,11 +23,12 @@ from typing import Optional
 async def show_clip_info():
     await asyncio.sleep(2)
     id = musics.get_playing_id()
-    info = wrapper.get_clip_info(id)
+    info = wrapper.get_clip_info_from_container(id)
+    info = wrapper.get_clip_info_from_db(id)
     if info:
-        title, artist, date, genre = info
+        title, artist, year, genre = info
         # NOW PLAYING :
-        Display.show(title.upper(), f"by {artist}", f"({date})", genre)
+        Display.show(title.upper(), f"by {artist}", f"({year})", genre)
 
 # --------------------------------------------------------------------- #
 # Callback for the Keyboard
@@ -101,7 +102,13 @@ def setup():
     # -----------------------------------------------------------------
     log.info(f"Using ContentDirectory control URL: {server_control_url}")
     wrapper.set_server(server_control_url)
-    # -------------------------------------------------------------
+    # -----------------------------------------------------------------
+    # Récupère la lists de tous les MP3 du serveur DLNA
+    # -----------------------------------------------------------------
+    log.debug("Scanning DLNA server for all MP3s...")
+    total_tracks = wrapper.scan_all_mp3_to_db()
+    log.info(f"Found {total_tracks} tracks on DLNA server")
+    # -----------------------------------------------------------------
     # Première lecture du fichier de demande
     user_request.load_user_request()
     # Récupération du Container parent : MUSIC

@@ -91,17 +91,18 @@ class DLNAWrapper:
             log.fatal(f"Failed to browse the container {container_id}.")
 
     # --------------------------------------------------------------------- #
-    # Retourne des infos sur le clip demandé.
+    # Retourne des infos sur le clip demandé, en les cherchant dans le DIDL
+    # du dernier container mémorisé.
     # --------------------------------------------------------------------- #
-    def get_clip_info(self, item_id: str) -> Optional[tuple]:
+    def get_clip_info_from_container(self, item_id: str) -> Optional[tuple]:
         """
         Extract metadata from a DIDL-Lite item element.
         
         Args:
-            item_id: The ID of the item to look up
+            item_id: The ID of the item to look up. Ex:2913
             
         Returns:
-            Tuple of (title, artist, date, genre)
+            Tuple of (title, artist, year, genre)
             Empty strings if field is missing
             None if item not found
         """    
@@ -113,12 +114,36 @@ class DLNAWrapper:
                     # Found the item - extract metadata fields
                     title = self._extract_field(items, '{*}title')
                     artist = self._extract_field(items, '{*}creator')
-                    date = self._extract_field(items, '{*}date').split('-')[0]
+                    year = self._extract_field(items, '{*}date').split('-')[0]
                     genre = self._extract_field(items, '{*}genre')                   
                     log.debug("Clip found")
-                    return (title, artist, date, genre)
+                    return title, artist, year, genre
         # Not found
         return None
+
+    # --------------------------------------------------------------------- #
+    # Retourne des infos sur le clip demandé, en les cherchant dans la
+    # base de données.
+    # --------------------------------------------------------------------- #
+    def get_clip_info_from_db(self, item_id: str) -> Optional[tuple]:
+        """
+        Extract metadata from the database.
+
+        Args:
+            item_id: The ID of the item to look up. Ex: 2913
+
+        Returns:
+            Tuple of (title, artist, year, genre)
+            Empty strings if field is missing
+            None if item not found
+        """
+        log.debug("Searching for item id: %s", item_id)
+        metadata = self.db.get_track_info(item_id)
+        if metadata:
+            return metadata['title'],metadata['artist'],metadata['year'],metadata['genre']
+        else:
+            # Not found
+            return None
 
     # --------------------------------------------------------------------- #
     # Demande la liste des URL des MP3 du DIDL container.
@@ -253,8 +278,8 @@ class DLNAWrapper:
     # --------------------------------------------------------------------- #
     def scan_all_mp3_to_db(self):
         """
-        Scan le serveur DLNA en priorité via "All Music",
-        avec fallback récursif si nécessaire.
+        Scanne le serveur DLNA en priorité via "All Music",
+        puis, en fallback, en mode récursif si nécessaire.
         """
 
         if self.server_control_url is None:
@@ -292,7 +317,7 @@ class DLNAWrapper:
 
 
     # --------------------------------------------------------------------- #
-    # Retourner une liste d'URLs basée sur la date et la plage
+    # Retourne une liste d'URLs basée sur la date et la plage demandées.
     # --------------------------------------------------------------------- #
     def get_urls_by_date_range(
         self, 
@@ -340,7 +365,7 @@ class DLNAWrapper:
 
         for item in didl_root.findall('.//{*}item'):
             # Extraire l'ID de l'item
-            item_id = item.attrib.get('id', '')  # ex: id="28$2857$@2913"
+            full_id = item.attrib.get('id', '')  # ex: id="28$2857$@2913"
             # Extraire les métadonnées de base
             title = self._extract_text(item, '{*}title')
             artist = self._extract_text(item, '{*}creator')
@@ -359,16 +384,16 @@ class DLNAWrapper:
             if url:
                 # Extraire le nom de fichier de l'URL
                 filename = url.split('/')[-1].split('?')[0]
-
+                item_id = full_id.split('@')[-1]
                 mp3_tracks.append({
                     'url': url,
-                    'filename': filename,
+                    # 'filename': filename,
+                    'item_id': item_id,
                     'title': title,
                     'artist': artist,
                     # 'album': album,
                     'genre': genre,
-                    # 'item_id': item_id,
-                    'year': date
+                    'year': date.split('-')[0]
                 })
 
         log.debug(f"Extrait {len(mp3_tracks)} pistes MP3 du container DIDL")

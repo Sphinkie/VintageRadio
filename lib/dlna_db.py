@@ -24,7 +24,7 @@ class DLNADatabase:
         tracks
         ├── id (INTEGER PRIMARY KEY)
         ├── url (TEXT UNIQUE)
-        ├── filename (TEXT)
+        ├── dlna_id (TEXT)
         ├── file_hash (TEXT)  # Hash 8 chars basé sur le nom
         ├── genre (TEXT)
         ├── year (TEXT)
@@ -57,8 +57,8 @@ class DLNADatabase:
             CREATE TABLE IF NOT EXISTS tracks (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 url TEXT UNIQUE NOT NULL,
-                filename TEXT NOT NULL,
-                file_hash TEXT NOT NULL,
+                dlna_id TEXT NOT NULL,
+                file_hash TEXT DEFAULT '',
                 title TEXT NOT NULL,
                 artist TEXT DEFAULT '',
                 genre TEXT DEFAULT '',
@@ -73,7 +73,7 @@ class DLNADatabase:
         # Index pour les requêtes par date et genre
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_year ON tracks(year)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_genre ON tracks(genre)')
-        cursor.execute('CREATE INDEX IF NOT EXISTS idx_file_hash ON tracks(filename)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_dlna_id ON tracks(dlna_id)')
 
         self.conn.commit()
         log.info(f"Base de données initialisée: {self.db_path}")
@@ -104,21 +104,18 @@ class DLNADatabase:
         Stocke ou met à jour une liste de pistes dans la base.
         
         Args:
-            tracks: Liste de dicts avec url, filename, genre, year
+            tracks: Liste de dicts avec url, dlna_id, genre, year
         """
         cursor = self.conn.cursor()
 
         for track in tracks:
-            file_hash = self.calculate_file_hash(track['filename'])
-
             cursor.execute('''
                 INSERT OR REPLACE INTO tracks 
-                (url, filename, file_hash, title, artiste, genre, year, updated_at)
+                (url, dlna_id, title, artiste, genre, year, updated_at)
                 VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
             ''', (
                 track['url'],
-                track['filename'],
-                file_hash,
+                track['item_id'],
                 track.get('title', '***'),
                 track.get('artist', 'artiste inconnu'),
                 track.get('genre', ''),
@@ -195,12 +192,17 @@ class DLNADatabase:
         return cursor.fetchone()
 
     # --------------------------------------------------------------------- #
-    # Retourne toutes les metadata d'une piste en fonction de son URL.
+    # Retourne toutes les metadata d'une piste en fonction de son ID.
     # --------------------------------------------------------------------- #
-    def get_track_info(self, url: str) -> Optional[dict]:
-        """Retourne les informations complètes d'une piste."""
+    def get_track_info(self, item_id: str) -> Optional[dict]:
+        """
+        Retourne les informations complètes d'une piste.
+        Returns:
+            A dictionnary with keys: title, artist, year, genre, rating, bpm
+            None if item not found
+        """
         cursor = self.conn.cursor()
-        cursor.execute('SELECT * FROM tracks WHERE url = ?', (url,))
+        cursor.execute('SELECT * FROM tracks WHERE item_id = ?', (item_id,))
         row = cursor.fetchone()
         return dict(row) if row else None
 

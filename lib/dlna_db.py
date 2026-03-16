@@ -59,6 +59,8 @@ class DLNADatabase:
                 url TEXT UNIQUE NOT NULL,
                 filename TEXT NOT NULL,
                 file_hash TEXT NOT NULL,
+                title TEXT NOT NULL,
+                artist TEXT DEFAULT '',
                 genre TEXT DEFAULT '',
                 year TEXT DEFAULT '',
                 rating INTEGER DEFAULT NULL,
@@ -71,7 +73,7 @@ class DLNADatabase:
         # Index pour les requêtes par date et genre
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_year ON tracks(year)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_genre ON tracks(genre)')
-        cursor.execute('CREATE INDEX IF NOT EXISTS idx_file_hash ON tracks(file_hash)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_file_hash ON tracks(filename)')
 
         self.conn.commit()
         log.info(f"Base de données initialisée: {self.db_path}")
@@ -111,12 +113,14 @@ class DLNADatabase:
 
             cursor.execute('''
                 INSERT OR REPLACE INTO tracks 
-                (url, filename, file_hash, genre, year, updated_at)
+                (url, filename, file_hash, title, artiste, genre, year, updated_at)
                 VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
             ''', (
                 track['url'],
                 track['filename'],
                 file_hash,
+                track.get('title', '***'),
+                track.get('artist', 'artiste inconnu'),
                 track.get('genre', ''),
                 track.get('year', '')
             ))
@@ -182,13 +186,13 @@ class DLNADatabase:
         return result
 
     # --------------------------------------------------------------------- #
-    # Retourne toutes les URLs de la base.
+    # Retourne le nombre de clips de la base.
     # --------------------------------------------------------------------- #
-    def get_all_urls(self) -> List[str]:
-        """Retourne toutes les URLs de la base."""
+    def count(self) -> int:
+        """Retourne le nombre de clips de la base."""
         cursor = self.conn.cursor()
-        cursor.execute('SELECT url FROM tracks ORDER BY year ASC, url ASC')
-        return [row['url'] for row in cursor.fetchall()]
+        cursor.execute('SELECT COUNT(*) FROM tracks')
+        return cursor.fetchone()
 
     # --------------------------------------------------------------------- #
     # Retourne toutes les metadata d'une piste en fonction de son URL.
@@ -224,6 +228,9 @@ class DLNADatabase:
 # TESTS
 # -------------------------------------------------------------
 if __name__ == "__main__":
+    # -------------------------------------------------------------
+    # TEST DU HASHAGE
+    # -------------------------------------------------------------
     filename = "Aretha Franklin - I will Survive.mp3"
     hash1 = DLNADatabase.calculate_file_hash(filename)  # Ex: "D6DC212A"
     print(hash1)

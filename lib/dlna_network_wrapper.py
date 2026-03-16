@@ -28,7 +28,7 @@ class DLNAWrapper:
     def __init__(self):
         """ Constructor. """
         self.net = DLNANetwork()
-        self.db = DLNADatabase()  
+        self.db = DLNADatabase("../data/mp3_metadata.db")
         self.didl_container = None
         self.server_control_url = None
         self.music_container_id = None
@@ -340,8 +340,7 @@ class DLNAWrapper:
 
         for item in didl_root.findall('.//{*}item'):
             # Extraire l'ID de l'item
-            item_id = item.attrib.get('id', '')
-
+            item_id = item.attrib.get('id', '')  # ex: id="28$2857$@2913"
             # Extraire les métadonnées de base
             title = self._extract_text(item, '{*}title')
             artist = self._extract_text(item, '{*}creator')
@@ -366,10 +365,10 @@ class DLNAWrapper:
                     'filename': filename,
                     'title': title,
                     'artist': artist,
-                    'album': album,
+                    # 'album': album,
                     'genre': genre,
-                    'year': date,
-                    'item_id': item_id
+                    # 'item_id': item_id,
+                    'year': date
                 })
 
         log.debug(f"Extrait {len(mp3_tracks)} pistes MP3 du container DIDL")

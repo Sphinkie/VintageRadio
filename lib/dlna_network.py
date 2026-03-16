@@ -145,7 +145,7 @@ class DLNANetwork:
         </s:Envelope>'''
 
     # --------------------------------------------------------------------- #
-    # Emet une requete SOAP et retourne la réponse XML
+    # Emet une requete SOAP et retourne en réponse un DIDL XML.
     # --------------------------------------------------------------------- #
     def browse(
             self,
@@ -229,7 +229,7 @@ class DLNANetwork:
         return didl_root
 
     # --------------------------------------------------------------------- #
-    # Récupère TOUS les MP3 d'un serveur (récursif)
+    # Récupère TOUS les MP3 d'un serveur (récursif) - Dure 40 secondes.
     # Alternative pour scan_all_musics (qui est plus simple et plus rapide)
     # --------------------------------------------------------------------- #
     def browse_recursive(self, control_url: str, object_id: str = "0", depth: int = 0) -> Optional[ET.Element]:
@@ -250,26 +250,44 @@ class DLNANetwork:
         if depth > 10:  # Limite de profondeur pour éviter les boucles
             log.warning(f"Profondeur maximale atteinte: {depth}")
             return None
-        # all_tracks = []
-        full_didl = None
+        # -------------------------------------------------------------
+        # Initialize full_didl properly (DIDL-Lite root element)
+        # Only initialize at depth 0 (top-level call)
+        # -------------------------------------------------------------
+        if depth == 0:
+            full_didl = ET.Element('{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}DIDL-Lite')
+        else:
+            full_didl = None
+
         try:
+            log.debug(f"> browse {object_id}")
             didl = self.browse(control_url, object_id=object_id)
             if didl is None:
                 return None
-            
+
             # Extraire les items MP3 de ce conteneur
             for item in didl.findall('.//{*}item'):
-                item_id = item.attrib.get('id', '')
+                log.debug(f"  didl {object_id} has item")
+                if full_didl is not None:
+                    full_didl.append(item)
 
             # Récursivement parcourir les sous-conteneurs
             for container in didl.findall('.//{*}container'):
                 container_id = container.attrib.get('id', '')
                 if container_id:
-                    sub_tracks = self.browse_recursive(control_url, container_id, depth + 1)
-                    full_didl = DLNANetwork.xml_merge(full_didl, sub_tracks)
+                    sub_didl = self.browse_recursive(control_url, container_id, depth + 1)
+                    if sub_didl is not None:
+                        # Merge sub_didl items into full_didl
+                        for item in sub_didl.findall('.//{*}item'):
+                            full_didl.append(item)
 
+        except TypeError as e:
+            # 'type' object is not iterable error
+            log.error(f"Erreur de type lors du browse du conteneur {object_id}: {e}")
+            return full_didl
         except Exception as e:
             log.error(f"Erreur lors du browse du conteneur {object_id}: {e}")
+            return full_didl
         return full_didl
 
     # --------------------------------------------------------------------- #
@@ -280,6 +298,7 @@ class DLNANetwork:
         for bchild in b:
             a.append(bchild)
         return a
+
 
 # -------------------------------------------------------------
 # TESTS

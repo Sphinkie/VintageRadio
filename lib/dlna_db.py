@@ -111,8 +111,8 @@ class DLNADatabase:
         for track in tracks:
             cursor.execute('''
                 INSERT OR REPLACE INTO tracks 
-                (url, dlna_id, title, artiste, genre, year, updated_at)
-                VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+                (url, dlna_id, title, artist, genre, year, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
             ''', (
                 track['url'],
                 track['item_id'],
@@ -189,7 +189,8 @@ class DLNADatabase:
         """Retourne le nombre de clips de la base."""
         cursor = self.conn.cursor()
         cursor.execute('SELECT COUNT(*) FROM tracks')
-        return cursor.fetchone()
+        result = cursor.fetchone()
+        return result[0] if result else 0
 
     # --------------------------------------------------------------------- #
     # Retourne toutes les metadata d'une piste en fonction de son ID.
@@ -202,9 +203,22 @@ class DLNADatabase:
             None if item not found
         """
         cursor = self.conn.cursor()
-        cursor.execute('SELECT * FROM tracks WHERE item_id = ?', (item_id,))
+        cursor.execute('SELECT * FROM tracks WHERE dlna_id = ?', (item_id,))
         row = cursor.fetchone()
         return dict(row) if row else None
+
+    # --------------------------------------------------------------------- #
+    # Retourne une liste de d'url.
+    # --------------------------------------------------------------------- #
+    def select_url(self, key:str, value:str) -> List[str]:
+        cursor = self.conn.cursor()
+        query = '''
+            SELECT url FROM tracks 
+            WHERE ? = ?
+            ORDER BY year ASC
+        '''
+        cursor.execute(query, (key, value))
+        return [row['url'] for row in cursor.fetchall()]
 
     # --------------------------------------------------------------------- #
     # Renseigne une valeur pour la piste donnée.

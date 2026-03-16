@@ -24,7 +24,6 @@ def get_logger(name: str = __name__) -> logging.Logger:
     # sys.stdout.reconfigure(line_buffering=True)
     return logger
 
-
 # ----------------------------------------------------------------------
 # Configuration du Logger
 # ----------------------------------------------------------------------
@@ -43,7 +42,6 @@ def set_logging(verbose_level: int) -> None:
     }
     # Default level : logging.WARNING
     level = level_map.get(verbose_level, logging.WARNING)
-    level = logging.DEBUG
     # Configure root logger
     logging.basicConfig(
         level=level,

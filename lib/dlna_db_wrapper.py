@@ -46,16 +46,22 @@ class DLNADbWrapper:
     #   70's      (musiques des années 70 - seventies)
     #   Ce qui est venu après (entre 1980 et 2050)
     # --------------------------------------------------------------------- #
-    def get_tracks_for_decade(self, year:int) -> List[str]:
-        if year < 1700: return self.db.get_tracks_by_date_range (year, 0, 1700)
-        if year < 1800: return self.db.get_tracks_by_date_range (year, 1700, 1800)
-        if year < 1900: return self.db.get_tracks_by_date_range (year, 1800, 1900)
-        if year < 1940: return self.db.get_tracks_by_date_range (year, 1900, 1939)
-        if year < 1950: return self.db.get_tracks_by_date_range (year, 1940, 1949)
-        if year < 1960: return self.db.get_tracks_by_date_range (year, 1950, 1959)
-        if year < 1970: return self.db.get_tracks_by_date_range (year, 1960, 1969)
-        if year < 1980: return self.db.get_tracks_by_date_range (year, 1970, 1979)
-        return self.db.get_tracks_by_date_range (year, 1980, 2050)
+    def get_tracks_for_decade(self, year: int) -> List[str]:
+        if year < 1700: return self.db.get_tracks_by_date_range(year, 0, 1700)
+        if year < 1800: return self.db.get_tracks_by_date_range(year, 1700, 1800)
+        if year < 1900: return self.db.get_tracks_by_date_range(year, 1800, 1900)
+        if year < 1940: return self.db.get_tracks_by_date_range(year, 1900, 1939)
+        if year < 1950: return self.db.get_tracks_by_date_range(year, 1940, 1949)
+        if year < 1960: return self.db.get_tracks_by_date_range(year, 1950, 1959)
+        if year < 1970: return self.db.get_tracks_by_date_range(year, 1960, 1969)
+        if year < 1980: return self.db.get_tracks_by_date_range(year, 1970, 1979)
+        return self.db.get_tracks_by_date_range(year, 1980, 2050)
+
+    # --------------------------------------------------------------------- #
+    # demande les url pour un genre donné
+    # --------------------------------------------------------------------- #
+    def get_tracks_by_genre(self, value: str) -> List[str]:
+        return self.db.select_url('genre', value)
 
     # --------------------------------------------------------------------- #
     # Retourne les metadata de la piste demandée.

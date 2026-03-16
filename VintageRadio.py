@@ -23,7 +23,7 @@ from typing import Optional
 async def show_clip_info():
     await asyncio.sleep(2)
     id = musics.get_playing_id()
-    info = wrapper.get_clip_info_from_container(id)
+    # info = wrapper.get_clip_info_from_container(id)
     info = wrapper.get_clip_info_from_db(id)
     if info:
         title, artist, year, genre = info
@@ -51,6 +51,10 @@ def on_key_press(action):
         wrapper.discover_servers()
 
 
+# --------------------------------------------------------------------- #
+# Helper pour le programme principal.
+# Parsing des arguments en ligne de commande.
+# --------------------------------------------------------------------- #
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
@@ -150,24 +154,26 @@ async def loop():
                 # -------------------------------------------------------------
                 # Détermine l'identifiant du container correspondant au mode demandé (ex: "By Genre")
                 # -------------------------------------------------------------
-                container_id = wrapper.find_child_id(wrapper.music_container_id, user_request.get('mode'))
-                if container_id is None:
-                    log.fatal(f"Could not locate a '{user_request.get('mode')}' container under 'Music'.")
-                    break
+                # container_id = wrapper.find_child_id(wrapper.music_container_id, user_request.get('mode'))
+                # if container_id is None:
+                #     log.fatal(f"Could not locate a '{user_request.get('mode')}' container under 'Music'.")
+                #     break
                 # -------------------------------------------------------------
                 # Détermine l'identifiant du container correspondant au genre demandé (ex: "Blues")
                 # -------------------------------------------------------------
-                genre_id = wrapper.find_child_id(container_id, user_request.get('genre'))
-                if genre_id is None:
-                    log.fatal(
-                        f"Could not locate a '{user_request.get('genre')}' container under '{user_request.get('mode')}'.")
-                    break
+                # genre_id = wrapper.find_child_id(container_id, user_request.get('genre'))
+                # if genre_id is None:
+                #      log.fatal(
+                #        f"Could not locate a '{user_request.get('genre')}' container under '{user_request.get('mode')}'.")
+                #    break
                 # -------------------------------------------------------------
                 # List the MP3 files of the container, and send them to the Music object.
                 # -------------------------------------------------------------
+                log.info(f"Current request is '{user_request.get('mode')}'")
                 log.info(f"Current genre is '{user_request.get('genre')}'")
-                wrapper.get_file_urls(genre_id)
-                musics.discover_tracks(wrapper.get_mp3_items())
+                # wrapper.get_container_content(genre_id)
+                #musics.discover_tracks(wrapper.get_mp3_items())
+                musics.discover_tracks(wrapper.get_mp3_db_items(user_request.get('mode'), user_request.get('genre')))
                 musics.shuffle_playlist()
                 # musics.list_all()
                 # On acquitte la prise en compte du changement.

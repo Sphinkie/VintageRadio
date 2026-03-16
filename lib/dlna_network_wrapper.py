@@ -28,7 +28,7 @@ class DLNAWrapper:
     def __init__(self):
         """ Constructor. """
         self.net = DLNANetwork()
-        self.db = DLNADatabase("../data/mp3_metadata.db")
+        self.db = DLNADatabase("./data/mp3_metadata.db")
         self.didl_container = None
         self.server_control_url = None
         self.music_container_id = None
@@ -82,9 +82,10 @@ class DLNAWrapper:
         return None
 
     # --------------------------------------------------------------------- #
-    # Demande la liste des infos MP3 d'un container.
+    # Demande au serveur DLNA la liste des fichiers MP3 d'un conteneur.
+    # La liste est mise dans le DIDL courant.
     # --------------------------------------------------------------------- #
-    def get_file_urls(self, container_id: str):
+    def get_container_content(self, container_id: str):
         self.didl_container = self.net.browse(self.server_control_url, object_id=container_id)
         log.debug("Container content: %s", self.didl_container)
         if self.didl_container is None:
@@ -92,7 +93,7 @@ class DLNAWrapper:
 
     # --------------------------------------------------------------------- #
     # Retourne des infos sur le clip demandé, en les cherchant dans le DIDL
-    # du dernier container mémorisé.
+    # du dernier conteneur mémorisé.
     # --------------------------------------------------------------------- #
     def get_clip_info_from_container(self, item_id: str) -> Optional[tuple]:
         """
@@ -137,7 +138,7 @@ class DLNAWrapper:
             Empty strings if field is missing
             None if item not found
         """
-        log.debug("Searching for item id: %s", item_id)
+        log.debug("get clip info from db for item id: %s", item_id)
         metadata = self.db.get_track_info(item_id)
         if metadata:
             return metadata['title'],metadata['artist'],metadata['year'],metadata['genre']
@@ -146,7 +147,7 @@ class DLNAWrapper:
             return None
 
     # --------------------------------------------------------------------- #
-    # Demande la liste des URL des MP3 du DIDL container.
+    # Extrait la liste des URL des MP3 du DIDL courant.
     # --------------------------------------------------------------------- #
     def get_mp3_items(self) -> List[str]:
         """
@@ -162,6 +163,18 @@ class DLNAWrapper:
                 if 'audio/mpeg' in protocol.lower():
                     if res.text:
                         mp3_urls.append(res.text.strip())
+        return mp3_urls
+
+    # --------------------------------------------------------------------- #
+    # Demande une liste d'URL de MP3 à la base de données.
+    # --------------------------------------------------------------------- #
+    def get_mp3_db_items(self, mode:str, value: str) -> List[str]:
+        """
+        Ask the databas of a list or URLs.
+        """
+        mp3_urls: List[str] = []
+        if mode.lower() == "by genre":
+            mp3_urls = self.db.get_tracks_by_genre (value)
         return mp3_urls
 
     # --------------------------------------------------------------------- #
@@ -286,6 +299,8 @@ class DLNAWrapper:
             log.fatal("Aucun serveur DLNA défini")
             return 0
 
+        if self.music_container_id is None:
+            self.find_music_container()
         # --------------------------------------------------------------------- #
         # Chercher le contenu du container "All Music"
         # --------------------------------------------------------------------- #
@@ -294,15 +309,15 @@ class DLNAWrapper:
         all_music_container_id = self.find_container(self.music_container_id, ["All Music", "All Tracks", "Toutes les musiques"])
         # On recupère toutes ses URLs de MP3 dans un XML
         if all_music_container_id:
-            log.info(f"Container 'All Music' found : {all_music_container_id}")
+            log.info(f"Container 'All Music' found with id {all_music_container_id}.")
             xml_tracks = self.net.browse(self.server_control_url, object_id=all_music_container_id)
             all_tracks = self.extract_all_mp3_from_didl(xml_tracks)
         else:
             # --------------------------------------------------------------------- #
-            # Fallback: parcours récursif complet
+            # Fallback: parcours récursif complet (40 secondes !)
             # --------------------------------------------------------------------- #
             log.warning("Container 'All Music' non trouvé, utilisation du parcours récursif...")
-            xml_tracks = self.net.browse_recursive(self.server_control_url, object_id="0")
+            xml_tracks = self.net.browse_recursive(self.server_control_url, object_id=self.music_container_id)
             all_tracks = self.extract_all_mp3_from_didl(xml_tracks)
 
         if not all_tracks:
@@ -328,12 +343,12 @@ class DLNAWrapper:
         """
         Retourne une liste d'URLs filtrée par plage de dates avec ordre circulaire.
         
-        Args:
-            target_date: Date de départ (ex : 1964)
-            range_start: Année de début de plage (ex : 1960)
-            range_end: Année de fin de plage (ex : 1969)
+        Args :
+            target_date : Date de départ (ex : 1964)
+            range_start : Année de début de plage (ex : 1960)
+            range_end : Année de fin de plage (ex : 1969)
             
-        Returns:
+        Returns :
             Liste d'URLs triées selon l'ordre circulaire
         """
         return self.db.get_tracks_by_date_range(target_year, range_start, range_end)
@@ -369,7 +384,7 @@ class DLNAWrapper:
             # Extraire les métadonnées de base
             title = self._extract_text(item, '{*}title')
             artist = self._extract_text(item, '{*}creator')
-            album = self._extract_text(item, '{*}album')
+            # album = self._extract_text(item, '{*}album')
             genre = self._extract_text(item, '{*}genre')
             date = self._extract_text(item, '{*}date')
 
@@ -383,7 +398,7 @@ class DLNAWrapper:
 
             if url:
                 # Extraire le nom de fichier de l'URL
-                filename = url.split('/')[-1].split('?')[0]
+                # filename = url.split('/')[-1].split('?')[0]
                 item_id = full_id.split('@')[-1]
                 mp3_tracks.append({
                     'url': url,
@@ -440,6 +455,11 @@ if __name__ == "__main__":
     print("Scanning DLNA server for all MP3s...")
     total_tracks = wrapper.scan_all_mp3_to_db()
     print(f"Found {total_tracks} tracks")
+
+    # -------------------------------------------------------------
+    # TEST DE COUNT
+    # -------------------------------------------------------------
+    print(f"Total {wrapper.db.count()} tracks")
 
     # -------------------------------------------------------------
     # TEST DE LISTE DES FIFTIES

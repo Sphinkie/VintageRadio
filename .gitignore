@@ -10,7 +10,7 @@ __pycache__/
 .Python
 build/
 dist/
-lib/*.db
+lib/data/
 downloads/
 
 

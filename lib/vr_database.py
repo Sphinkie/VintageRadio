@@ -30,8 +30,7 @@ class VRDatabase:
         ├── rating (INTEGER)  # Futur: 0-5 étoiles
         ├── bpm (INTEGER)     # Futur: battements par minute
         ├── added_at (TIMESTAMP)
-        └── updated_at (TIMESTAMP)   
-    
+        └── updated_at (TIMESTAMP)
     """
 
     # --------------------------------------------------------------------- #
@@ -76,7 +75,6 @@ class VRDatabase:
 
         self.conn.commit()
         log.info(f"Base de données initialisée: {self.db_path}")
-
 
     # --------------------------------------------------------------------- #
     # Stocke (ou met à jour) une liste de pistes dans la base.
@@ -174,7 +172,6 @@ class VRDatabase:
         log.debug(f"Retourné {len(result)} pistes pour la plage {range_start}-{range_end}, en partant de {target_year}")
         return result
 
-
     # --------------------------------------------------------------------- #
     # Retourne toutes les metadata d'une piste en fonction de son ID.
     # --------------------------------------------------------------------- #
@@ -193,7 +190,7 @@ class VRDatabase:
     # --------------------------------------------------------------------- #
     # Retourne une liste de tracks (url).
     # --------------------------------------------------------------------- #
-    def select_url(self, key:str, value:str) -> List[str]:
+    def select_url(self, key: str, value: str) -> List[str]:
         cursor = self.conn.cursor()
         query = '''
             SELECT url FROM tracks 
@@ -221,4 +218,3 @@ class VRDatabase:
         """Ferme la connexion à la base de données."""
         if self.conn:
             self.conn.close()
-

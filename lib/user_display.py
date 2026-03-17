@@ -5,6 +5,7 @@
 # VintageRadio - Librairie.
 # David de Lorenzo (2026)
 # ==================================================================
+from typing import List, Optional
 
 
 # ----------------------------------------------------------------------- #
@@ -71,3 +72,33 @@ class Display:
     def input(text: str) -> str:
         choice = input(text)
         return choice
+
+    # --------------------------------------------------------------------- #
+    # Affiche le menu de choix du server DLNA parmi ceux qui ont été
+    # trouvé, et demande à l'utilisateur d'en choisir un.
+    # Retourne l'URL choisie (ou None).
+    # --------------------------------------------------------------------- #
+    @staticmethod
+    def pick_server_interactively(server_list: List) -> Optional[str]:
+        """
+        Show a numbered list of discovered servers (showing just the host part)
+        and ask the user to choose one.  Returns the selected *control URL*.
+        """
+        if not server_list:
+            return None
+
+        Display.flush()
+        Display.add_line("Discovered DLNA MediaServers:")
+        for idx, (desc_url, usn) in enumerate(server_list, start=1):
+            host = desc_url.split("/", 3)[2]  # crude host extraction
+            Display.add_line(f"[{idx}] {host}")
+
+        while True:
+            choice = Display.input(f"Select a server (1‑{len(server_list)} or press Enter to abort): ")
+            if not choice:
+                return None
+            if choice.isdigit():
+                i = int(choice)
+                if 1 <= i <= len(server_list):
+                    return server_list[i - 1][0]  # return the Description URL
+            Display.warning("Invalid selection – try again.")

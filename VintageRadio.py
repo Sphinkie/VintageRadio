@@ -9,46 +9,13 @@ import asyncio
 import argparse
 from lib.vr_logger import get_logger, set_logging
 from lib.dlna_music import DLNAMusic
-from lib.dlna_network_wrapper import DLNAWrapper
+# from lib.dlna_network_wrapper import DLNAWrapper
+from lib.vr_engine import VREngine
 from lib.user_display import Display
 from lib.user_request import UserRequest
 from lib.user_keyboard import KeyboardController
 from lib.user_preferences import *
 from typing import Optional
-
-
-# --------------------------------------------------------------------- #
-# Attend 2 secondes et affiche les infos du clip.
-# --------------------------------------------------------------------- #
-async def show_clip_info():
-    await asyncio.sleep(2)
-    id = musics.get_playing_id()
-    # info = wrapper.get_clip_info_from_container(id)
-    info = wrapper.get_clip_info_from_db(id)
-    if info:
-        title, artist, year, genre = info
-        # NOW PLAYING :
-        Display.show(title.upper(), f"by {artist}", f"({year})", genre)
-
-# --------------------------------------------------------------------- #
-# Callback for the Keyboard
-# --------------------------------------------------------------------- #
-def on_key_press(action):
-    if action == 'QUIT':
-        log.warning("QUIT command received")
-    elif action == 'NEXT':
-        log.info("PLAY NEXT command received")
-        # Trigger your skip logic here
-        # La musique suivante va commencer automatiquement.
-        musics.stop()
-    elif action == 'AGAIN':
-        log.info("PLAY AGAIN command received")
-        musics.rewind()
-        musics.stop()
-        # La musique va recommencer automatiquement.
-    elif action == 'DISCOVER':
-        log.info("DISCOVERY command received")
-        wrapper.discover_servers()
 
 
 # --------------------------------------------------------------------- #
@@ -110,7 +77,7 @@ def setup():
     # Récupère la lists de tous les MP3 du serveur DLNA
     # -----------------------------------------------------------------
     log.debug("Scanning DLNA server for all MP3s...")
-    total_tracks = wrapper.scan_all_mp3_to_db()
+    total_tracks = wrapper.scan_all_mp3()
     log.info(f"Found {total_tracks} tracks on DLNA server")
     # -----------------------------------------------------------------
     # Première lecture du fichier de demande
@@ -172,8 +139,8 @@ async def loop():
                 log.info(f"Current request is '{user_request.get('mode')}'")
                 log.info(f"Current genre is '{user_request.get('genre')}'")
                 # wrapper.get_container_content(genre_id)
-                #musics.discover_tracks(wrapper.get_mp3_items())
-                musics.discover_tracks(wrapper.get_mp3_db_items(user_request.get('mode'), user_request.get('genre')))
+                # musics.discover_tracks(wrapper.get_mp3_items())
+                musics.discover_tracks(engine.get_mp3_db_items(user_request.get('mode'), user_request.get('genre')))
                 musics.shuffle_playlist()
                 # musics.list_all()
                 # On acquitte la prise en compte du changement.
@@ -215,7 +182,7 @@ async def main():
     # On exécute le Setup
     setup()
     # On lance la boucle (si on a un serveur DLNA)
-    if wrapper.server_control_url:
+    if engine.ready():
         await loop()
     keyboard_ctrl.stop()
 
@@ -233,7 +200,8 @@ if __name__ == "__main__":
     # ---------------------------------------------------------
     # Initialisations des objets
     # ---------------------------------------------------------
-    wrapper = DLNAWrapper()
+    # wrapper = DLNAWrapper()
+    engine = VREngine()
     musics = DLNAMusic()
     user_request = UserRequest()
     display = Display('tty')

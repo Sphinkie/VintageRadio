@@ -15,9 +15,9 @@ log = get_logger(__name__)
 # --------------------------------------------------------------------- #
 # Wrapper de la base de données des métadonnées MP3.
 # --------------------------------------------------------------------- #
-class DLNADbWrapper:
+class DBWrapper:
     """
-    Wrapper de la base de données des métadonnées MP3.
+    Wrapper autour de la base de données des métadonnées MP3.
     """
 
     # --------------------------------------------------------------------- #
@@ -82,7 +82,61 @@ class DLNADbWrapper:
         self.db.update_track(url, "bmp", bpm)
 
     # --------------------------------------------------------------------- #
+    # Retourne des infos sur le clip demandé, en les cherchant dans la
+    # base de données.
+    # --------------------------------------------------------------------- #
+    def get_clip_info_from_db(self, item_id: str) -> Optional[tuple]:
+        """
+        Extract metadata from the database.
+
+        Args:
+            item_id: The ID of the item to look up. Ex: 2913
+
+        Returns:
+            Tuple of (title, artist, year, genre)
+            Empty strings if field is missing
+            None if item not found
+        """
+        log.debug("get clip info from db for item id: %s", item_id)
+        metadata = self.db.get_track_info(item_id)
+        if metadata:
+            return metadata['title'], metadata['artist'], metadata['year'], metadata['genre']
+        else:
+            # Not found
+            return None
+
+    # --------------------------------------------------------------------- #
+    # Demande une liste d'URL de MP3 à la base de données.
+    # --------------------------------------------------------------------- #
+    def get_mp3_db_items(self, mode: str, value: str) -> List[str]:
+        """
+        Ask the databas of a list or URLs.
+        """
+        mp3_urls: List[str] = []
+        if mode.lower() == "by genre":
+            mp3_urls = self.db.get_tracks_by_genre(value)
+        return mp3_urls
+
+    # --------------------------------------------------------------------- #
     # Ferme la connexion à la base de données
     # --------------------------------------------------------------------- #
     def close(self):
         self.db.close()
+
+
+# -------------------------------------------------------------
+# TESTS
+# -------------------------------------------------------------
+if __name__ == "__main__":
+    db_wrapper = DBWrapper()
+    # -------------------------------------------------------------
+    # TEST DE COUNT
+    # -------------------------------------------------------------
+    print(f"Total {db_wrapper.db.count()} tracks")
+
+    # -------------------------------------------------------------
+    # TEST DE LISTE DES FIFTIES
+    # -------------------------------------------------------------
+    # Récupérer une liste basée sur la date
+    urls = db_wrapper.get_urls_by_date_range(1955, 1950, 1959)
+    print(f"Retrieved {len(urls)} URLs for date range {1950}-{1959}")

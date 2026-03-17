@@ -7,8 +7,8 @@
 # ==================================================================
 from lib.dlna_network import DLNANetwork
 from lib.user_display import Display
-from lib.dlna_logger import get_logger
-from lib.dlna_db import DLNADatabase
+from lib.vr_logger import get_logger
+from lib.vr_database import VRDatabase
 from lib.tag_collector import get_mp3_tags
 from typing import List, Optional
 import xml.etree.ElementTree as ET
@@ -28,7 +28,7 @@ class DLNAWrapper:
     def __init__(self):
         """ Constructor. """
         self.net = DLNANetwork()
-        self.db = DLNADatabase("./data/mp3_metadata.db")
+        self.db = VRDatabase("./data/mp3_metadata.db")
         self.didl_container = None
         self.server_control_url = None
         self.music_container_id = None

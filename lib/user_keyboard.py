@@ -9,7 +9,7 @@ import sys
 import asyncio
 import threading
 from typing import Optional, Callable
-from lib.dlna_logger import get_logger
+from lib.vr_logger import get_logger
 
 # Detect operating system for conditional imports
 IS_WINDOWS = sys.platform.startswith('win')

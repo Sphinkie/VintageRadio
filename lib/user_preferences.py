@@ -8,7 +8,7 @@
 import configparser
 from pathlib import Path
 from typing import Optional
-from lib.dlna_logger import get_logger
+from lib.vr_logger import get_logger
 
 # --------------------------------------------------------------------- #
 # Configuration handling (preferred_dlna.ini)

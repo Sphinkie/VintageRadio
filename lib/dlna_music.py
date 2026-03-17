@@ -11,7 +11,7 @@ import time
 import random
 import signal
 from urllib.parse import urlsplit
-from lib.dlna_logger import get_logger
+from lib.vr_logger import get_logger
 from lib.user_display import Display
 
 try:

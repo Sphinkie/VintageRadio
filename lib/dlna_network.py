@@ -9,7 +9,7 @@ import http.client
 import xml.etree.ElementTree as ET
 from urllib.parse import urlparse
 from typing import List, Optional, Tuple
-from lib.dlna_logger import get_logger
+from lib.vr_logger import get_logger
 
 log = get_logger(__name__)
 

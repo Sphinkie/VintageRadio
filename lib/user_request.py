@@ -8,7 +8,7 @@
 import json
 import asyncio
 from pathlib import Path
-from lib.dlna_logger import get_logger
+from lib.vr_logger import get_logger
 
 log = get_logger(__name__)
 REQUEST_PATH = Path("user_request.json")  # <-- location of the JSON file

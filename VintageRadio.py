@@ -7,8 +7,8 @@
 # ==================================================================
 import asyncio
 import argparse
+from lib.vr_logger import get_logger, set_logging
 from lib.dlna_music import DLNAMusic
-from lib.dlna_logger import get_logger, set_logging
 from lib.dlna_network_wrapper import DLNAWrapper
 from lib.user_display import Display
 from lib.user_request import UserRequest

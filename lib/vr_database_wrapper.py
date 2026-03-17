@@ -1,12 +1,12 @@
 # coding: UTF-8
 # ==================================================================
-# lib/dlna_db_wrapper.py
+# lib/vr_database_wrapper.py
 # ==================================================================
 # VintageRadio - Librairie.
 # David de Lorenzo (2026)
 # ==================================================================
-from lib.dlna_db import DLNADatabase
-from lib.dlna_logger import get_logger
+from lib.vr_database import VRDatabase
+from lib.vr_logger import get_logger
 from typing import List, Optional, Tuple
 
 log = get_logger(__name__)
@@ -24,7 +24,7 @@ class DLNADbWrapper:
     # Constructeur
     # --------------------------------------------------------------------- #
     def __init__(self, db_path: Optional[str]):
-        self.db = DLNADatabase(db_path)
+        self.db = VRDatabase(db_path)
 
     # --------------------------------------------------------------------- #
     # Stocke (ou met à jour) une liste de pistes dans la base.

@@ -16,7 +16,7 @@
 import requests
 from mutagen.id3 import ID3
 from typing import Tuple, Optional
-from lib.dlna_logger import get_logger
+from lib.vr_logger import get_logger
 
 log = get_logger(__name__)
 

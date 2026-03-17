@@ -1,6 +1,6 @@
 # coding: UTF-8
 # ==================================================================
-# lib/dlna_logger.py
+# lib/vr_logger.py
 # ==================================================================
 # VintageRadio - Helper for Logging.
 # David de Lorenzo (2026)

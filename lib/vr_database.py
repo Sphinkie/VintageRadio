@@ -1,15 +1,14 @@
 # coding: UTF-8
 # ==================================================================
-# lib/dlna_db.py
+# lib/vr_database.py
 # ==================================================================
 # VintageRadio - Librairie.
 # David de Lorenzo (2026)
 # ==================================================================
 import sqlite3
-import hashlib
 from typing import List, Optional, Tuple
 from datetime import datetime
-from lib.dlna_logger import get_logger
+from lib.vr_logger import get_logger
 
 log = get_logger(__name__)
 
@@ -17,7 +16,7 @@ log = get_logger(__name__)
 # --------------------------------------------------------------------- #
 # Gestion de la base de données SQLite pour les métadonnées MP3.
 # --------------------------------------------------------------------- #
-class DLNADatabase:
+class VRDatabase:
     """Gestion de la base de données SQLite pour les métadonnées MP3.
     
         Schéma de la base de données:
@@ -78,23 +77,6 @@ class DLNADatabase:
         self.conn.commit()
         log.info(f"Base de données initialisée: {self.db_path}")
 
-    # --------------------------------------------------------------------- #
-    # Calcule un hash de 8 caractères basé sur le nom du fichier.
-    # --------------------------------------------------------------------- #
-    @staticmethod
-    def calculate_file_hash(file_name: str) -> str:
-        """
-        Calcule un hash de 8 caractères basé uniquement sur le nom du fichier.
-        
-        Args:
-            file_name: Nom du fichier MP3 (ex: "01_Song_Name.mp3")
-            
-        Returns:
-            Hash hexadécimal de 8 caractères
-        """
-        # Utilise SHA256 puis prend les 8 premiers caractères
-        hash_obj = hashlib.sha256(file_name.encode('utf-8'))
-        return hash_obj.hexdigest()[:8].upper()
 
     # --------------------------------------------------------------------- #
     # Stocke (ou met à jour) une liste de pistes dans la base.
@@ -124,6 +106,16 @@ class DLNADatabase:
 
         self.conn.commit()
         log.info(f"{len(tracks)} pistes stockées dans la base de données")
+
+    # --------------------------------------------------------------------- #
+    # Retourne le nombre de tracks de la base.
+    # --------------------------------------------------------------------- #
+    def count(self) -> int:
+        """Retourne le nombre de tracks de la base."""
+        cursor = self.conn.cursor()
+        cursor.execute('SELECT COUNT(*) FROM tracks')
+        result = cursor.fetchone()
+        return result[0] if result else 0
 
     # --------------------------------------------------------------------- #
     # Retourne une liste de MP3 (URL) en fonction de la plage de dates demandée.
@@ -182,15 +174,6 @@ class DLNADatabase:
         log.debug(f"Retourné {len(result)} pistes pour la plage {range_start}-{range_end}, en partant de {target_year}")
         return result
 
-    # --------------------------------------------------------------------- #
-    # Retourne le nombre de clips de la base.
-    # --------------------------------------------------------------------- #
-    def count(self) -> int:
-        """Retourne le nombre de clips de la base."""
-        cursor = self.conn.cursor()
-        cursor.execute('SELECT COUNT(*) FROM tracks')
-        result = cursor.fetchone()
-        return result[0] if result else 0
 
     # --------------------------------------------------------------------- #
     # Retourne toutes les metadata d'une piste en fonction de son ID.
@@ -208,7 +191,7 @@ class DLNADatabase:
         return dict(row) if row else None
 
     # --------------------------------------------------------------------- #
-    # Retourne une liste de d'url.
+    # Retourne une liste de tracks (url).
     # --------------------------------------------------------------------- #
     def select_url(self, key:str, value:str) -> List[str]:
         cursor = self.conn.cursor()
@@ -221,7 +204,7 @@ class DLNADatabase:
         return [row['url'] for row in cursor.fetchall()]
 
     # --------------------------------------------------------------------- #
-    # Renseigne une valeur pour la piste donnée.
+    # Renseigne une valeur pour la track donnée.
     # --------------------------------------------------------------------- #
     def update_track(self, url: str, key: str, value: int):
         """Met à jour une valeur."""
@@ -239,18 +222,3 @@ class DLNADatabase:
         if self.conn:
             self.conn.close()
 
-
-# -------------------------------------------------------------
-# TESTS
-# -------------------------------------------------------------
-if __name__ == "__main__":
-    # -------------------------------------------------------------
-    # TEST DU HASHAGE
-    # -------------------------------------------------------------
-    filename = "Aretha Franklin - I will Survive.mp3"
-    hash1 = DLNADatabase.calculate_file_hash(filename)  # Ex: "D6DC212A"
-    print(hash1)
-
-    filename = "Blue Steel & His Orchestra - Sugar Babe, I'm Leavin'!.mp3"
-    hash2 = DLNADatabase.calculate_file_hash(filename)  # Ex: "16B19780"
-    print(hash2)

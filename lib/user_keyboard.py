@@ -47,6 +47,7 @@ class KeyboardController:
         Args:
             callback: Function to call when a key is pressed.
                      Receives the action string ('NEXT', 'AGAIN', 'QUIT').
+            quit_event: L'évènement asyncio à déclencher en cas d'action QUIT.
         """
         self.callback = callback
         self.running = False
@@ -84,7 +85,7 @@ class KeyboardController:
         if self.fd is not None and self.old_settings is not None:
             try:
                 termios.tcsetattr(self.fd, termios.TCSADRAIN, self.old_settings)
-            except:
+            except Exception as e:
                 pass  # Ignore les erreurs de restauration
 
     # --------------------------------------------------------------------- #

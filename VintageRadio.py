@@ -14,7 +14,6 @@ from lib.vr_engine import VREngine
 from lib.user_display import Display
 from lib.user_request import UserRequest
 from lib.user_keyboard import KeyboardController
-from lib.user_preferences import *
 from typing import Optional
 
 
@@ -41,44 +40,15 @@ def parse_args() -> argparse.Namespace:
 # --------------------------------------------------------------------- #
 def setup():
     log.info("Start Setup")
-
+    Display.show("VINTAGE RADIO")
     # -----------------------------------------------------------------
-    # Try to load a previously saved server
+    # Get the DLNA server
     # -----------------------------------------------------------------
-    server_control_url: Optional[str] = None
-    preferred_server_desc_url = load_preferred_server()
-    log.info("preferred server url: %s", preferred_server_desc_url)
+    engine.get_dlna_server()
     # -----------------------------------------------------------------
-    # If we have a saved description URL, verify that it is still reachable
+    # Récupère la liste de tous les MP3 du serveur DLNA
     # -----------------------------------------------------------------
-    if preferred_server_desc_url:
-        log.debug(f"Trying previously saved server: {preferred_server_desc_url}")
-        preferred_server_ctrl_url = DLNAWrapper.resolve_control(preferred_server_desc_url)
-        if preferred_server_ctrl_url:
-            server_control_url = preferred_server_ctrl_url
-            log.info("Saved server is reachable.")
-        else:
-            log.warning("Saved server could not be reached or does not expose ContentDirectory.")
-    # -----------------------------------------------------------------
-    # If we still have no usable server, discover a new.
-    # -----------------------------------------------------------------
-    if not server_control_url:
-        wrapper.discover_servers()
-        server_desc_url = wrapper.choose_server(preferred_server_desc_url)
-        if server_desc_url:
-            save_preferred_server(server_desc_url)
-            server_control_url = DLNAWrapper.resolve_control(server_desc_url)
-    # -----------------------------------------------------------------
-    # At this point we have a valid control URL
-    # -----------------------------------------------------------------
-    log.info(f"Using ContentDirectory control URL: {server_control_url}")
-    wrapper.set_server(server_control_url)
-    # -----------------------------------------------------------------
-    # Récupère la lists de tous les MP3 du serveur DLNA
-    # -----------------------------------------------------------------
-    log.debug("Scanning DLNA server for all MP3s...")
-    total_tracks = wrapper.scan_all_mp3()
-    log.info(f"Found {total_tracks} tracks on DLNA server")
+    engine.scan_all_mp3()
     # -----------------------------------------------------------------
     # Première lecture du fichier de demande
     user_request.load_user_request()
@@ -172,6 +142,7 @@ async def loop():
         log.warning("End loop")
         refresh_task.cancel()
         await refresh_task
+        keyboard_ctrl.stop()
         log.warning("Shutdown complete")
 
 
@@ -184,8 +155,7 @@ async def main():
     # On lance la boucle (si on a un serveur DLNA)
     if engine.ready():
         await loop()
-    keyboard_ctrl.stop()
-
+    engine.close()
 
 # -------------------------------------------------------------
 # Launch Main Program (EventLoop)
@@ -203,13 +173,12 @@ if __name__ == "__main__":
     # wrapper = DLNAWrapper()
     engine = VREngine()
     musics = DLNAMusic()
-    user_request = UserRequest()
     display = Display('tty')
+    user_request = UserRequest()
+    # Initialise le Keyboard Listener thread
     # Create a Quit Event
     quit_event = asyncio.Event()
-    # Initialise le Keyboard Listener thread
-    keyboard_ctrl = KeyboardController(on_key_press, quit_event)
-    Display.show("VINTAGE RADIO")
+    keyboard_ctrl = KeyboardController(engine.on_key_press, quit_event)
     # ---------------------------------------------------------
     # Lancement de l'Event Loop
     # ---------------------------------------------------------

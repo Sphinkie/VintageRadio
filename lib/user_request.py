@@ -25,7 +25,7 @@ class UserRequest:
     # --------------------------------------------------------------------- #
     def __init__(self):
         """ Constructor. """
-        self.default_mode = "By Genre"  # fre: "Par genre"
+        self.default_mode = "genre"
         self.default_genre = "Jazz"
         self.previous_mode = self.default_mode
         self.previous_genre = self.default_genre

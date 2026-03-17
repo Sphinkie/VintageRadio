@@ -9,12 +9,31 @@ import asyncio
 import argparse
 from lib.vr_logger import get_logger, set_logging
 from lib.dlna_music import DLNAMusic
-# from lib.dlna_network_wrapper import DLNAWrapper
 from lib.vr_engine import VREngine
 from lib.user_display import Display
 from lib.user_request import UserRequest
 from lib.user_keyboard import KeyboardController
-from typing import Optional
+
+
+# --------------------------------------------------------------------- #
+# Callback for the Keyboard
+# --------------------------------------------------------------------- #
+def on_key_press(action):
+    if action == 'QUIT':
+        log.warning("QUIT command received")
+    elif action == 'NEXT':
+        log.info("PLAY NEXT command received")
+        # Trigger your skip logic here
+        # La musique suivante va commencer automatiquement.
+        musics.stop()
+    elif action == 'AGAIN':
+        log.info("PLAY AGAIN command received")
+        musics.rewind()
+        musics.stop()
+        # La musique va recommencer automatiquement.
+    elif action == 'DISCOVER':
+        log.info("DISCOVERY command received")
+        engine.net_wrapper.discover_servers()
 
 
 # --------------------------------------------------------------------- #
@@ -52,8 +71,6 @@ def setup():
     # -----------------------------------------------------------------
     # Première lecture du fichier de demande
     user_request.load_user_request()
-    # Récupération du Container parent : MUSIC
-    wrapper.find_music_container()
     # Lance le Listener du clavier dans un thread.
     keyboard_ctrl.start()
     # -------------------------------------------------------------
@@ -89,28 +106,12 @@ async def loop():
             if user_request.has_changed():
                 log.info("User request change detected")
                 # -------------------------------------------------------------
-                # Détermine l'identifiant du container correspondant au mode demandé (ex: "By Genre")
+                # List the MP3 files for the request, and send them to the Music object.
                 # -------------------------------------------------------------
-                # container_id = wrapper.find_child_id(wrapper.music_container_id, user_request.get('mode'))
-                # if container_id is None:
-                #     log.fatal(f"Could not locate a '{user_request.get('mode')}' container under 'Music'.")
-                #     break
-                # -------------------------------------------------------------
-                # Détermine l'identifiant du container correspondant au genre demandé (ex: "Blues")
-                # -------------------------------------------------------------
-                # genre_id = wrapper.find_child_id(container_id, user_request.get('genre'))
-                # if genre_id is None:
-                #      log.fatal(
-                #        f"Could not locate a '{user_request.get('genre')}' container under '{user_request.get('mode')}'.")
-                #    break
-                # -------------------------------------------------------------
-                # List the MP3 files of the container, and send them to the Music object.
-                # -------------------------------------------------------------
-                log.info(f"Current request is '{user_request.get('mode')}'")
-                log.info(f"Current genre is '{user_request.get('genre')}'")
-                # wrapper.get_container_content(genre_id)
-                # musics.discover_tracks(wrapper.get_mp3_items())
-                musics.discover_tracks(engine.get_mp3_db_items(user_request.get('mode'), user_request.get('genre')))
+                log.info(f"Current request is by '{user_request.get('mode')}'")
+                log.info(f"Requested genre is '{user_request.get('genre')}'")
+                track_list = engine.get_track_from_db(user_request.get('mode'), user_request.get('genre'))
+                musics.load_playlist(track_list)
                 musics.shuffle_playlist()
                 # musics.list_all()
                 # On acquitte la prise en compte du changement.
@@ -122,8 +123,11 @@ async def loop():
             if lecture_task is None:
                 log.debug("Start playing a new file")
                 lecture_task = asyncio.create_task(musics.play_random_async())
+                # On attend que la lecture ait démarré
                 await lecture_task
-                display_task = asyncio.create_task(show_clip_info())
+                # On demande l'affichage du titre
+                current_id = musics.get_playing_id()
+                display_task = asyncio.create_task(engine.show_clip_info(current_id))
             # -------------------------------------------------------------
             # [4] Check if the MP3 file is still playing
             # -------------------------------------------------------------
@@ -136,13 +140,13 @@ async def loop():
             # --------------------------------------------------------------------
             await asyncio.sleep(1)
     # --------------------------------------------------------------------
-    # Sortie de la boucle
+    # Sortie de la boucle: on ferme tout.
     # --------------------------------------------------------------------
     finally:
         log.warning("End loop")
+        keyboard_ctrl.stop()
         refresh_task.cancel()
         await refresh_task
-        keyboard_ctrl.stop()
         log.warning("Shutdown complete")
 
 
@@ -156,6 +160,7 @@ async def main():
     if engine.ready():
         await loop()
     engine.close()
+
 
 # -------------------------------------------------------------
 # Launch Main Program (EventLoop)
@@ -178,7 +183,7 @@ if __name__ == "__main__":
     # Initialise le Keyboard Listener thread
     # Create a Quit Event
     quit_event = asyncio.Event()
-    keyboard_ctrl = KeyboardController(engine.on_key_press, quit_event)
+    keyboard_ctrl = KeyboardController(on_key_press, quit_event)
     # ---------------------------------------------------------
     # Lancement de l'Event Loop
     # ---------------------------------------------------------

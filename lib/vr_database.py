@@ -6,8 +6,7 @@
 # David de Lorenzo (2026)
 # ==================================================================
 import sqlite3
-from typing import List, Optional, Tuple
-from datetime import datetime
+from typing import List, Optional
 from lib.vr_logger import get_logger
 
 log = get_logger(__name__)
@@ -36,7 +35,7 @@ class VRDatabase:
     # --------------------------------------------------------------------- #
     # Constructeur
     # --------------------------------------------------------------------- #
-    def __init__(self, db_path: str = "music_metadata.db"):
+    def __init__(self, db_path: str = "data/music_metadata.db"):
         self.db_path = db_path
         self.conn = None
         self._init_db()
@@ -81,10 +80,11 @@ class VRDatabase:
     # --------------------------------------------------------------------- #
     def store_tracks(self, tracks: List[dict]):
         """
-        Stocke ou met à jour une liste de pistes dans la base.
+        Stocke ou met à jour une liste de pistes dans la base de données.
+        Chaque track comporte une URL, un ID, et d'autres metadata.
         
         Args:
-            tracks: Liste de dicts avec url, dlna_id, genre, year
+            tracks: Liste de dicts avec url, item_id, title, artist, genre, year.
         """
         cursor = self.conn.cursor()
 
@@ -109,7 +109,11 @@ class VRDatabase:
     # Retourne le nombre de tracks de la base.
     # --------------------------------------------------------------------- #
     def count(self) -> int:
-        """Retourne le nombre de tracks de la base."""
+        """
+        Retourne le nombre de tracks de la base de données.
+        Returns:
+            The number of tracks in the database.
+        """
         cursor = self.conn.cursor()
         cursor.execute('SELECT COUNT(*) FROM tracks')
         result = cursor.fetchone()
@@ -118,7 +122,7 @@ class VRDatabase:
     # --------------------------------------------------------------------- #
     # Retourne une liste de MP3 (URL) en fonction de la plage de dates demandée.
     # --------------------------------------------------------------------- #
-    def get_tracks_by_date_range(
+    def get_track_urls_by_date_range(
             self,
             target_year: int,
             range_start: int,
@@ -133,7 +137,7 @@ class VRDatabase:
             range_end: Fin de la plage (format YYYY)
             
         Returns:
-            Liste d'URLs triées selon l'ordre circulaire demandé
+            Liste d'URLs triées selon l'ordre circulaire demandé.
             
         Exemple
             target_year = "1963"
@@ -176,29 +180,29 @@ class VRDatabase:
     # Retourne toutes les metadata d'une piste en fonction de son ID.
     # --------------------------------------------------------------------- #
     def get_track_info(self, item_id: str) -> Optional[dict]:
-        """
-        Retourne les informations complètes d'une piste.
+        """ ---------------------------------------------------------------------
+        None if item not found.
         Returns:
-            A dictionnary with keys: title, artist, year, genre, rating, bpm
-            None if item not found
-        """
+            A dictionary with keys: title, artist, year, genre, rating, bpm.
+        --------------------------------------------------------------------- """
         cursor = self.conn.cursor()
         cursor.execute('SELECT * FROM tracks WHERE dlna_id = ?', (item_id,))
         row = cursor.fetchone()
         return dict(row) if row else None
 
     # --------------------------------------------------------------------- #
-    # Retourne une liste de tracks (url).
+    # Retourne liste de tracks (url) correspondant au genre demandé.
     # --------------------------------------------------------------------- #
-    def select_url(self, key: str, value: str) -> List[str]:
+    def get_track_urls_by_genre(self, value: str) -> List[str]:
+        """ ---------------------------------------------------------------------
+        Returns:
+            Une liste de tracks (url) correspondant au genre demandé.
+        --------------------------------------------------------------------- """
         cursor = self.conn.cursor()
-        query = '''
-            SELECT url FROM tracks 
-            WHERE ? = ?
-            ORDER BY year ASC
-        '''
-        cursor.execute(query, (key, value))
-        return [row['url'] for row in cursor.fetchall()]
+        query = f"SELECT url FROM tracks WHERE genre='{value}' ORDER BY year ASC"
+        cursor.execute(query)
+        result = [row['url'] for row in cursor.fetchall()]
+        return result
 
     # --------------------------------------------------------------------- #
     # Renseigne une valeur pour la track donnée.

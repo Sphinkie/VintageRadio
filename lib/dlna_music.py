@@ -10,6 +10,7 @@ import sys
 import time
 import random
 import signal
+from typing import List
 from urllib.parse import urlsplit
 from lib.vr_logger import get_logger
 from lib.user_display import Display
@@ -40,7 +41,7 @@ class DLNAMusic:
         # Note: tous les MP3 ont été normalisés avec mp3gain (ReplayGain)
         self._instance = vlc.Instance(
             '--quiet',
-            '--audio-normalize',  # Enable replaygain
+            '--audio-normalize',  # Enable ReplayGain
             '--replaygain-mode', 'track',  # 'track' or 'album'
             '--replaygain-preamp', '0',  # Pre-amplification in dB
             '--audio-filter', 'normvol'  # Additional volume normalization
@@ -70,13 +71,12 @@ class DLNAMusic:
     # --------------------------------------------------------------------- #
     # Remplissage de la liste des tracks.
     # --------------------------------------------------------------------- #
-    def discover_tracks(self, mp3_urls):
+    def load_playlist(self, mp3_urls: List[str]):
         """ Populate tracks with absolute URLs of MP3 files found under container_url."""
         if mp3_urls is None:
             Display.warning("No MP3 files were found in the folder.")
         else:
             self.tracks = mp3_urls
-        return
 
     # --------------------------------------------------------------------- #
     # Affiche la liste des URLs reçues.
@@ -85,7 +85,6 @@ class DLNAMusic:
         log.debug("MP3 url found:")
         for url in self.tracks:
             log.debug(url)
-        return
 
     # --------------------------------------------------------------------- #
     # Démarre un fichier MP3.

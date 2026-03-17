@@ -7,7 +7,7 @@
 # ==================================================================
 from lib.vr_database import VRDatabase
 from lib.vr_logger import get_logger
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 log = get_logger(__name__)
 
@@ -23,7 +23,7 @@ class DBWrapper:
     # --------------------------------------------------------------------- #
     # Constructeur
     # --------------------------------------------------------------------- #
-    def __init__(self, db_path: Optional[str]):
+    def __init__(self, db_path: str):
         self.db = VRDatabase(db_path)
 
     # --------------------------------------------------------------------- #
@@ -47,27 +47,38 @@ class DBWrapper:
     #   Ce qui est venu après (entre 1980 et 2050)
     # --------------------------------------------------------------------- #
     def get_tracks_for_decade(self, year: int) -> List[str]:
-        if year < 1700: return self.db.get_tracks_by_date_range(year, 0, 1700)
-        if year < 1800: return self.db.get_tracks_by_date_range(year, 1700, 1800)
-        if year < 1900: return self.db.get_tracks_by_date_range(year, 1800, 1900)
-        if year < 1940: return self.db.get_tracks_by_date_range(year, 1900, 1939)
-        if year < 1950: return self.db.get_tracks_by_date_range(year, 1940, 1949)
-        if year < 1960: return self.db.get_tracks_by_date_range(year, 1950, 1959)
-        if year < 1970: return self.db.get_tracks_by_date_range(year, 1960, 1969)
-        if year < 1980: return self.db.get_tracks_by_date_range(year, 1970, 1979)
-        return self.db.get_tracks_by_date_range(year, 1980, 2050)
+        """
+        Retourne une liste d'URLs filtrée par plage de dates avec ordre circulaire.
+        Args :
+            target_date : Date de départ (ex : 1964)
+            range_start : Année de début de plage (ex : 1960)
+            range_end : Année de fin de plage (ex : 1969)
+        Returns :
+            Liste d'URLs triées selon l'ordre circulaire
+        """
+        if year < 1700:
+            return self.db.get_track_urls_by_date_range(year, 0, 1700)
+        if year < 1800:
+            return self.db.get_track_urls_by_date_range(year, 1700, 1800)
+        if year < 1900:
+            return self.db.get_track_urls_by_date_range(year, 1800, 1900)
+        if year < 1940:
+            return self.db.get_track_urls_by_date_range(year, 1900, 1939)
+        if year < 1950:
+            return self.db.get_track_urls_by_date_range(year, 1940, 1949)
+        if year < 1960:
+            return self.db.get_track_urls_by_date_range(year, 1950, 1959)
+        if year < 1970:
+            return self.db.get_track_urls_by_date_range(year, 1960, 1969)
+        if year < 1980:
+            return self.db.get_track_urls_by_date_range(year, 1970, 1979)
+        return self.db.get_track_urls_by_date_range(year, 1980, 2050)
 
     # --------------------------------------------------------------------- #
-    # demande les url pour un genre donné
+    # Demande les url pour un genre donné.
     # --------------------------------------------------------------------- #
-    def get_tracks_by_genre(self, value: str) -> List[str]:
-        return self.db.select_url('genre', value)
-
-    # --------------------------------------------------------------------- #
-    # Retourne les metadata de la piste demandée.
-    # --------------------------------------------------------------------- #
-    def get_track_info(self, url: str) -> Optional[dict]:
-        return self.db.get_track_info(url)
+    def get_tracks_for_genre(self, value: str) -> List[str]:
+        return self.db.get_track_urls_by_genre(value)
 
     # --------------------------------------------------------------------- #
     # Met à jour le rating d'une piste.
@@ -76,7 +87,7 @@ class DBWrapper:
         self.db.update_track(url, "rating", rating)
 
     # --------------------------------------------------------------------- #
-    # Met à jour le BPM (Beat Per Minute) d'une piste
+    # Met à jour le BPM (Beat Per Minute) d'une piste.
     # --------------------------------------------------------------------- #
     def update_track_bpm(self, url: str, bpm: int):
         self.db.update_track(url, "bmp", bpm)
@@ -85,12 +96,12 @@ class DBWrapper:
     # Retourne des infos sur le clip demandé, en les cherchant dans la
     # base de données.
     # --------------------------------------------------------------------- #
-    def get_clip_info_from_db(self, item_id: str) -> Optional[tuple]:
+    def get_track_info(self, item_id: str) -> Optional[tuple]:
         """
         Extract metadata from the database.
 
         Args:
-            item_id: The ID of the item to look up. Ex: 2913
+            item_id: The ID of the item to look up. Ex: '2913'.
 
         Returns:
             Tuple of (title, artist, year, genre)
@@ -106,18 +117,6 @@ class DBWrapper:
             return None
 
     # --------------------------------------------------------------------- #
-    # Demande une liste d'URL de MP3 à la base de données.
-    # --------------------------------------------------------------------- #
-    def get_mp3_db_items(self, mode: str, value: str) -> List[str]:
-        """
-        Ask the databas of a list or URLs.
-        """
-        mp3_urls: List[str] = []
-        if mode.lower() == "by genre":
-            mp3_urls = self.db.get_tracks_by_genre(value)
-        return mp3_urls
-
-    # --------------------------------------------------------------------- #
     # Ferme la connexion à la base de données
     # --------------------------------------------------------------------- #
     def close(self):
@@ -128,7 +127,7 @@ class DBWrapper:
 # TESTS
 # -------------------------------------------------------------
 if __name__ == "__main__":
-    db_wrapper = DBWrapper()
+    db_wrapper = DBWrapper("data/music_metadata.db")
     # -------------------------------------------------------------
     # TEST DE COUNT
     # -------------------------------------------------------------
@@ -138,5 +137,10 @@ if __name__ == "__main__":
     # TEST DE LISTE DES FIFTIES
     # -------------------------------------------------------------
     # Récupérer une liste basée sur la date
-    urls = db_wrapper.get_urls_by_date_range(1955, 1950, 1959)
-    print(f"Retrieved {len(urls)} URLs for date range {1950}-{1959}")
+    urls = db_wrapper.get_tracks_for_decade(1955)
+    print(f"Retrieved {len(urls)} songs for 1955")
+    # -------------------------------------------------------------
+    # TEST DE LISTE DES CHANSONS
+    # -------------------------------------------------------------
+    urls = db_wrapper.get_tracks_for_genre('Blues')
+    print(f"Retrieved {len(urls)} songs of Blues")

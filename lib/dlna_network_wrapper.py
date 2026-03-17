@@ -27,16 +27,17 @@ class DLNAWrapper:
     def __init__(self):
         """ Constructor. """
         self.net = DLNANetwork()
+        self.server_list = None
         self.didl_container = None
         self.server_control_url = None
         self.music_container_id = None
         self.latest_container_id = None
-        self.server_list = None
 
     # --------------------------------------------------------------------- #
     # Demande au réseau de rechercher la liste des serveurs DLNA disponibles.
     # --------------------------------------------------------------------- #
     def discover_servers(self):
+        """Demande au réseau de rechercher la liste des serveurs DLNA disponibles."""
         self.server_list = self.net.discover_servers()
         # Affichage des hostnames dans le log
         for (desc_url, usn) in self.server_list:
@@ -44,9 +45,10 @@ class DLNAWrapper:
             log.info("> %s", host)
 
     # --------------------------------------------------------------------- #
-    # On définit le Serveur DLNA à utiliser
+    # Définit le Serveur DLNA à utiliser.
     # --------------------------------------------------------------------- #
     def set_server(self, server_ctrl_url: str):
+        """Définit le Serveur DLNA à utiliser."""
         self.server_control_url = server_ctrl_url
 
     # --------------------------------------------------------------------- #
@@ -54,6 +56,12 @@ class DLNAWrapper:
     # --------------------------------------------------------------------- #
     @staticmethod
     def resolve_control(url: str) -> Optional[str]:
+        """        
+        Args :
+            url : La 'Description URL' du serveur DLNA.
+        Returns :
+            La 'Control URL' du serveur DLNA (ContentDirectory).
+        """
         return DLNANetwork.get_content_directory_control_url(url)
 
     # --------------------------------------------------------------------- #
@@ -69,7 +77,7 @@ class DLNAWrapper:
         return self.music_container_id
 
     # --------------------------------------------------------------------- #
-    # Cherche un Child-Container parmi une liste de noms (multi-langues).
+    # Cherche un Child-Conteneur parmi une liste de noms (multi-langues).
     # --------------------------------------------------------------------- #
     def find_container(self, parent_id, possible_names):
         for name in possible_names:
@@ -110,7 +118,7 @@ class DLNAWrapper:
     # Retourne des infos sur le clip demandé, en les cherchant dans le DIDL
     # du dernier conteneur mémorisé.
     # --------------------------------------------------------------------- #
-    def get_clip_info_from_container(self, item_id: str) -> Optional[tuple]:
+    def get_clip_info(self, item_id: str) -> Optional[tuple]:
         """
         Extract metadata from a DIDL-Lite item element.
         
@@ -334,7 +342,7 @@ if __name__ == "__main__":
             print(f"  {t['title']} - {t['artist']} ({t['year'][:4]})")
 
     # -------------------------------------------------------------
-    # TEST DE REMPLISSAGE DE LA BDD (1468 tracks : 2 secondes)
+    # TEST DE SCAN du serveur DLNA (1468 tracks : 2 secondes)
     # -------------------------------------------------------------
     # Scanner tout le serveur et remplir la base de données
     print("Scanning DLNA server for all MP3s...")

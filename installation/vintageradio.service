@@ -1,0 +1,17 @@
+[Unit]
+Description=VintageRadio - DLNA Music Player
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/Programmes/VintageRadio
+ExecStart=/usr/bin/python3 /home/pi/Programmes/VintageRadio/VintageRadio.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -5,7 +5,6 @@
 # VintageRadio - Programme principal
 # David de Lorenzo (2026)
 # ==================================================================
-import sys
 import asyncio
 import argparse
 from lib.vr_logger import get_logger, set_logging
@@ -183,13 +182,7 @@ if __name__ == "__main__":
     # ---------------------------------------------------------
     # Create a Quit Event
     quit_event = asyncio.Event()
-    # Détecter si on est en mode daemon
-    if not sys.stdin.isatty():
-        log.info("Running in daemon mode – keyboard input disabled")
-        # Désactive le keyboard controller
-        keyboard_ctrl = None
-    else:
-        keyboard_ctrl = KeyboardController(on_key_press, quit_event)
+    keyboard_ctrl = KeyboardController(on_key_press, quit_event)
     # ---------------------------------------------------------
     # Lancement de l'Event Loop
     # ---------------------------------------------------------

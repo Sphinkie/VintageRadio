@@ -40,7 +40,7 @@ class VREngine:
         self.db_w.close()
 
     # --------------------------------------------------------------------- #
-    # On est prêt si on a établi une laison avec un serveur DLNA
+    # On est prêt si on a établi une liaison avec un serveur DLNA.
     # --------------------------------------------------------------------- #
     def ready(self) -> bool:
         return self.net_wrapper.server_control_url is not None

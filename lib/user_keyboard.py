@@ -106,21 +106,24 @@ class KeyboardController:
         Unix/Linux implementation using termios/tty.
         Reads single characters from stdin in raw mode (no line buffering).
         """
+        # Vérifier si stdin est un vrai terminal
+        if not sys.stdin.isatty():
+            log.warning("No controlling terminal – keyboard input disabled (daemon mode)")
+            return
         self.fd = sys.stdin.fileno()
         self.old_settings = termios.tcgetattr(self.fd)
 
         try:
             # Set terminal to raw mode (immediate keypress, no echo)
             tty.setraw(self.fd)
-
             while self.running:
                 ch = sys.stdin.read(1)
                 if ch:
                     log.debug(f"Keyboard (Unix): {ch}")
                     self._handle_key(ch)
-
         except Exception as e:
-            print(f"Keyboard error (Unix): {e}", file=sys.stderr)
+            log.warning(f"Keyboard error (daemon mode ?): {e}")
+            return
         finally:
             # Restore terminal settings
             self._restore_terminal()

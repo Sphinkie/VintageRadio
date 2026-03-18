@@ -17,7 +17,7 @@ log = get_logger(__name__)
 
 
 # ----------------------------------------------------------------------- #
-# Cette classe ....
+# Cette classe coordonne la gestion de la base de données et du serveur DLNA.
 # ----------------------------------------------------------------------- #
 class VREngine:
 
@@ -28,6 +28,8 @@ class VREngine:
         """ Constructor. """
         self.db_w = DBWrapper("./data/mp3_metadata.db")
         self.net_wrapper = DLNAWrapper()
+        display = Display('tty')
+        display.show("VINTAGE RADIO")
 
     # --------------------------------------------------------------------- #
     # Nettoyer la base de données à la fermeture
@@ -109,12 +111,9 @@ class VREngine:
     # Attend 2 secondes et affiche les infos du clip.
     # --------------------------------------------------------------------- #
     async def show_clip_info(self, track_id: str):
-        print("**")
         await asyncio.sleep(2)
-        print("**")
         # info = self.net_wrapper.get_clip_info(track_id)
         info = self.db_w.get_track_info(track_id)
-        print(info)
         if info:
             title, artist, year, genre = info
             # NOW PLAYING :

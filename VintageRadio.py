@@ -10,7 +10,6 @@ import argparse
 from lib.vr_logger import get_logger, set_logging
 from lib.dlna_music import DLNAMusic
 from lib.vr_engine import VREngine
-from lib.user_display import Display
 from lib.user_request import UserRequest
 from lib.user_keyboard import KeyboardController
 
@@ -59,7 +58,6 @@ def parse_args() -> argparse.Namespace:
 # --------------------------------------------------------------------- #
 def setup():
     log.info("Start Setup")
-    Display.show("VINTAGE RADIO")
     # -----------------------------------------------------------------
     # Get the DLNA server
     # -----------------------------------------------------------------
@@ -178,7 +176,6 @@ if __name__ == "__main__":
     # wrapper = DLNAWrapper()
     engine = VREngine()
     musics = DLNAMusic()
-    display = Display('tty')
     user_request = UserRequest()
     # Initialise le Keyboard Listener thread
     # Create a Quit Event

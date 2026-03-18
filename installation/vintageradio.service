@@ -6,6 +6,10 @@ Wants=network-online.target
 [Service]
 Type=simple
 User=pi
+Group=audio
+# IMPORTANT : Définissez HOME pour que ALSA trouve ses configs
+Environment=HOME=/home/pi
+
 WorkingDirectory=/home/pi/Programmes/VintageRadio
 ExecStart=/usr/bin/python3 /home/pi/Programmes/VintageRadio/VintageRadio.py
 Restart=no

@@ -13,5 +13,11 @@ RestartSec=10
 StandardOutput=journal
 StandardError=journal
 
+# Pour le développement seulement (décommenter si besoin)
+# StandardInput=tty
+# StandardOutput=tty
+# StandardError=tty
+# TTYPath=/dev/tty1
+
 [Install]
 WantedBy=multi-user.target

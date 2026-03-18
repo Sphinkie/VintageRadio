@@ -40,12 +40,13 @@ class DLNAMusic:
         # Enable ReplayGain normalization.
         # Note: tous les MP3 ont été normalisés avec mp3gain (ReplayGain)
         self._instance = vlc.Instance(
-            '--quiet',
-            # '--audio-normalize',  # Enable ReplayGain
-            '--audio-replay-gain-mode=track'
+            '--aout', 'alsa',        # ALSA output
+            '--audio-replay-gain-mode', 'track',
             '--replaygain-mode', 'track',  # 'track' or 'album'
+            # '--audio-normalize',  # Enable ReplayGain
             # '--replaygain-preamp', '0',  # Pre-amplification in dB
             # '--audio-filter', 'normvol'  # Additional volume normalization
+            '--quiet'
         )
         # Création d'une instance VLC
         self.renderer = vlc.MediaPlayer()

@@ -13,10 +13,14 @@
 #     BPM           : The TBP frame is standard. If your NAS doesn't write this, it will return None.
 # ==================================================================
 
+import sys
 import requests
-from mutagen.id3 import ID3
 from typing import Tuple, Optional
 from lib.vr_logger import get_logger
+try:
+    from mutagen.id3 import ID3
+except ImportError:
+    sys.exit("python-mutagen not found – install with: sudo apt install python3-mutagen")
 
 log = get_logger(__name__)
 

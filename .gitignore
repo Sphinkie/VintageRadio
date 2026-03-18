@@ -4,13 +4,16 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.dll
+*.bkp
 
+# Test files and folders
+lib/data/
+*.db
 
 # Distribution / packaging
 .Python
 build/
 dist/
-lib/data/
 downloads/
 
 

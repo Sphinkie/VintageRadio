@@ -17,7 +17,8 @@ log = get_logger(__name__)
 
 
 # ----------------------------------------------------------------------- #
-# Cette classe coordonne la gestion de la base de données et du serveur DLNA.
+# Cette classe de haut niveau coordonne la gestion de la base de données
+# et du serveur DLNA.
 # ----------------------------------------------------------------------- #
 class VREngine:
 
@@ -26,7 +27,7 @@ class VREngine:
     # --------------------------------------------------------------------- #
     def __init__(self):
         """ Constructor. """
-        self.db_w = DBWrapper("./data/mp3_metadata.db")
+        self.db_w = DBWrapper("./data/music_metadata.db")
         self.net_wrapper = DLNAWrapper()
         display = Display('tty')
         display.show("VINTAGE RADIO")

@@ -22,7 +22,6 @@ def on_key_press(action):
         log.warning("QUIT command received")
     elif action == 'NEXT':
         log.info("PLAY NEXT command received")
-        # Trigger your skip logic here
         # La musique suivante va commencer automatiquement.
         musics.stop()
     elif action == 'AGAIN':
@@ -173,7 +172,6 @@ if __name__ == "__main__":
     # ---------------------------------------------------------
     # Initialisations des objets
     # ---------------------------------------------------------
-    # wrapper = DLNAWrapper()
     engine = VREngine()
     musics = DLNAMusic()
     user_request = UserRequest()

@@ -50,9 +50,7 @@ class DBWrapper:
         """
         Retourne une liste d'URLs filtrée par plage de dates avec ordre circulaire.
         Args :
-            target_date : Date de départ (ex : 1964)
-            range_start : Année de début de plage (ex : 1960)
-            range_end : Année de fin de plage (ex : 1969)
+            year : Date de départ (ex : 1964)
         Returns :
             Liste d'URLs triées selon l'ordre circulaire
         """

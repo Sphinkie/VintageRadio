@@ -1,0 +1,245 @@
+-- ----------------------------------------
+-- Exemple de Log quand ça fonctionne bien: 
+-- VintageRadio en Daemon et Sortie Audio sur enceinte bluetooth JLB.
+-- ----------------------------------------
+
+mars 21 13:24:58 Raspberry systemd[1]: Started vintageradio.service - VintageRadio - DLNA Music Player.
+mars 21 13:24:59 Raspberry python3[2832]: 2026-03-21 13:24:59,721 DEBUG lib.vr_database: self.db_path ./data/music_metadata.db
+mars 21 13:24:59 Raspberry python3[2832]: 2026-03-21 13:24:59,723 INFO lib.vr_database: Base de données initialisée: ./data/music_metadata.db
+
+mars 21 13:24:59 Raspberry python3[2832]: [00000000078d8af0] main libvlc debug: VLC media player - 3.0.23 Vetinari
+mars 21 13:24:59 Raspberry python3[2832]: [00000000078d8af0] main libvlc debug: Copyright © 1996-2025 the VideoLAN team
+mars 21 13:24:59 Raspberry python3[2832]: [00000000078d8af0] main libvlc debug: revision 3.0.23-2-0-g79128878dd
+mars 21 13:24:59 Raspberry python3[2832]: [00000000078d8af0] main libvlc debug: configured with ./configure  '--build=aarch64-linux-gnu' '--prefix=/usr' '--includedir=${prefix}/include' '--mandir=${prefix}/share/man' '--infodir=${prefix}/share/info' '--sysconfdir=/etc' '--localstatedir=/var' '--disable-option-checking' '--disable-silent-rules' '--libdir=${prefix}/lib/aarch64-linux-gnu' '--runstatedir=/run' '--disable-maintainer-mode' '--disable-dependency-tracking' '--disable-debug' '--config-cache' '--disable-update-check' '--enable-fast-install' '--docdir=/usr/share/doc/vlc' '--with-binary-version=1:3.0.23-0+deb13u1+rpt1' '--enable-aa' '--enable-aribsub' '--enable-avahi' '--enable-bluray' '--enable-caca' '--enable-chromaprint' '--enable-chromecast' '--enable-dav1d' '--enable-dbus' '--enable-dvbpsi' '--enable-dvdnav' '--enable-faad' '--enable-flac' '--enable-fluidsynth' '--enable-freetype' '--enable-fribidi' '--enable-gles2' '--enable-gnutls' '--enable-harfbuzz' '--enable-jack' '--enable-kate' '--enable-libass' '--enable-libxml2' '--enable-lirc' '--enable-live555' '--enable-mad' '--enable-matroska' '--enable-mod' '--enable-mpc' '--enable-mpg123' '--enable-mtp' '--enable-ncurses' '--enable-notify' '--enable-ogg' '--enable-opus' '--enable-pulse' '--enable-qt' '--enable-realrtsp' '--enable-samplerate' '--enable-sftp' '--enable-shine' '--enable-shout' '--enable-skins2' '--enable-soxr' '--enable-spatialaudio' '--enable-speex' '--enable-srt' '--enable-svg' '--enable-svgdec' '--enable-taglib' '--enable-theora' '--enable-twolame' '--enable-upnp' '--enable-vnc' '--enable-vorbis' '--enable-x264' '--enable-x265' '--enable-zvbi' '--with-kde-solid=/usr/share/solid/actions/' '--disable-a52' '--disable-aom' '--disable-crystalhd' '--disable-d3d11va' '--disable-dca' '--disable-decklink' '--disable-directx' '--disable-dsm' '--disable-dxva2' '--disable-fdkaac' '--disable-fluidlite' '--disable-freerdp' '--disable-goom' '--disable-gst-decode' '--disable-libmpeg2' '--disable-libplacebo' '--disable-libtar' '--disable-macosx' '--disable-macosx-avfoundation' '--disable-macosx-qtkit' '--disable-mfx' '--disable-microdns' '--disable-omxil' '--disable-opencv' '--disable-oss' '--disable-projectm' '--disable-schroedinger' '--disable-sdl-image' '--disable-sndio' '--disable-sparkle' '--disable-telx' '--disable-vpx' '--disable-vsxu' '--disable-wasapi' '--enable-alsa' '--enable-dc1394' '--enable-dv1394' '--enable-linsys' '--enable-nfs' '--enable-udev' '--enable-v4l2' '--enable-wayland' '--enable-vcd' '--enable-smbclient' '--disable-mmx' '--disable-sse' '--disable-neon' '--disable-vdpau' '--disable-libva' '--disable-altivec' 'build_alias=aarch64-linux-gnu' 'CFLAGS=-g -O2 -Werror=implicit-function-declaration -ffile-prefix-map=/build/vlc-LbRKLF/vlc-3.0.23=. -fstack-protector-strong -fstack-clash-protection -Wformat -Werror=format-security -mbranch-protection=standard ' 'LDFLAGS=-Wl,-z,relro -Wl,-z,now' 'CPPFLAGS=-Wdate-time -D_FORTIFY_SOURCE=2' 'CXXFLAGS=-g -O2 -ffile-prefix-map=/build/vlc-LbRKLF/vlc-3.0.23=. -fstack-protector-strong -fstack-clash-protection -Wformat -Werror=format-security -mbranch-protection=standard ' 'OBJCFLAGS=-g -O2 -ffile-prefix-map=/build/vlc-LbRKLF/vlc-3.0.23=. -fstack-protector-strong -fstack-clash-protection -Wformat -Werror=format-security -mbranch-protection=standard'
+mars 21 13:24:59 Raspberry python3[2832]: [00000000078d8af0] main libvlc debug: searching plug-in modules
+mars 21 13:24:59 Raspberry python3[2832]: [00000000078d8af0] main libvlc debug: loading plugins cache file /usr/lib/aarch64-linux-gnu/vlc/plugins/plugins.dat
+mars 21 13:24:59 Raspberry python3[2832]: [00000000078d8af0] main libvlc debug: recursively browsing `/usr/lib/aarch64-linux-gnu/vlc/plugins'
+mars 21 13:24:59 Raspberry python3[2832]: [00000000078d8af0] main libvlc debug: plug-ins loaded: 503 modules
+mars 21 13:24:59 Raspberry python3[2832]: [000000000776e310] main logger debug: looking for logger module matching "any": 4 candidates
+mars 21 13:24:59 Raspberry python3[2832]: [000000000776e310] main logger debug: using logger module "console"
+mars 21 13:24:59 Raspberry python3[2832]: [00000000078d8af0] main libvlc debug: translation test: code is "C"
+mars 21 13:24:59 Raspberry python3[2832]: [0000000007dc8380] main keystore debug: looking for keystore module matching "memory": 4 candidates
+mars 21 13:24:59 Raspberry python3[2832]: [0000000007dc8380] main keystore debug: using keystore module "memory"
+mars 21 13:24:59 Raspberry python3[2832]: [00000000078d8af0] main libvlc debug: CPU has capabilities FPU
+mars 21 13:24:59 Raspberry python3[2832]: [0000000007dcdcb0] main playlist debug: creating audio output
+mars 21 13:24:59 Raspberry python3[2832]: [0000000007dc84b0] main audio output debug: looking for audio output module matching "pulse": 5 candidates
+mars 21 13:24:59 Raspberry python3[2832]: [0000000007dc84b0] vlcpulse audio output debug: using library version 17.0.0
+mars 21 13:24:59 Raspberry python3[2832]: [0000000007dc84b0] vlcpulse audio output debug:  (compiled with version 17.0.0, protocol 35)
+mars 21 13:24:59 Raspberry python3[2832]: [0000000007dc84b0] vlcpulse audio output debug: connected locally to unix:/run/user/1000/pulse/native as client #139
+mars 21 13:24:59 Raspberry python3[2832]: [0000000007dc84b0] vlcpulse audio output debug: using protocol 35, server protocol 35
+mars 21 13:24:59 Raspberry python3[2832]: [0000000007dc84b0] pulse audio output debug: adding sink 56: alsa_output.platform-3f00b840.mailbox.stereo-fallback (Audio interne Stereo)
+mars 21 13:24:59 Raspberry python3[2832]: [0000000007dc84b0] pulse audio output debug: adding sink 96: bluez_output.20_18_5B_06_45_B0.1 (JBL Flip 5)
+mars 21 13:24:59 Raspberry python3[2832]: [0000000007dc84b0] main audio output debug: using audio output module "pulse"
+mars 21 13:24:59 Raspberry python3[2832]: [0000000007dcdcb0] main playlist debug: keeping audio output
+mars 21 13:24:59 Raspberry python3[2832]: [0000007fa4000c40] main input debug: Creating an input for preparsing 'vlc'
+mars 21 13:24:59 Raspberry python3[2832]: [0000000007df1d30] main generic debug: creating audio output
+mars 21 13:24:59 Raspberry python3[2832]: [0000000007f0eeb0] main audio output debug: looking for audio output module matching "pulse": 5 candidates
+mars 21 13:24:59 Raspberry python3[2832]: [0000000007f0eeb0] vlcpulse audio output debug: using library version 17.0.0
+mars 21 13:24:59 Raspberry python3[2832]: [0000000007f0eeb0] vlcpulse audio output debug:  (compiled with version 17.0.0, protocol 35)
+mars 21 13:24:59 Raspberry python3[2832]: [0000007f90000c40] main meta fetcher debug: looking for meta fetcher module matching "any": 1 candidates
+mars 21 13:24:59 Raspberry python3[2832]: [0000007f90000c40] lua meta fetcher debug: Trying Lua scripts in /home/pi/.local/share/vlc/lua/meta/fetcher
+mars 21 13:24:59 Raspberry python3[2832]: [0000007f90000c40] lua meta fetcher debug: Trying Lua scripts in /usr/lib/aarch64-linux-gnu/vlc/lua/meta/fetcher
+mars 21 13:24:59 Raspberry python3[2832]: [0000007f90000c40] lua meta fetcher debug: Trying Lua scripts in /usr/share/vlc/lua/meta/fetcher
+mars 21 13:24:59 Raspberry python3[2832]: [0000007f90000c40] main meta fetcher debug: no meta fetcher modules matched
+mars 21 13:24:59 Raspberry python3[2832]: [0000007f90000c40] main art finder debug: looking for art finder module matching "any": 2 candidates
+mars 21 13:24:59 Raspberry python3[2832]: [0000007f90000c40] lua art finder debug: Trying Lua scripts in /home/pi/.local/share/vlc/lua/meta/art
+mars 21 13:24:59 Raspberry python3[2832]: [0000007f90000c40] lua art finder debug: Trying Lua scripts in /usr/lib/aarch64-linux-gnu/vlc/lua/meta/art
+mars 21 13:24:59 Raspberry python3[2832]: [0000007f90000c40] lua art finder debug: Trying Lua playlist script /usr/lib/aarch64-linux-gnu/vlc/lua/meta/art/00_musicbrainz.luac
+mars 21 13:24:59 Raspberry python3[2832]: [0000007f90000c40] lua art finder debug: skipping script (unmatched scope) /usr/lib/aarch64-linux-gnu/vlc/lua/meta/art/00_musicbrainz.luac
+mars 21 13:24:59 Raspberry python3[2832]: [0000007f90000c40] lua art finder debug: Trying Lua playlist script /usr/lib/aarch64-linux-gnu/vlc/lua/meta/art/01_googleimage.luac
+mars 21 13:24:59 Raspberry python3[2832]: [0000007f90000c40] lua art finder debug: skipping script (unmatched scope) /usr/lib/aarch64-linux-gnu/vlc/lua/meta/art/01_googleimage.luac
+mars 21 13:24:59 Raspberry python3[2832]: [0000007f90000c40] lua art finder debug: Trying Lua playlist script /usr/lib/aarch64-linux-gnu/vlc/lua/meta/art/02_frenchtv.luac
+mars 21 13:24:59 Raspberry python3[2832]: [0000007f90000c40] lua art finder debug: skipping script (unmatched scope) /usr/lib/aarch64-linux-gnu/vlc/lua/meta/art/02_frenchtv.luac
+mars 21 13:24:59 Raspberry python3[2832]: [0000007f90000c40] lua art finder debug: Trying Lua playlist script /usr/lib/aarch64-linux-gnu/vlc/lua/meta/art/03_lastfm.luac
+mars 21 13:24:59 Raspberry python3[2832]: [0000007f90000c40] lua art finder debug: skipping script (unmatched scope) /usr/lib/aarch64-linux-gnu/vlc/lua/meta/art/03_lastfm.luac
+mars 21 13:24:59 Raspberry python3[2832]: [0000007f90000c40] lua art finder debug: Trying Lua scripts in /usr/share/vlc/lua/meta/art
+mars 21 13:24:59 Raspberry python3[2832]: [0000007f90000c40] main art finder debug: no art finder modules matched
+mars 21 13:24:59 Raspberry python3[2832]: [0000000007f0eeb0] vlcpulse audio output debug: connected locally to unix:/run/user/1000/pulse/native as client #140
+mars 21 13:24:59 Raspberry python3[2832]: [0000000007f0eeb0] vlcpulse audio output debug: using protocol 35, server protocol 35
+mars 21 13:24:59 Raspberry python3[2832]: [0000000007f0eeb0] pulse audio output debug: adding sink 56: alsa_output.platform-3f00b840.mailbox.stereo-fallback (Audio interne Stereo)
+mars 21 13:24:59 Raspberry python3[2832]: [0000000007f0eeb0] pulse audio output debug: adding sink 96: bluez_output.20_18_5B_06_45_B0.1 (JBL Flip 5)
+mars 21 13:24:59 Raspberry python3[2832]: [0000000007f0eeb0] main audio output debug: using audio output module "pulse"
+mars 21 13:24:59 Raspberry python3[2832]: [0000000007df1d30] main generic debug: keeping audio output
+
+mars 21 13:24:59 Raspberry python3[2832]: --------------
+mars 21 13:24:59 Raspberry python3[2832]: VINTAGE RADIO
+mars 21 13:24:59 Raspberry python3[2832]: 2026-03-21 13:24:59,811 DEBUG asyncio: Using selector: EpollSelector
+mars 21 13:24:59 Raspberry python3[2832]: 2026-03-21 13:24:59,813 INFO __main__: Start Setup
+mars 21 13:24:59 Raspberry python3[2832]: 2026-03-21 13:24:59,815 INFO lib.vr_engine: preferred server url: http://192.168.0.101:50001/desc/device.xml
+mars 21 13:24:59 Raspberry python3[2832]: 2026-03-21 13:24:59,816 DEBUG lib.vr_engine: Trying previously saved server: http://192.168.0.101:50001/desc/device.xml
+mars 21 13:24:59 Raspberry python3[2832]: 2026-03-21 13:24:59,936 INFO lib.vr_engine: Saved server is reachable.
+mars 21 13:24:59 Raspberry python3[2832]: 2026-03-21 13:24:59,936 INFO lib.vr_engine: Using ContentDirectory control URL: http://192.168.0.101:50001/ContentDirectory/control
+mars 21 13:25:00 Raspberry python3[2832]: 2026-03-21 13:25:00,033 DEBUG lib.vr_engine: Scanning DLNA server for all MP3s...
+mars 21 13:25:00 Raspberry python3[2832]: 2026-03-21 13:25:00,033 INFO lib.dlna_network_wrapper: Recherche du container 'All Music'...
+mars 21 13:25:00 Raspberry python3[2832]: 2026-03-21 13:25:00,136 INFO lib.dlna_network_wrapper: Container 'All Music' found with id 23.
+mars 21 13:25:01 Raspberry python3[2832]: 2026-03-21 13:25:01,881 DEBUG lib.dlna_network_wrapper: Extrait 1468 pistes MP3 du container DIDL
+mars 21 13:25:02 Raspberry python3[2832]: 2026-03-21 13:25:02,064 INFO lib.vr_database: 1468 pistes stockées dans la base de données
+mars 21 13:25:02 Raspberry python3[2832]: 2026-03-21 13:25:02,064 INFO lib.vr_engine: Scan terminé: 1468 pistes trouvées
+mars 21 13:25:02 Raspberry python3[2832]: 2026-03-21 13:25:02,070 DEBUG lib.user_keyboard: Start keyboard listening thread
+mars 21 13:25:02 Raspberry python3[2832]: 2026-03-21 13:25:02,071 WARNING lib.user_keyboard: No controlling terminal – keyboard input disabled (daemon mode)
+mars 21 13:25:02 Raspberry python3[2832]: 2026-03-21 13:25:02,071 INFO __main__: End Setup
+mars 21 13:25:02 Raspberry python3[2832]: 2026-03-21 13:25:02,072 DEBUG __main__: Start Loop
+mars 21 13:25:02 Raspberry python3[2832]: 2026-03-21 13:25:02,072 INFO __main__: User request change detected
+mars 21 13:25:02 Raspberry python3[2832]: 2026-03-21 13:25:02,072 INFO __main__: Current request is by 'genre'
+mars 21 13:25:02 Raspberry python3[2832]: 2026-03-21 13:25:02,072 INFO __main__: Requested genre is 'Country'
+mars 21 13:25:02 Raspberry python3[2832]: 2026-03-21 13:25:02,074 INFO lib.dlna_music: Shuffle playlist
+mars 21 13:25:02 Raspberry python3[2832]: 2026-03-21 13:25:02,074 DEBUG __main__: Start playing a new file
+mars 21 13:25:02 Raspberry python3[2832]: 2026-03-21 13:25:02,075 DEBUG lib.dlna_music: [Start playing 0
+
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Creating an input for '3480.mp3'
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: using timeshift granularity of 50 MiB
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: using default timeshift path
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: `http://192.168.0.101:50002/m/MP3/3480.mp3' gives access `http' demux `any' path `192.168.0.101:50002/m/MP3/3480.mp3'
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa80065c0] main input source debug: creating demux: access='http' demux='any' location='192.168.0.101:50002/m/MP3/3480.mp3' file='(null)'
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa8006770] main demux debug: looking for access_demux module matching "http": 19 candidates
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa8006770] main demux debug: no access_demux modules matched
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa8007a90] main stream debug: creating access: http://192.168.0.101:50002/m/MP3/3480.mp3
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa8007a90] main stream debug: looking for access module matching "http": 30 candidates
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa8007a90] http stream debug: resolving 192.168.0.101 ...
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa8007a90] http stream debug: outgoing request:
+mars 21 13:25:02 Raspberry python3[2832]: GET /m/MP3/3480.mp3 HTTP/1.1
+mars 21 13:25:02 Raspberry python3[2832]: Host: 192.168.0.101:50002
+mars 21 13:25:02 Raspberry python3[2832]: Accept: */*
+mars 21 13:25:02 Raspberry python3[2832]: Accept-Language: en_US
+mars 21 13:25:02 Raspberry python3[2832]: User-Agent: VLC/3.0.23 LibVLC/3.0.23
+mars 21 13:25:02 Raspberry python3[2832]: Range: bytes=0-
+mars 21 13:25:02 Raspberry python3[2832]:
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa8007a90] http stream debug: incoming response:
+mars 21 13:25:02 Raspberry python3[2832]: HTTP/1.1 206 Partial Content
+mars 21 13:25:02 Raspberry python3[2832]: transferMode.dlna.org: Streaming
+mars 21 13:25:02 Raspberry python3[2832]: Content-Type: audio/mpeg
+mars 21 13:25:02 Raspberry python3[2832]: Last-Modified: Sat, 14 Mar 2026 20:26:44 GMT
+mars 21 13:25:02 Raspberry python3[2832]: Content-Length: 3030431
+mars 21 13:25:02 Raspberry python3[2832]: Accept-Ranges: bytes
+mars 21 13:25:02 Raspberry python3[2832]: Content-Range: bytes 0-3030430/3030431
+mars 21 13:25:02 Raspberry python3[2832]: Date: Sat, 21 Mar 2026 12:25:01 GMT
+mars 21 13:25:02 Raspberry python3[2832]: Server: lighttpd/1.4.76
+mars 21 13:25:02 Raspberry python3[2832]:
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa8007a90] main stream debug: using access module "access"
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa800b560] main stream debug: looking for stream_filter module matching "prefetch,cache_block": 26 candidates
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa800b560] prefetch stream debug: using 3030431 bytes buffer, 3030431 bytes read
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa800b560] main stream debug: using stream_filter module "prefetch"
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82f0590] main stream debug: looking for stream_filter module matching "any": 26 candidates
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa800b560] skiptags stream debug: ID3v2.3 revision 0 tag found, skipping 57155 bytes
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82f0590] main stream debug: using stream_filter module "skiptags"
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82f0590] main stream debug: stream filter added to 0x7fa800b560
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] main stream debug: looking for stream_filter module matching "any": 26 candidates
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] lua stream debug: Trying Lua scripts in /home/pi/.local/share/vlc/lua/playlist
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] lua stream debug: Trying Lua scripts in /usr/lib/aarch64-linux-gnu/vlc/lua/playlist
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] lua stream debug: Trying Lua playlist script /usr/lib/aarch64-linux-gnu/vlc/lua/playlist/anevia_streams.luac
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] lua stream debug: Trying Lua playlist script /usr/lib/aarch64-linux-gnu/vlc/lua/playlist/anevia_xml.luac
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] lua stream debug: Trying Lua playlist script /usr/lib/aarch64-linux-gnu/vlc/lua/playlist/appletrailers.luac
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] lua stream debug: Trying Lua playlist script /usr/lib/aarch64-linux-gnu/vlc/lua/playlist/bbc_co_uk.luac
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] lua stream debug: Trying Lua playlist script /usr/lib/aarch64-linux-gnu/vlc/lua/playlist/cue.luac
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] lua stream debug: Trying Lua playlist script /usr/lib/aarch64-linux-gnu/vlc/lua/playlist/dailymotion.luac
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] lua stream debug: Trying Lua playlist script /usr/lib/aarch64-linux-gnu/vlc/lua/playlist/jamendo.luac
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] lua stream debug: Trying Lua playlist script /usr/lib/aarch64-linux-gnu/vlc/lua/playlist/koreus.luac
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] lua stream debug: Trying Lua playlist script /usr/lib/aarch64-linux-gnu/vlc/lua/playlist/liveleak.luac
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] lua stream debug: Trying Lua playlist script /usr/lib/aarch64-linux-gnu/vlc/lua/playlist/newgrounds.luac
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] lua stream debug: Trying Lua playlist script /usr/lib/aarch64-linux-gnu/vlc/lua/playlist/rockbox_fm_presets.luac
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] lua stream debug: Trying Lua playlist script /usr/lib/aarch64-linux-gnu/vlc/lua/playlist/soundcloud.luac
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] lua stream debug: Trying Lua playlist script /usr/lib/aarch64-linux-gnu/vlc/lua/playlist/twitch.luac
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] lua stream debug: Trying Lua playlist script /usr/lib/aarch64-linux-gnu/vlc/lua/playlist/vimeo.luac
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] lua stream debug: Trying Lua playlist script /usr/lib/aarch64-linux-gnu/vlc/lua/playlist/vocaroo.luac
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] lua stream debug: Trying Lua playlist script /usr/lib/aarch64-linux-gnu/vlc/lua/playlist/youtube.luac
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] lua stream debug: Trying Lua scripts in /usr/share/vlc/lua/playlist
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] main stream debug: no stream_filter modules matched
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa830bef0] main stream_directory debug: looking for stream_directory module matching "any": 1 candidates
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa830bef0] main stream_directory debug: no stream_directory modules matched
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa80065c0] main input source debug: attachment of directory-extractor failed for http://192.168.0.101:50002/m/MP3/3480.mp3
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] main stream debug: looking for stream_filter module matching "record": 26 candidates
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa82ffbe0] main stream debug: using stream_filter module "record"
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa80065c0] main input source debug: creating demux: access='http' demux='mp3' location='192.168.0.101:50002/m/MP3/3480.mp3' file='(null)'
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa8006770] main demux debug: looking for demux module matching "mp3": 56 candidates
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa8006770] es demux debug: detected format mpga
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa830de50] main demux packetizer debug: looking for packetizer module matching "any": 25 candidates
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa830de50] main demux packetizer debug: using packetizer module "mpegaudio"
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa830de50] mpegaudio demux packetizer debug: MPGA channels:2 samplerate:44100 bitrate:192
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: selecting program id=0
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa8006770] main demux debug: using demux module "es"
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa8313a60] main decoder debug: looking for audio decoder module matching "any": 18 candidates
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa8313a60] mpg123 decoder debug: mpga->f32l, bits per sample: 32
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa8313a60] main decoder debug: using audio decoder module "mpg123"
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa836aaf0] main demux meta debug: looking for meta reader module matching "any": 2 candidates
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa836aaf0] lua demux meta debug: Trying Lua scripts in /home/pi/.local/share/vlc/lua/meta/reader
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa836aaf0] lua demux meta debug: Trying Lua scripts in /usr/lib/aarch64-linux-gnu/vlc/lua/meta/reader
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa836aaf0] lua demux meta debug: Trying Lua playlist script /usr/lib/aarch64-linux-gnu/vlc/lua/meta/reader/filename.luac
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa836aaf0] lua demux meta debug: Trying Lua scripts in /usr/share/vlc/lua/meta/reader
+mars 21 13:25:02 Raspberry python3[2832]: [0000007fa836aaf0] main demux meta debug: no meta reader modules matched
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: `http://192.168.0.101:50002/m/MP3/3480.mp3' successfully opened
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 0%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 2%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 5%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 7%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 10%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 13%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 15%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 18%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 20%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 23%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 26%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 28%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 31%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 33%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007df1d30] main generic debug: reusing audio output
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 36%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 39%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f0eeb0] pulse audio output debug: using stereo channel map
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 41%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 44%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 47%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 49%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 52%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 54%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 57%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 60%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 62%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 65%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 67%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 70%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 73%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 75%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 78%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 80%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 83%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 86%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 88%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 91%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 94%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 96%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Buffering 99%
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Stream buffering done (1018 ms in 9 ms)
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f0eeb0] pulse audio output debug: changed buffer metrics: maxlength=4194304, tlength=42336, prebuf=0, minreq=14112
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f0eeb0] pulse audio output debug: connected to sink bluez_output.20_18_5B_06_45_B0.1
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f0eeb0] main audio output debug: output 'f32l' 44100 Hz Stereo frame=1 samples/8 bytes
+mars 21 13:25:02 Raspberry python3[2832]: [0000007f90001c40] main volume debug: looking for audio volume module matching "any": 2 candidates
+mars 21 13:25:02 Raspberry python3[2832]: [0000007f90001c40] main volume debug: using audio volume module "float_mixer"
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f0eeb0] main audio output debug: input 'f32l' 44100 Hz Stereo frame=1 samples/8 bytes
+mars 21 13:25:02 Raspberry python3[2832]: [0000007f90006b70] main audio filter debug: looking for audio filter module matching "scaletempo": 16 candidates
+mars 21 13:25:02 Raspberry python3[2832]: [0000007f90006b70] scaletempo audio filter debug: format: 44100 rate, 2 nch, 4 bps, fl32
+mars 21 13:25:02 Raspberry python3[2832]: [0000007f90006b70] scaletempo audio filter debug: params: 30 stride, 0.200 overlap, 14 search
+mars 21 13:25:02 Raspberry python3[2832]: [0000007f90006b70] scaletempo audio filter debug: 1.000 scale, 1323.000 stride_in, 1323 stride_out, 1059 standing, 264 overlap, 617 search, 2204 queue, fl32 mode
+mars 21 13:25:02 Raspberry python3[2832]: [0000007f90006b70] main audio filter debug: using audio filter module "scaletempo"
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f0eeb0] main audio output debug: conversion: 'f32l'->'f32l' 44100 Hz->44100 Hz Stereo->Stereo
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f0eeb0] main audio output debug: conversion pipeline complete
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f0eeb0] main audio output debug: conversion: 'f32l'->'f32l' 44100 Hz->44100 Hz Stereo->Stereo
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f0eeb0] main audio output debug: conversion pipeline complete
+mars 21 13:25:02 Raspberry python3[2832]: [0000007f9000dd10] main audio resampler debug: looking for audio resampler module matching "any": 4 candidates
+mars 21 13:25:02 Raspberry python3[2832]: [0000007f9000dd10] main audio resampler debug: using audio resampler module "samplerate"
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f2c690] main input debug: Decoder wait done in 97 ms
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f0eeb0] pulse audio output debug: cannot synchronize start
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f0eeb0] pulse audio output debug: deferring start (61453 us)
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f0eeb0] pulse audio output debug: deferring start (56836 us)
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f0eeb0] pulse audio output debug: deferring start (56744 us)
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f0eeb0] pulse audio output debug: deferring start (28050 us)
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f0eeb0] pulse audio output warning: starting late (-684 us)
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f0eeb0] main audio output warning: playback too early (-50192): down-sampling
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f0eeb0] pulse audio output debug: changing sink 96: bluez_output.20_18_5B_06_45_B0.1 (JBL Flip 5)
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007dc84b0] pulse audio output debug: changing sink 96: bluez_output.20_18_5B_06_45_B0.1 (JBL Flip 5)
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f0eeb0] pulse audio output debug: started
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f0eeb0] main audio output debug: resampling stopped (drift: -7876 us)
+mars 21 13:25:02 Raspberry python3[2832]: [0000000007f0eeb0] main audio output warning: playback too late (89876): up-sampling
+mars 21 13:25:04 Raspberry python3[2832]: 2026-03-21 13:25:04,080 DEBUG lib.vr_database_wrapper: get clip info from db for item id: 3480
+mars 21 13:25:05 Raspberry python3[2832]: [0000007fa800b560] prefetch stream debug: end of stream
+mars 21 13:25:14 Raspberry python3[2832]: [0000000007f0eeb0] pulse audio output debug: changing sink 96: bluez_output.20_18_5B_06_45_B0.1 (JBL Flip 5)
+mars 21 13:25:14 Raspberry python3[2832]: [0000000007dc84b0] pulse audio output debug: changing sink 96: bluez_output.20_18_5B_06_45_B0.1 (JBL Flip 5)

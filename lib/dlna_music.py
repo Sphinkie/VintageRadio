@@ -39,21 +39,16 @@ class DLNAMusic:
         self.current_pos = 0
         # Enable ReplayGain normalization.
         # Note: tous les MP3 ont été normalisés avec mp3gain (ReplayGain)
-
         # Création d'une instance VLC
         self._instance = vlc.Instance(
             '--quiet',
-            # '--no-x11',  #  vlc: unknown option
-            '--no-video',
-            '--aout', 'alsa',        # ALSA output
-            '--audio-replay-gain-mode', 'track',
-            # '--replaygain-mode', 'track'  # vlc: unknown option
-            # '--audio-normalize',  # Enable ReplayGain
-            # '--replaygain-preamp', '0',  # Pre-amplification in dB
-            # '--audio-filter', 'normvol'  # Additional volume normalization
+            #'--verbose', '2',
+            '--aout', 'pulse',                   # Audio output module
+            '--audio-replay-gain-mode', 'track', # Mode ReplayGain
+            '--audio-replay-gain-preamp', '0',   # Replay Mode ReplayGain in dB
+            '--no-video'
         )
         self.renderer = self._instance.media_player_new()
-        # self.renderer = vlc.MediaPlayer()
         # On ajoute un handler pour le CTR-C
         self.install_signal_handler()
         # Seed avec des octets aléatoires du système
@@ -99,8 +94,7 @@ class DLNAMusic:
         """ Send a Play request for a single track to the renderer."""
         # Create a media player from the instance
         media = self._instance.media_new(track_url)
-        self.renderer.set_media(media)  # ← Link to existing renderer
-        #self.renderer = vlc.MediaPlayer(track_url)
+        self.renderer.set_media(media)  # Link to the existing renderer
         # Start playback (returns immediately)
         self.renderer.play()
 

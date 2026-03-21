@@ -1,5 +1,38 @@
 # Vintage Radio - Installation
 
+## Développement
+
+Développement en Python.
+
+- Sous Windows, utilisation de PyCharm
+- appliquer les modules `python vlc` et `mutagen` dans l'environnement virtuel.
+- Utilise la librairie Python `libvlc.dll`.
+- Ajouter la DLL de VLC au path
+   `setx Path "%Path%;C:\Program Files\VideoLAN\VLC"`
+
+
+
+
+## Première installation sur Raspberry Pi
+
+- Installation:
+```bash
+sudo apt update
+sudo apt install python3-pip python3-vlc 
+sudo apt install python3-mutagen
+sudo apt install pulseaudio pulseaudio-utils pavucontrol
+pip3 install -r requirements.txt   # (optional, if you add extra deps)
+git clone https://github.com/Sphinkie/VintageRadio
+...
+# update with:
+git pull
+...
+# run with
+cd Programmes/VintageRadio
+python VintageRadio.py
+```
+
+
 ## Démarrage automatique Raspberry
 
 ### Installation
@@ -77,3 +110,15 @@ KillMode=mixed
 - **Logs** :	Utilisez `journalctl -u vintageradio.service` pour déboguer.
 - **Arrêt propre** :	Le service *systemd* gère le signal SIGTERM, mais votre code doit gérer SIGINT (CTRL-C).
 
+## Dossiers
+
+- `pulse/system.pa` : ce fichier permet en théorie au module Son **Alsa** d'utiliser la librairie **pulseAudio** et de trouver les périphériques blutooth. 
+   En pratique, on a configuré le module Son **PipeWire**, donc ce fichier ne sert pas.
+
+- `pipewire/pipewire.conf.d/99-default-sink.conf` : ce fichier permet en théorie à **pipewire** de retrouver l'enceinte blutooth JLB et de se connecter dessus. 
+   En pratique, ce fichier semble plutot poser problème, car quand il est présent, on ne peut plus se connecter à l'enceinte JLB.
+   De plus, il n'est pas vraiment utile, car on peut configurer **pipewire** de façon perenne, via la ligne de commande:
+   ```shell
+   
+   ```
+   

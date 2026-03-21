@@ -1,14 +1,15 @@
 [Unit]
 Description=VintageRadio - DLNA Music Player
-After=network.target
-Wants=network-online.target
+After=network.target sound.target pulseaudio.target
+Wants=network-online.target pulseaudio.service
 
 [Service]
 Type=simple
 User=pi
-Group=audio
-# IMPORTANT : Définissez HOME pour que ALSA trouve ses configs
+Group=pulse-access
+# IMPORTANT : Definition de HOME pour que ALSA trouve sa config.
 Environment=HOME=/home/pi
+Environment=PULSE_SERVER=unix:/tmp/pulse-socket
 
 WorkingDirectory=/home/pi/Programmes/VintageRadio
 ExecStart=/usr/bin/python3 /home/pi/Programmes/VintageRadio/VintageRadio.py
@@ -16,12 +17,6 @@ Restart=no
 RestartSec=10
 StandardOutput=journal
 StandardError=journal
-
-# Pour le développement seulement (décommenter si besoin)
-# StandardInput=tty
-# StandardOutput=tty
-# StandardError=tty
-# TTYPath=/dev/tty1
 
 [Install]
 WantedBy=multi-user.target

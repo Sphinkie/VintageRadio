@@ -119,6 +119,6 @@ KillMode=mixed
    En pratique, ce fichier semble plutot poser problème, car quand il est présent, on ne peut plus se connecter à l'enceinte JLB.
    De plus, il n'est pas vraiment utile, car on peut configurer **pipewire** de façon perenne, via la ligne de commande:
    ```shell
-   
+   $ pactl set-default-sink bluez_output.20_18_5B_06_45_B0.1
    ```
    

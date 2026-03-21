@@ -25,18 +25,17 @@ Ce package va agir sur tous les fichiers mp3, sans toucher au signal audio lui-m
 
 Cet utilitaire peut être lancé sous Linux, mais étant donné que le Synology ne permet pas l'ajout de packages addionnels (pas de `apt install mp3gain`), on va monter le disque du NAS sous Windows, et lancer l'utilitaire en ligne de commande MS-DOS.
 
-On l'exécute sur tous les sous-répertoires, un-par-un.
+On l'exécute sur le répertoire parent, il va traiter recursivement les sous-répertoires.
 ```dos
-cd M:\Music\Rock
-
+cd M:\Music
 F:\mp3gain\mp3gain.exe /r /p /c *.mp3
 ```
 
-- option -r : Apply Track gain automatically (all files set to equal loudness)
-- option -p : Preserve original file timestamp
-- option -c : Ignore clipping warning when applying gain
+- option `-r` : Apply Track gain automatically (all files set to equal loudness)
+- option `-p` : Preserve original file timestamp
+- option `-c` : Ignore clipping warning when applying gain
 ou  
-- option -s c : Only check stored tag info (no other processing)
+- option `-s c` : Only check stored tag info (no other processing)
 
 > TODO : le faire sur les nouveaux morceaux, au fur et à mesure des ajouts.
 
@@ -55,7 +54,7 @@ Utilisation de l'utilitaire FREEWARE [**MixMeister BMP Analyzer**](https://www.m
 - Attendre qu'il ait fini son analyse. 
 - Le tag **BPM** est alors automatiquement ajouté à chaque MP3 *(la date du fichier est modifiée)*.
 
-[screenshot](mixmeister.png)
+![screenshot](mixmeister.png)
 
 ## Méthode 2
 

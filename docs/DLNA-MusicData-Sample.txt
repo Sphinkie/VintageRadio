@@ -11,10 +11,8 @@ creator     = Johnny Cash
 genre       = Blues
 albumArtURI = "http://192.168.0.101:50002/transcoder/jpegtnscaler.cgi/ebdart/2913.jpg"
 
-
 author              = Willie Mae Thornton
 originalTrackNumber = 3
-
 size            = "4208621"
 bitrate         = "24000"
 duration        = "0:02:52.000"

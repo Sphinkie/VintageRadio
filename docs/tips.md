@@ -82,7 +82,11 @@ $ pactl list sinks
 $ bluetoothctl info
 ```
 
+
 ### Configurer PipeWire pour la connexion automatique à l'enceinte JLB
+
+Une fois que l'on a obtenu l'adreses MAC du périphérique Bluetooth, on peut le declarer auprès de **pipewire** pour qu'il puisse l'utilser comme sortie audio.
+
 
 ```shell
 # Assignation

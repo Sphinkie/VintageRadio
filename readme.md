@@ -8,13 +8,15 @@ A command-line python program for RaspberryPi that plays music served by a DLNA 
 
 Faire CTRL-C pour stopper
 
-
+En mode terminal: 
+- n = next song
+- b = play again the same song
+- d = redo a DLNA server discovery
+- q = quit
 
 ## Utilisation de Raspberry:
 
 - Apairer la sortie audio avec une enceinte bluetooth si souhaité.
-
-
 
    
    

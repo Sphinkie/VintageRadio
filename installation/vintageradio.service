@@ -6,7 +6,6 @@ Wants=network-online.target pulseaudio.service
 [Service]
 Type=simple
 User=pi
-Group=pulse-access
 # IMPORTANT : Definition de HOME pour que ALSA trouve sa config.
 Environment=HOME=/home/pi
 Environment=PULSE_SERVER=unix:/tmp/pulse-socket

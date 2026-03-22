@@ -28,7 +28,7 @@ log = get_logger(__name__)
 # ----------------------------------------------------------------------
 # Récupération de l'entête d'un fichier MP3
 # ----------------------------------------------------------------------
-def get_mp3_tags(url: str, max_bytes: int = 100000) -> Tuple[Optional[str], Optional[str]]:
+def get_mp3_tags(track_url: str, max_bytes: int = 100000) -> Tuple[Optional[str], Optional[str]]:
     """
     Fetches ID3v2 tags (BPM, Rating, Genre) from an MP3 file hosted on a DLNA server.
     Uses HTTP Range requests to fetch only the last ~100KB of the file where ID3v2 tags
@@ -37,26 +37,28 @@ def get_mp3_tags(url: str, max_bytes: int = 100000) -> Tuple[Optional[str], Opti
     Note that ID3v1 tags are located at the end of the file (not managed here).
     Documentation: https://mutagen.readthedocs.io/en/latest/index.html
     Ordre des tags: TIT2(titre) TPE2(artist) TALB(album) TCON(genre) APIC(picture) POPM(rating) TPE1(artist) TDRC(année)
+    A noter que le RATING est situé après le(s) picture(s), ce qui empêche de se limiter à un nombre
+    minimal d'octets à télécharger...
     Args:
-        url: The full URL to the MP3 file.
+        track_url: The full URL to the MP3 file.
         max_bytes: Maximum bytes to fetch (default 100KB).
         
     Returns:
         Tuple of (bpm, rating)
-        Returns (None, None) if tags are missing or fetch fails.
+        Returns (None, None) if tags are missing or if fetch fails.
     """
     try:
         # Try to get the head.
-        head_resp = requests.head(url, timeout=5)
+        head_resp = requests.head(track_url, timeout=5)
         # Try to get file size.
         file_size = int(head_resp.headers.get('content-length', 0))
         # Define the range of bytes to download.
         range_start = 0
         range_end = min(file_size - 1, max_bytes - 1) if file_size > 0 else max_bytes - 1
         headers = {'Range': f'bytes={range_start}-{range_end}'}
-        log.debug(f"Fetching tags from {url} (Range: {range_start}-{range_end})")
+        log.debug(f"Fetching tags from {track_url} (Range: {range_start}-{range_end})")
         # Let's fetch the first 100K bytes.
-        resp = requests.get(url, headers=headers, timeout=10, stream=True)
+        resp = requests.get(track_url, headers=headers, timeout=10, stream=True)
         # not 200 OK will raise an error.
         resp.raise_for_status()
 
@@ -71,14 +73,14 @@ def get_mp3_tags(url: str, max_bytes: int = 100000) -> Tuple[Optional[str], Opti
             # print(f"tags {tags}") # Full dump
         except Exception:
             # For simplicity, let's assume ID3v2 at start is standard for DLNA.
-            log.warning(f"No ID3 tags found in the first {max_bytes} bytes of {url}")
+            log.warning(f"No ID3 tags found in the first {max_bytes} bytes of {track_url}")
             return None, None
 
         # 3. Extract specific fields
         # BPM is usually TBPM (Beats Per Minute)
         bpm_frame = tags.get('TBPM')
         log.debug(f"bpm_frame: {bpm_frame}")
-        bpm = bpm_frame.text[0] if (bpm_frame and bpm_frame.text) else None
+        track_bpm = bpm_frame.text[0] if (bpm_frame and bpm_frame.text) else None
 
         # Rating is tricky. It's often stored in:
         # - COMM (User Defined Text Information) with description "Rating"
@@ -116,13 +118,13 @@ def get_mp3_tags(url: str, max_bytes: int = 100000) -> Tuple[Optional[str], Opti
         genre = genre_frame.genres[0]
         print(f"genre {genre}")
 
-        return bpm, mp3_rating
+        return track_bpm, mp3_rating
 
     except requests.exceptions.RequestException as e:
-        log.error(f"Failed to fetch tags from {url}: {e}")
+        log.error(f"Failed to fetch tags from {track_url}: {e}")
         return None, None
     except Exception as e:
-        log.error(f"Error parsing tags from {url}: {e}")
+        log.error(f"Error parsing tags from {track_url}: {e}")
         return None, None
 
 

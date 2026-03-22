@@ -82,14 +82,14 @@ class DBWrapper:
     # --------------------------------------------------------------------- #
     # Met à jour le rating d'une piste.
     # --------------------------------------------------------------------- #
-    def update_track_rating(self, url: str, rating: int):
-        self.db.update_track(url, "rating", rating)
+    def update_track_rating(self, tags: dict):
+        self.db.update_track(tags['url'], "rating", tags['rating'])
 
     # --------------------------------------------------------------------- #
     # Met à jour le BPM (Beat Per Minute) d'une piste.
     # --------------------------------------------------------------------- #
-    def update_track_bpm(self, url: str, bpm: int):
-        self.db.update_track(url, "bmp", bpm)
+    def update_track_bpm(self, tags: dict):
+        self.db.update_track(tags['url'], "bmp", tags['bpm'])
 
     # --------------------------------------------------------------------- #
     # Retourne des infos sur le clip demandé, en les cherchant dans la

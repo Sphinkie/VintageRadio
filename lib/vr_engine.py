@@ -33,7 +33,7 @@ class VREngine:
         display.show("VINTAGE RADIO")
 
     # --------------------------------------------------------------------- #
-    # Nettoyer la base de données à la fermeture
+    # Fermer la base de données à la fermeture de l'application.
     # --------------------------------------------------------------------- #
     def close(self):
         """Ferme les ressources (base de données)."""
@@ -120,6 +120,11 @@ class VREngine:
     # Attend 2 secondes et affiche les infos du clip.
     # --------------------------------------------------------------------- #
     async def show_clip_info(self, track_id: str):
+        """
+        Attend 2 secondes et affiche les infos du clip.
+        Args :
+            track_id : l'identifiant du clip dont on veut afficher les informations détaillées.
+        """
         await asyncio.sleep(2)
         # info = self.net_wrapper.get_clip_info(track_id)
         info = self.db_w.get_track_info(track_id)
@@ -127,3 +132,27 @@ class VREngine:
             title, artist, year, genre = info
             # NOW PLAYING :
             Display.show(title.upper(), f"by {artist}", f"({year})", genre)
+
+    # --------------------------------------------------------------------- #
+    # Récupération du BPM et du RATING du clip.
+    # --------------------------------------------------------------------- #
+    async def get_additional_data(self, track_id: str):
+        """
+        Récupération d'informations complémentaires sur le clip : BEAT et RATING.
+        Ces informations ne sont pas remontées par le DLNA.
+        Args :
+            track_id : l'identifiant du clip dont on veut les informations.
+        """
+        # TODO : On boucle sur tous les clips (par ID ou par URL ?)
+        # get clip URL
+        track_url = "http://192.168.0.101:50002/m/MP3/3532.mp3"
+        # get tags
+        tags = self.net_wrapper.get_track_details(track_url)
+        # Enregistre les tags dans la base
+        self.db_w.update_track_bpm(tags)
+        self.db_w.update_track_rating(tags)
+        # wait
+        await asyncio.sleep(0.5) # 500ms
+
+
+

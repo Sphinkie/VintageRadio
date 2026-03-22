@@ -99,16 +99,6 @@ class DLNAMusic:
         self.renderer.play()
 
     # --------------------------------------------------------------------- #
-    # Retourne True si un fichier est Ended, False si le fichier est playing.
-    # --------------------------------------------------------------------- #
-    def is_stopped(self) -> bool:
-        """ returns False if a file is playing."""
-        # log.debug(self.renderer.get_state())
-        ended = (self.renderer.get_state() == vlc.State.Ended)
-        stopped = (self.renderer.get_state() == vlc.State.Stopped)
-        return ended or stopped
-
-    # --------------------------------------------------------------------- #
     # Stoppe le fichier MP3 courant et attend un court délai.
     # --------------------------------------------------------------------- #
     def stop(self):
@@ -123,25 +113,14 @@ class DLNAMusic:
             time.sleep(delay_between)
 
     # --------------------------------------------------------------------- #
-    # Joue un fichier MP3 et attend la fin.
-    # Note: La fonction est bloquante : on y reste jusqu'à la fin du morceau.
+    # Retourne True si un fichier est Ended, False si le fichier est playing.
     # --------------------------------------------------------------------- #
-    def play_track(self, track_url):
-        """Send a Play request for a single track to the renderer."""
-        self.start_track(track_url)
-        # Wait until the track ends
-        while self.renderer.get_state() != vlc.State.Ended:
-            time.sleep(0.5)  # poll every half-second
-        # Give the renderer a moment to settle before the next URI
-        time.sleep(0.5)
-
-    # --------------------------------------------------------------------- #
-    # Play All files in DLNA order.
-    # --------------------------------------------------------------------- #
-    def play_all(self):
-        for url in self.tracks:
-            self.play_track(url)
-        return
+    def is_stopped(self) -> bool:
+        """ returns False if a file is playing."""
+        # log.debug(self.renderer.get_state())
+        ended = (self.renderer.get_state() == vlc.State.Ended)
+        stopped = (self.renderer.get_state() == vlc.State.Stopped)
+        return ended or stopped
 
     # ----------------------------------------------------------------------
     # Gestion de la randomization.
@@ -160,26 +139,43 @@ class DLNAMusic:
         self.current_pos = 0
 
     # ----------------------------------------------------------------------
-    # Play a track from the shuffled tracklist.
-    # Note: La fonction est bloquante: on y reste jusqu'à la fin du morceau.
+    # Clone la playlist, pour obtenir une playlist de travail.
     # ----------------------------------------------------------------------
-    def play_random(self):
-        """ Play all discovered MP3 tracks in a random sequence. """
-        uri = self.shuffled_tracklist[self.current_pos]
-        # Play the track
-        self.play_track(uri)
+    def clone_playlist(self):
+        """
+        Makes a shallow copy of ``self.tracks`` as it is the working playlist.
+        """
+        if not self.tracks:
+            raise RuntimeError("No tracks loaded – call discover_tracks() first.")
+        log.debug("Clone playlist")
+        self.shuffled_tracklist = self.tracks[:]  # shallow copy
+        self.current_pos = 0
+
+    # ----------------------------------------------------------------------
+    # Joue un fichier MP3 et attend la fin.
+    # Note: La fonction est bloquante : on y reste jusqu'à la fin du morceau.
+    # ----------------------------------------------------------------------
+    def play_sync(self):
+        """ Play an MP3 track of the shuffled playlist. """
+        track_url = self.shuffled_tracklist[self.current_pos]
+        # Send a Play request for a single track to the renderer.
+        self.start_track(track_url)
+        # Wait until the track ends
+        while self.renderer.get_state() != vlc.State.Ended:
+            time.sleep(0.5)  # poll every half-second
+        # Give the renderer a moment to settle before the next URI
+        time.sleep(0.5)
         self.current_pos += 1
 
     # --------------------------------------------------------------------- #
-    # Démarre une piste en mode asynchrone.
+    # Démarre la piste suivante de la playlist (en mode asynchrone).
     # --------------------------------------------------------------------- #
-    async def play_random_async(self):
+    async def play_async(self):
         if self.current_pos >= len(self.shuffled_tracklist):
-            self.shuffle_playlist()
             self.current_pos = 0
-        log.debug("[Start playing %d", self.current_pos)
         uri = self.shuffled_tracklist[self.current_pos]
         # Start the track
+        log.debug("[Start playing %d", self.current_pos)
         self.start_track(uri)
         self.current_pos += 1
 

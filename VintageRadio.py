@@ -105,11 +105,16 @@ async def loop():
                 # -------------------------------------------------------------
                 # List the MP3 files for the request, and send them to the Music object.
                 # -------------------------------------------------------------
-                log.info(f"Current request is by '{user_request.get('mode')}'")
-                log.info(f"Requested genre is '{user_request.get('genre')}'")
-                track_list = engine.get_track_from_db(user_request.get('mode'), user_request.get('genre'))
+                log.info(f"Current requested Mode is 'by {user_request.get('mode')}'")
+                log.info(f"Current Request is '{user_request.get('request')}'")
+                track_list = engine.get_tracklist_from_db(user_request.get('mode'), user_request.get('request'))
                 musics.load_playlist(track_list)
-                musics.shuffle_playlist()
+                # En cas de playlist par genre ou par rating, on la met dans un ordre aléatoire
+                # (chaque fois différent).
+                if user_request.get('mode') == 'genre' or user_request.get('mode') == 'rating':
+                    musics.shuffle_playlist()
+                else:
+                    musics.clone_playlist()
                 # musics.list_all()
                 # On acquitte la prise en compte du changement.
                 user_request.ack_has_changed()
@@ -119,7 +124,7 @@ async def loop():
             # -------------------------------------------------------------
             if lecture_task is None:
                 log.debug("Start playing a new file")
-                lecture_task = asyncio.create_task(musics.play_random_async())
+                lecture_task = asyncio.create_task(musics.play_async())
                 # On attend que la lecture ait démarré
                 await lecture_task
                 # On demande l'affichage du titre

@@ -100,12 +100,20 @@ class VREngine:
     # --------------------------------------------------------------------- #
     # Retourne la liste des tracks MP3 correspondant aux critères demandés.
     # --------------------------------------------------------------------- #
-    def get_track_from_db(self, mode: str, value: str) -> List[str]:
+    def get_tracklist_from_db(self, mode: str, value: str) -> List[str]:
         if mode == 'genre':
             return self.db_w.get_tracks_for_genre(value)
         if mode == 'year':
             return self.db_w.get_tracks_for_decade(int(value))
-        # TODO : A COMPLETER
+        if mode == 'rating':
+            # TODO : A COMPLETER
+            pass
+        if mode == 'alea':
+            # TODO : A COMPLETER
+            pass
+        if mode == 'bpm':
+            # TODO : A COMPLETER
+            pass
         return []
 
     # --------------------------------------------------------------------- #

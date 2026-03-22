@@ -130,13 +130,12 @@ class VRDatabase:
     ) -> List[str]:
         """
         Retourne une liste d'URLs basée sur une plage de dates avec comportement circulaire.
-        
-        Args:
-            target_year: Année de départ (format YYYY)
-            range_start: Début de la plage (format YYYY)
-            range_end: Fin de la plage (format YYYY)
+        Args :
+            target_year : Année de départ (format YYYY)
+            range_start : Début de la plage (format YYYY)
+            range_end : Fin de la plage (format YYYY)
             
-        Returns:
+        Returns :
             Liste d'URLs triées selon l'ordre circulaire demandé.
             
         Exemple
@@ -146,6 +145,7 @@ class VRDatabase:
             
             Ordre= 1963 → 1964 → ... → 1969 → 1960 → 1961 → 1962 → 1963
         """
+        log.debug(f" Cherche l'année {target_year} dans la plage {range_start}-{range_end}")
         cursor = self.conn.cursor()
 
         # Vérifier que l'année de départ est dans la plage
@@ -173,7 +173,7 @@ class VRDatabase:
 
         # Combiner les deux parties
         result = part1 + part2
-        log.debug(f"Retourné {len(result)} pistes pour la plage {range_start}-{range_end}, en partant de {target_year}")
+        log.debug(f"Retourne {len(result)} pistes pour la plage {range_start}-{range_end}, en partant de {target_year}")
         return result
 
     # --------------------------------------------------------------------- #

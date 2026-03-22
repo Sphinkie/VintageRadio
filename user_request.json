@@ -1,9 +1,11 @@
 {
-  "mode": "genre",
-  "genre0" : "Blues",
-  "genre" : "Country",
+  "mode": "year",
+  "mode1": "genre",
+  "genre" : "Blues",
+  "genre1" : "Country",
   "genre2" : "Jazz",
   "genre3" : "Classique",
   "genre4" : "Chanson",
-  "genre5" : "Cajun"
+  "genre5" : "Cajun",
+  "year": "1964"
 }

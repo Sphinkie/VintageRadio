@@ -54,6 +54,7 @@ class DBWrapper:
         Returns :
             Liste d'URLs triées selon l'ordre circulaire
         """
+        log.debug(f" Demande les clips de la décade {year}...")
         if year < 1700:
             return self.db.get_track_urls_by_date_range(year, 0, 1700)
         if year < 1800:

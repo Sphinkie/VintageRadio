@@ -157,7 +157,7 @@ class VRDatabase:
         part1_query = '''
             SELECT url FROM tracks 
             WHERE year >= ? AND year <= ?
-            ORDER BY year ASC, url ASC
+            ORDER BY year ASC, RANDOM();
         '''
         cursor.execute(part1_query, (target_year, range_end))
         part1 = [row['url'] for row in cursor.fetchall()]
@@ -166,7 +166,7 @@ class VRDatabase:
         part2_query = '''
             SELECT url FROM tracks 
             WHERE year >= ? AND year < ?
-            ORDER BY year ASC, url ASC
+            ORDER BY year ASC, RANDOM();
         '''
         cursor.execute(part2_query, (range_start, target_year))
         part2 = [row['url'] for row in cursor.fetchall()]
@@ -195,7 +195,7 @@ class VRDatabase:
     # --------------------------------------------------------------------- #
     def get_track_urls_by_genre(self, value: str) -> List[str]:
         """ ---------------------------------------------------------------------
-        Returns:
+        Returns :
             Une liste de tracks (url) correspondant au genre demandé.
         --------------------------------------------------------------------- """
         cursor = self.conn.cursor()

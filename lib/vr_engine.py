@@ -136,23 +136,36 @@ class VREngine:
     # --------------------------------------------------------------------- #
     # Récupération du BPM et du RATING du clip.
     # --------------------------------------------------------------------- #
-    async def get_additional_data(self, track_id: str):
+    async def repeat_get_data (self, period: float):
+        """
+        Periodic task: check if we miss a BPM.
+        Args:
+            period: attente avant recupération nouveau BPM. Typiquement 500ms.
+        """
+        unrythmed_track_list = self.db_w.get_unrythmed_tracks()
+        try:
+            for track_url in unrythmed_track_list:
+                # track_url = "http://192.168.0.101:50002/m/MP3/3532.mp3"
+                await asyncio.sleep(period)
+                print (f"get dat for {track_url}")
+                self.get_additional_data(track_url)
+        except asyncio.CancelledError:
+            log.warning("repeat_get_data task cancelled.")
+
+    # --------------------------------------------------------------------- #
+    # Récupération du BPM et du RATING du clip.
+    # --------------------------------------------------------------------- #
+    def get_additional_data(self, track_url: str):
         """
         Récupération d'informations complémentaires sur le clip : BEAT et RATING.
         Ces informations ne sont pas remontées par le DLNA.
         Args :
-            track_id : l'identifiant du clip dont on veut les informations.
+            track_url : url du clip dont on veut les informations.
         """
-        # TODO : On boucle sur tous les clips (par ID ou par URL ?)
-        # get clip URL
-        track_url = "http://192.168.0.101:50002/m/MP3/3532.mp3"
-        # get tags
         tags = self.net_wrapper.get_track_details(track_url)
         # Enregistre les tags dans la base
         self.db_w.update_track_bpm(tags)
         self.db_w.update_track_rating(tags)
-        # wait
-        await asyncio.sleep(0.5) # 500ms
 
 
 

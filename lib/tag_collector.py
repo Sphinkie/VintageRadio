@@ -10,7 +10,7 @@
 #     Performance   : Fetching 100KB is very fast (milliseconds on LAN). It does not download the whole song.
 #     Rating Format : The "5 stars" rating is often stored in the POPM frame as a byte (0-255). The code above converts this to a rough "X stars" string.
 #                     If your Synology NAS uses a different custom frame (e.g., XSOP), you may need to adjust the tags.get() call.
-#     BPM           : The TBP frame is standard. If your NAS doesn't write this, it will return None.
+#     BPM           : The TBP frame is standard.
 # ==================================================================
 
 import sys
@@ -28,7 +28,7 @@ log = get_logger(__name__)
 # ----------------------------------------------------------------------
 # Récupération de l'entête d'un fichier MP3
 # ----------------------------------------------------------------------
-def get_mp3_tags(track_url: str, max_bytes: int = 100000) -> Tuple[Optional[str], Optional[str]]:
+def get_track_tags(track_url: str, max_bytes: int = 100000) -> Tuple[Optional[str], Optional[str]]:
     """
     Fetches ID3v2 tags (BPM, Rating, Genre) from an MP3 file hosted on a DLNA server.
     Uses HTTP Range requests to fetch only the last ~100KB of the file where ID3v2 tags
@@ -56,7 +56,7 @@ def get_mp3_tags(track_url: str, max_bytes: int = 100000) -> Tuple[Optional[str]
         range_start = 0
         range_end = min(file_size - 1, max_bytes - 1) if file_size > 0 else max_bytes - 1
         headers = {'Range': f'bytes={range_start}-{range_end}'}
-        log.debug(f"Fetching tags from {track_url} (Range: {range_start}-{range_end})")
+        log.debug(f"Fetching tags from {track_url} (Range: {range_start}-{int(range_end/1000)}kB)")
         # Let's fetch the first 100K bytes.
         resp = requests.get(track_url, headers=headers, timeout=10, stream=True)
         # not 200 OK will raise an error.
@@ -67,7 +67,9 @@ def get_mp3_tags(track_url: str, max_bytes: int = 100000) -> Tuple[Optional[str]
         from io import BytesIO
         audio_data = BytesIO(resp.content)
 
+        # -----------------------------------------------------------------
         # Try to load ID3 tags
+        # -----------------------------------------------------------------
         try:
             tags = ID3(audio_data)
             # print(f"tags {tags}") # Full dump
@@ -76,19 +78,24 @@ def get_mp3_tags(track_url: str, max_bytes: int = 100000) -> Tuple[Optional[str]
             log.warning(f"No ID3 tags found in the first {max_bytes} bytes of {track_url}")
             return None, None
 
-        # 3. Extract specific fields
-        # BPM is usually TBPM (Beats Per Minute)
+        # ---------------------------------------------------------------------
+        # Extract BPM specific field (Beats Per Minute).
+        # - BPM is usually TBPM
+        # ---------------------------------------------------------------------
         bpm_frame = tags.get('TBPM')
         log.debug(f"bpm_frame: {bpm_frame}")
         track_bpm = bpm_frame.text[0] if (bpm_frame and bpm_frame.text) else None
 
-        # Rating is tricky. It's often stored in:
+        # ---------------------------------------------------------------------
+        # Extract Rating specific field (number of stars).
         # - COMM (User Defined Text Information) with description "Rating"
         # - POPM (Popularimeter) - requires parsing binary data
         # - Or a custom frame like 'XSOP' or 'RATING'
+        # ---------------------------------------------------------------------
         mp3_rating = None
-
+        # ---------------------------------------------------------------------
         # Check for COMM (User Comment) that might contain rating
+        # ---------------------------------------------------------------------
         # comm_frames = tags.getall('COMM')
         # print (f"COMM {COMM}")
         # for comm in comm_frames:
@@ -96,11 +103,12 @@ def get_mp3_tags(track_url: str, max_bytes: int = 100000) -> Tuple[Optional[str]
         #     if 'rating' in comm.desc.lower() or 'stars' in comm.desc.lower():
         #         rating = comm.text[0] if comm.text else None
         #         break
-
-        # Check for POPM (Popularimeter) - this is binary, complex to parse simply
-        # If you need POPM, you'd need to parse the binary structure:
-        # email, count, rating (1 byte), seek position
-        # Ex: 'POPM:Windows Media Player 9 Series': POPM(email='Windows Media Player 9 Series', rating=196), 3.8☆
+        # ---------------------------------------------------------------------
+        # Check for POPM (Popularimeter)
+        # ---------------------------------------------------------------------
+        # Parse the POPM binary structure: email, count, rating (1 byte).
+        # Ex: 'POPM:Windows Media Player 9 Series': POPM(email='Windows Media Player 9 Series', rating=196)
+        # Ex: 196 = 3.8 stars
         # There may be more than one "POPM" frame in each tag, but only one with the same email address.
         popm_frame = tags.getall('POPM')
         if popm_frame:
@@ -111,13 +119,18 @@ def get_mp3_tags(track_url: str, max_bytes: int = 100000) -> Tuple[Optional[str]
             if raw_rating > 0:
                 mp3_rating = f"{round(raw_rating / 51)} stars"  # Rough approximation (255/51 ≈ 5)
 
-        # Genre is usually TCON
-        genre_frame = tags.get('TCON')
+        # ---------------------------------------------------------------------
+        # Extract Genre specific field.
+        # - TCON
+        # ---------------------------------------------------------------------
+        # genre_frame = tags.get('TCON')
         # genre = genre_frame.text[0] if genre_frame and genre_frame.text else None
         # For convenience, use the ‘genres’ property (list) rather than the ‘text’ attribute.
-        genre = genre_frame.genres[0]
-        print(f"genre {genre}")
+        # genre = genre_frame.genres[0]
 
+        # ---------------------------------------------------------------------
+        # On retourne les valeurs trouvées (peuvent être None)
+        # ---------------------------------------------------------------------
         return track_bpm, mp3_rating
 
     except requests.exceptions.RequestException as e:
@@ -128,20 +141,12 @@ def get_mp3_tags(track_url: str, max_bytes: int = 100000) -> Tuple[Optional[str]
         return None, None
 
 
-""" 
-usage:
-        details = self.get_track_details(uri)
-        if details['bpm']:
-            log.info(f"Playing track with BPM: {details['bpm']}")
-        if details['rating']:
-            log.info(f"User Rating: {details['rating']}")
-"""
-
 # -------------------------------------------------------------
 # Testing
 # -------------------------------------------------------------
 if __name__ == "__main__":
     url = "http://192.168.0.101:50002/m/MP3/2913.mp3"
-    bpm, rating = get_mp3_tags(url)
+    bpm, rating = get_track_tags(url)
+    # ou tags = self.get_track_tags(url)
     print(f"BPM: {bpm}")
     print(f"Rating: {rating}")

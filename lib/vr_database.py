@@ -26,8 +26,8 @@ class VRDatabase:
         ├── file_hash (TEXT)  # Hash 8 chars basé sur le nom
         ├── genre (TEXT)
         ├── year (TEXT)
-        ├── rating (INTEGER)  # Futur: 0-5 étoiles
-        ├── bpm (INTEGER)     # Futur: battements par minute
+        ├── rating (INTEGER)  # 0-5 étoiles
+        ├── bpm (REAL)        # battements par minute (beat)
         ├── added_at (TIMESTAMP)
         └── updated_at (TIMESTAMP)
     """
@@ -54,15 +54,15 @@ class VRDatabase:
             CREATE TABLE IF NOT EXISTS tracks (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 url TEXT UNIQUE NOT NULL,
-                dlna_id TEXT NOT NULL,
+                dlna_id TEXT UNIQUE NOT NULL ,
                 file_hash TEXT DEFAULT '',
-                title TEXT NOT NULL,
+                title  TEXT NOT NULL,
                 artist TEXT DEFAULT '',
-                genre TEXT DEFAULT '',
-                year TEXT DEFAULT '',
+                genre  TEXT DEFAULT '',
+                year   TEXT DEFAULT '',
                 rating INTEGER DEFAULT NULL,
-                bpm INTEGER DEFAULT NULL,
-                added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                bpm    REAL DEFAULT NULL,
+                added_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
@@ -73,7 +73,8 @@ class VRDatabase:
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_dlna_id ON tracks(dlna_id)')
 
         self.conn.commit()
-        log.info(f"Base de données initialisée: {self.db_path}")
+        version = cursor.execute("SELECT sqlite_version();").fetchone()[0]
+        log.info(f"BSQLite version: {version}")
 
     # --------------------------------------------------------------------- #
     # Stocke (ou met à jour) une liste de pistes dans la base.
@@ -82,18 +83,23 @@ class VRDatabase:
         """
         Stocke ou met à jour une liste de pistes dans la base de données.
         Chaque track comporte une URL, un ID, et d'autres metadata.
-        
-        Args:
-            tracks: Liste de dicts avec url, item_id, title, artist, genre, year.
+        Args :
+            tracks : Liste de dicts avec url, item_id, title, artist, genre, year.
         """
         cursor = self.conn.cursor()
-
         for track in tracks:
-            cursor.execute('''
-                INSERT OR REPLACE INTO tracks 
-                (url, dlna_id, title, artist, genre, year, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-            ''', (
+            # Pour faire INSERT IF EXISTS, on utilise la syntaxe particulière du "ON CONFLICT" (UPSERT).
+            # Nécessite SQLite en version > 3.24
+            query = '''
+                INSERT INTO tracks(url, dlna_id, title, artist, genre, year, updated_at)
+                   VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+                ON CONFLICT(dlna_id) DO UPDATE 
+                   SET artist = excluded.artist, genre = excluded.genre
+            '''
+            # cursor.executemany(query, tracks)
+            old_query = '''INSERT INTO tracks(url, dlna_id, title, artist, genre, year, updated_at)
+                            VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP) '''
+            cursor.execute(query, (
                 track['url'],
                 track['item_id'],
                 track.get('title', '***'),
@@ -118,6 +124,54 @@ class VRDatabase:
         cursor.execute('SELECT COUNT(*) FROM tracks')
         result = cursor.fetchone()
         return result[0] if result else 0
+
+    # --------------------------------------------------------------------- #
+    # Retourne la liste de toutes les tracks (url).
+    # --------------------------------------------------------------------- #
+    def get_track_urls(self) -> List[str]:
+        """
+        Retourne la liste de toutes les tracks.
+        Returns : Une liste d'URLs de tracks.
+        """
+        cursor = self.conn.cursor()
+        query = f"SELECT url FROM tracks ORDER BY id ASC"
+        cursor.execute(query)
+        result = [row['url'] for row in cursor.fetchall()]
+        return result
+
+    # --------------------------------------------------------------------- #
+    # Retourne liste de tracks (url) correspondant au Beat demandé.
+    # --------------------------------------------------------------------- #
+    def get_track_urls_by_bpm(self, value: Optional[int]) -> List[str]:
+        """
+        Args :
+          value : une valeur de BeatPerMinute (pouvant être None).
+        Returns : Une liste d'URLs de tracks.
+        """
+        cursor = self.conn.cursor()
+        if value is None:
+            query = f"SELECT url FROM tracks WHERE bpm IS NULL"
+        else:
+            query = f"SELECT url FROM tracks WHERE bpm={value}"
+        print (query)
+        cursor.execute(query)
+        result = [row['url'] for row in cursor.fetchall()]
+        print(result[:10])
+        return result
+
+    # --------------------------------------------------------------------- #
+    # Retourne la liste des tracks correspondant au Genre demandé.
+    # --------------------------------------------------------------------- #
+    def get_track_urls_by_genre(self, value: str) -> List[str]:
+        """ ---------------------------------------------------------------------
+        Returns :
+            Une liste d'urls correspondant au Genre demandé.
+        --------------------------------------------------------------------- """
+        cursor = self.conn.cursor()
+        query = f"SELECT url FROM tracks WHERE genre='{value}' ORDER BY year ASC"
+        cursor.execute(query)
+        result = [row['url'] for row in cursor.fetchall()]
+        return result
 
     # --------------------------------------------------------------------- #
     # Retourne une liste de MP3 (URL) en fonction de la plage de dates demandée.
@@ -162,7 +216,7 @@ class VRDatabase:
         cursor.execute(part1_query, (target_year, range_end))
         part1 = [row['url'] for row in cursor.fetchall()]
 
-        # Partie 2 : De range_start à target_year (exclue)
+        # Partie 2 : De range_start à target_year (non incluse)
         part2_query = '''
             SELECT url FROM tracks 
             WHERE year >= ? AND year < ?
@@ -191,28 +245,20 @@ class VRDatabase:
         return dict(row) if row else None
 
     # --------------------------------------------------------------------- #
-    # Retourne liste de tracks (url) correspondant au genre demandé.
-    # --------------------------------------------------------------------- #
-    def get_track_urls_by_genre(self, value: str) -> List[str]:
-        """ ---------------------------------------------------------------------
-        Returns :
-            Une liste de tracks (url) correspondant au genre demandé.
-        --------------------------------------------------------------------- """
-        cursor = self.conn.cursor()
-        query = f"SELECT url FROM tracks WHERE genre='{value}' ORDER BY year ASC"
-        cursor.execute(query)
-        result = [row['url'] for row in cursor.fetchall()]
-        return result
-
-    # --------------------------------------------------------------------- #
     # Renseigne une valeur pour la track donnée.
     # --------------------------------------------------------------------- #
     def update_track(self, url: str, key: str, value: int):
-        """Met à jour une valeur."""
+        """
+        Met à jour une valeur dans la base de données.
+        Args :
+            url : url de la track à modifier
+            key : nom de la colonne
+            value : valeur à modifier.
+        """
+        if value is None: return
         cursor = self.conn.cursor()
-        cursor.execute('''
-            UPDATE tracks SET ? = ?, updated_at = CURRENT_TIMESTAMP 
-            WHERE url = ? ''', (key, value, url))
+        query = f"UPDATE tracks SET {key}={value}, updated_at = CURRENT_TIMESTAMP WHERE url='{url}' "
+        cursor.execute(query)
         self.conn.commit()
 
     # --------------------------------------------------------------------- #

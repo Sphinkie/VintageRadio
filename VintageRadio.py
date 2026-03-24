@@ -12,6 +12,12 @@ from lib.dlna_music import DLNAMusic
 from lib.vr_engine import VREngine
 from lib.user_request import UserRequest
 from lib.user_keyboard import KeyboardController
+import signal
+import sys
+
+def sigint_handler(signum, frame):
+    print(f"\nReceived SIGINT! (signum={signum})")
+    sys.exit(0)
 
 
 # --------------------------------------------------------------------- #
@@ -84,6 +90,10 @@ async def loop():
     # Tache périodique No 1 : Reload user request (json file) every 5 seconds.
     # -------------------------------------------------------------------------- #
     refresh_task = asyncio.create_task(user_request.repeating_reread(5))  # fire-and-forget
+    # -------------------------------------------------------------------------- #
+    # Tache périodique No 2 : Read missing Beat Per Minute on server.
+    # -------------------------------------------------------------------------- #
+    refresh_bpm = asyncio.create_task(engine.repeat_get_data(10))  # start repeating
 
     try:
         # -------------------------------------------------------------------------- #
@@ -148,7 +158,10 @@ async def loop():
         log.warning("End loop")
         keyboard_ctrl.stop()
         refresh_task.cancel()
+        refresh_bpm.cancel()
+        # On attend que les taches s'achevent
         await refresh_task
+        await refresh_bpm
         log.warning("Shutdown complete")
 
 
@@ -183,6 +196,7 @@ if __name__ == "__main__":
     # ---------------------------------------------------------
     # Initialise le Keyboard Listener thread
     # ---------------------------------------------------------
+    signal.signal(signal.SIGINT, sigint_handler)
     # Create a Quit Event
     quit_event = asyncio.Event()
     keyboard_ctrl = KeyboardController(on_key_press, quit_event)

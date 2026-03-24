@@ -72,7 +72,7 @@ class UserRequest:
             log.info(f"Detected user request change: {self.new_request['mode']} > {self.new_request['request']}")
 
     # -----------------------------------------------------------------
-    # Indique si le fichier a changé lors la dernière lecture.
+    # Indique si le fichier a été changé depuis la dernière lecture.
     # -----------------------------------------------------------------
     def has_changed(self) -> bool:
         """ Return True if the user request has changed. """
@@ -96,15 +96,15 @@ class UserRequest:
     # Relit périodiquement le fichier de la UserRequest.
     # Fonction asynchrone : On attend PUIS on lit le fichier.
     # -----------------------------------------------------------------
-    async def repeating_reread(self, interval):
+    async def repeating_reread(self, period: float):
         """
         Periodic task: re-read the UserRequest Json file.
         Args:
-            interval: attente avant la relecture du fichier. Typiquement 5s.
+            period: attente avant la relecture du fichier. Typiquement 5s.
         """
         try:
             while True:
-                await asyncio.sleep(interval)
+                await asyncio.sleep(period)
                 self.refresh_user_request()
         except asyncio.CancelledError:
             log.warning("repeating_reread of UserRequest cancelled.")

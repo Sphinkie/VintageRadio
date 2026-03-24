@@ -80,16 +80,35 @@ class DBWrapper:
         return self.db.get_track_urls_by_genre(value)
 
     # --------------------------------------------------------------------- #
+    # Demande les url des clips qui n'ont pas de BPM.
+    # --------------------------------------------------------------------- #
+    def get_unrythmed_tracks(self, force: bool = False) -> List[str]:
+        """
+        Demande des urls des clips qui n'ont pas de BPM.
+        Args :
+            force : si True, renvoie la liste de toutes les URLs, pour un re-scan total.
+        Returns : Une liste d'URLs.
+        """
+        if force:
+            # Si force, on renvoie toutes les urls.
+            return self.db.get_track_urls()
+        else:
+            # Sinon, on ne renvoie que les urls qui n'ont pas de BPM en base.
+            return self.db.get_track_urls_by_bpm(None)
+
+    # --------------------------------------------------------------------- #
     # Met à jour le rating d'une piste.
     # --------------------------------------------------------------------- #
     def update_track_rating(self, tags: dict):
         self.db.update_track(tags['url'], "rating", tags['rating'])
+        log.debug("tag updated: %s",tags['rating'])
 
     # --------------------------------------------------------------------- #
     # Met à jour le BPM (Beat Per Minute) d'une piste.
     # --------------------------------------------------------------------- #
     def update_track_bpm(self, tags: dict):
-        self.db.update_track(tags['url'], "bmp", tags['bpm'])
+        self.db.update_track(tags['url'], "bpm", tags['bpm'])
+        log.info("BPM updated for %s: %s",tags['url'], tags['bpm'])
 
     # --------------------------------------------------------------------- #
     # Retourne des infos sur le clip demandé, en les cherchant dans la

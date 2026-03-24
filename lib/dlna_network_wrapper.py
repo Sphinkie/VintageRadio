@@ -8,7 +8,7 @@
 from lib.dlna_network import DLNANetwork
 from lib.user_display import Display
 from lib.vr_logger import get_logger
-from lib.tag_collector import get_mp3_tags
+from lib.tag_collector import get_track_tags
 from typing import List, Optional
 import xml.etree.ElementTree as ET
 
@@ -202,7 +202,7 @@ class DLNAWrapper:
         """
         Fetches detailed mp3 metadata including BPM and Rating.
         """
-        bpm, rating = get_mp3_tags(url)
+        bpm, rating = get_track_tags(url)
         return {
             'url': url,
             'bpm': bpm,
@@ -210,7 +210,7 @@ class DLNAWrapper:
         }
 
     # --------------------------------------------------------------------- #
-    # Retoune TOUS les MP3 du serveur DLNA.
+    # Retourne TOUS les MP3 du serveur DLNA.
     # --------------------------------------------------------------------- #
     def scan_all_mp3(self) -> List[dict]:
         """

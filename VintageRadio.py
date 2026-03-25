@@ -21,7 +21,7 @@ def sigint_handler(signum, frame):
 
 
 # --------------------------------------------------------------------- #
-# Callback for the Keyboard
+# Callback for the Keyboard Listening thread
 # --------------------------------------------------------------------- #
 def on_key_press(action):
     if action == 'QUIT':
@@ -33,10 +33,18 @@ def on_key_press(action):
     elif action == 'AGAIN':
         log.info("PLAY AGAIN command received")
         musics.rewind()
-        musics.stop()
         # La musique va recommencer automatiquement.
+        musics.stop()
+    elif action == 'RESET':
+        log.info("RESET command received")
+        # Supprime la base de données et quitte.
+        # Utilisé si la BDD a besoin d'être rafraichie
+        # TODO
+        pass
     elif action == 'DISCOVER':
         log.info("DISCOVERY command received")
+        # Refait un scan du réseau à la recherche de serveurs DLNA
+        # Utilisé pour la mise au point
         engine.net_wrapper.discover_servers()
 
 

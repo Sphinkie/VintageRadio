@@ -159,7 +159,11 @@ class KeyboardController:
             self.callback('NEXT')
         elif ch_lower == 'a':
             self.callback('AGAIN')
+        elif ch_lower == 'r':
+            # Utilisé pour la mise au point
+            self.callback('RESET')
         elif ch_lower == 'd':
+            # Utilisé pour la mise au point
             self.callback('DISCOVER')
         elif ch_lower == 'q':
             # Set the event to signal the main loop

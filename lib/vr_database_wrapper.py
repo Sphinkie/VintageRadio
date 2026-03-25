@@ -21,38 +21,42 @@ class DBWrapper:
     """
 
     # --------------------------------------------------------------------- #
-    # Constructeur
     # --------------------------------------------------------------------- #
     def __init__(self, db_path: str):
+        """
+        Constructeur.
+        :param db_path: Le chemin et le nom de la base de données.
+        """
         self.db = VRDatabase(db_path)
 
     # --------------------------------------------------------------------- #
-    # Stocke (ou met à jour) une liste de pistes dans la base.
     # --------------------------------------------------------------------- #
     def store_tracks(self, tracks: List[dict]):
+        """
+        Stocke (ou met à jour) une liste de pistes dans la base.
+        :param tracks: Une liste de tracks avec leurs metadata.
+        """
         self.db.store_tracks(tracks)
 
     # --------------------------------------------------------------------- #
-    # En fonction de l'année demandée, on remonte une liste de MP3 contenus
-    # dans la "période" correspondante.
-    # On a défini 9 "périodes" :
-    #   0000-1700 (moyen-age)
-    #   1700-1800 (en général, la musique classique)
-    #   1800-1900 (opéras et débuts de la chanson)
-    #   20's      (chansons d'avant-guerre)
-    #   40's      (musiques des années 40)
-    #   50's      (musiques des années 50 - fifties)
-    #   60's      (musiques des années 60 - sixties)
-    #   70's      (musiques des années 70 - seventies)
-    #   Ce qui est venu après (entre 1980 et 2050)
     # --------------------------------------------------------------------- #
     def get_tracks_for_decade(self, year: int) -> List[str]:
         """
         Retourne une liste d'URLs filtrée par plage de dates avec ordre circulaire.
-        Args :
-            year : Date de départ (ex : 1964)
-        Returns :
-            Liste d'URLs triées selon l'ordre circulaire
+        En fonction de l'année demandée, on remonte une liste de MP3 contenus
+        dans la "période" correspondante.
+        On a défini 9 "périodes" (décades) :
+         - 0000-1700 (moyen-age)
+         - 1700-1800 (en général, la musique classique)
+         - 1800-1900 (opéras et débuts de la chanson)
+         - 20's      (chansons d'avant-guerre)
+         - 40's      (musiques des années 40)
+         - 50's      (musiques des années 50 - fifties)
+         - 60's      (musiques des années 60 - sixties)
+         - 70's      (musiques des années 70 - seventies)
+         - Ce qui est venu après (entre 1980 et 2050)
+        :param year: Date de départ (ex : 1964)
+        :return: Une liste d'URLs triées selon l'ordre circulaire.
         """
         log.debug(f" Demande les clips de la décade {year}...")
         if year < 1700:
@@ -74,20 +78,37 @@ class DBWrapper:
         return self.db.get_track_urls_by_date_range(year, 1980, 2050)
 
     # --------------------------------------------------------------------- #
-    # Demande les url pour un genre donné.
     # --------------------------------------------------------------------- #
     def get_tracks_for_genre(self, value: str) -> List[str]:
+        """
+        Demande des urls pour le genre donné.
+        :param value: Le nom d'un genre de musiques.
+        :return: Une liste d'URLs dans un ordre aléatoire à chaque fois différent.
+        """
         return self.db.get_track_urls_by_genre(value)
 
     # --------------------------------------------------------------------- #
-    # Demande les url des clips qui n'ont pas de BPM.
+    # --------------------------------------------------------------------- #
+    def get_tracks_for_beat(self, value: float) -> List[str]:
+        """
+        Demande des tracks pour un rythme (bpm) donné.
+        La fonction renvoie la liste des URLs à partir du BPM donné, et dans le sens demandé
+        croissant ou décroissant.
+        Si le rythme demandé est lent, on va vers du plus calme.
+        Si le rythme demandé est rapide, on va vers du plus énergique.
+        :param value: La valeur du BPM demandée de base.
+        :returns: Une liste d'URLs triées selon le critère demandé.
+        """
+        direction = "desc" if value < 120 else "asc"
+        return self.db.get_track_urls_by_bpm(value, direction)
+
+    # --------------------------------------------------------------------- #
     # --------------------------------------------------------------------- #
     def get_unrythmed_tracks(self, force: bool = False) -> List[str]:
         """
         Demande des urls des clips qui n'ont pas de BPM.
-        Args :
-            force : si True, renvoie la liste de toutes les URLs, pour un re-scan total.
-        Returns : Une liste d'URLs.
+        :param force: Si True, renvoie la liste de toutes les URLs, pour un re-scan total.
+        :returns: Une liste d'URLs.
         """
         if force:
             # Si force, on renvoie toutes les urls.
@@ -97,16 +118,22 @@ class DBWrapper:
             return self.db.get_track_urls_by_bpm(None)
 
     # --------------------------------------------------------------------- #
-    # Met à jour le rating d'une piste.
     # --------------------------------------------------------------------- #
     def update_track_rating(self, tags: dict):
+        """
+        Met à jour le rating d'une piste.
+        :param tags: Un dictionnaire ('url', 'rating', 'bpm').
+        """
         self.db.update_track(tags['url'], "rating", tags['rating'])
         log.debug("tag updated: %s",tags['rating'])
 
     # --------------------------------------------------------------------- #
-    # Met à jour le BPM (Beat Per Minute) d'une piste.
     # --------------------------------------------------------------------- #
     def update_track_bpm(self, tags: dict):
+        """
+        Met à jour le BPM (Beat Per Minute) d'une piste.
+        :param tags: Un dictionnaire ('url', 'rating', 'bpm').
+        """
         self.db.update_track(tags['url'], "bpm", tags['bpm'])
         log.info("BPM updated for %s: %s",tags['url'], tags['bpm'])
 
@@ -117,14 +144,11 @@ class DBWrapper:
     def get_track_info(self, item_id: str) -> Optional[tuple]:
         """
         Extract metadata from the database.
-
-        Args:
-            item_id: The ID of the item to look up. Ex: '2913'.
-
-        Returns:
-            Tuple of (title, artist, year, genre)
-            Empty strings if field is missing
-            None if item not found
+        :param item_id: The ID of the item to look up. Ex: '2913'.
+        :returns:
+            Tuple of (title, artist, year, genre).
+            `Empty strings` if field is missing.
+            `None` if item not found.
         """
         log.debug("get clip info from db for item id: %s", item_id)
         metadata = self.db.get_track_info(item_id)
@@ -135,10 +159,20 @@ class DBWrapper:
             return None
 
     # --------------------------------------------------------------------- #
-    # Ferme la connexion à la base de données
     # --------------------------------------------------------------------- #
     def close(self):
+        """
+        Ferme la connexion à la base de données.
+        """
         self.db.close()
+
+    # --------------------------------------------------------------------- #
+    # --------------------------------------------------------------------- #
+    def drop_db(self):
+        """
+        Supprime la base de données.
+        """
+        self.db.drop()
 
 
 # -------------------------------------------------------------

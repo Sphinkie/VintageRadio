@@ -18,11 +18,11 @@ log = get_logger(__name__)
 class VRDatabase:
     """Gestion de la base de données SQLite pour les métadonnées MP3.
     
-        Schéma de la base de données:
+        Schéma de la base de données.
         tracks
         ├── id (INTEGER PRIMARY KEY)
         ├── url (TEXT UNIQUE)
-        ├── dlna_id (TEXT)
+        ├── dlna_id (TEXT UNIQUE)
         ├── file_hash (TEXT)  # Hash 8 chars basé sur le nom
         ├── genre (TEXT)
         ├── year (TEXT)
@@ -33,18 +33,23 @@ class VRDatabase:
     """
 
     # --------------------------------------------------------------------- #
-    # Constructeur
     # --------------------------------------------------------------------- #
     def __init__(self, db_path: str = "data/music_metadata.db"):
+        """
+        Constructeur
+        :param db_path: Le chemin et le nom de la base de données.
+        """
         self.db_path = db_path
         self.conn = None
         self._init_db()
 
     # --------------------------------------------------------------------- #
-    # Crée les tables dans la base de données (si besoin).
     # --------------------------------------------------------------------- #
     def _init_db(self):
-        """Initialise la base de données avec le schéma requis."""
+        """
+        Crée les tables dans la base de données (si besoin).
+        Initialise la base de données avec le schéma requis.
+        """
         log.debug("self.db_path %s", self.db_path)
         self.conn = sqlite3.connect(self.db_path, check_same_thread=False)
         self.conn.row_factory = sqlite3.Row
@@ -77,14 +82,12 @@ class VRDatabase:
         log.info(f"BSQLite version: {version}")
 
     # --------------------------------------------------------------------- #
-    # Stocke (ou met à jour) une liste de pistes dans la base.
     # --------------------------------------------------------------------- #
     def store_tracks(self, tracks: List[dict]):
         """
         Stocke ou met à jour une liste de pistes dans la base de données.
         Chaque track comporte une URL, un ID, et d'autres metadata.
-        Args :
-            tracks : Liste de dicts avec url, item_id, title, artist, genre, year.
+        :param tracks: Liste de dicts avec url, item_id, title, artist, genre, year.
         """
         cursor = self.conn.cursor()
         for track in tracks:
@@ -112,13 +115,11 @@ class VRDatabase:
         log.info(f"{len(tracks)} pistes stockées dans la base de données")
 
     # --------------------------------------------------------------------- #
-    # Retourne le nombre de tracks de la base.
     # --------------------------------------------------------------------- #
     def count(self) -> int:
         """
         Retourne le nombre de tracks de la base de données.
-        Returns:
-            The number of tracks in the database.
+        :returns: The number of tracks in the database.
         """
         cursor = self.conn.cursor()
         cursor.execute('SELECT COUNT(*) FROM tracks')
@@ -126,12 +127,11 @@ class VRDatabase:
         return result[0] if result else 0
 
     # --------------------------------------------------------------------- #
-    # Retourne la liste de toutes les tracks (url).
     # --------------------------------------------------------------------- #
     def get_track_urls(self) -> List[str]:
         """
-        Retourne la liste de toutes les tracks.
-        Returns : Une liste d'URLs de tracks.
+        Retourne la liste de toutes les tracks (url)..
+        :returns: Une liste d'URLs de tracks.
         """
         cursor = self.conn.cursor()
         query = f"SELECT url FROM tracks ORDER BY id ASC"
@@ -140,33 +140,35 @@ class VRDatabase:
         return result
 
     # --------------------------------------------------------------------- #
-    # Retourne liste de tracks (url) correspondant au Beat demandé.
     # --------------------------------------------------------------------- #
-    def get_track_urls_by_bpm(self, value: Optional[int]) -> List[str]:
+    def get_track_urls_by_bpm(self, value: Optional[float], direction: Optional[str]) -> List[str]:
         """
-        Args :
-          value : une valeur de BeatPerMinute (pouvant être None).
-        Returns : Une liste d'URLs de tracks.
+        Retourne liste de tracks (url) correspondant au Beat demandé.
+        :param value: Une valeur de BeatPerMinute (pouvant être None).
+        :param direction: "asc" ou "desc" ou "None" (= valeur stricte).
+        :returns: Une liste d'URLs de tracks.
         """
         cursor = self.conn.cursor()
         if value is None:
             query = f"SELECT url FROM tracks WHERE bpm IS NULL"
-        else:
-            query = f"SELECT url FROM tracks WHERE bpm={value}"
-        print (query)
+        elif direction == "asc":
+            query = f"SELECT url FROM tracks WHERE bpm >= {value} ORDER BY bmp ASC"
+        elif direction == "desc":
+            query = f"SELECT url FROM tracks WHERE bpm <= {value} ORDER BY bmp DESC"
+        else: # direction is None:
+            query = f"SELECT url FROM tracks WHERE bpm = {value}"
         cursor.execute(query)
         result = [row['url'] for row in cursor.fetchall()]
-        print(result[:10])
+        # print(result[:5])
         return result
 
     # --------------------------------------------------------------------- #
-    # Retourne la liste des tracks correspondant au Genre demandé.
     # --------------------------------------------------------------------- #
     def get_track_urls_by_genre(self, value: str) -> List[str]:
-        """ ---------------------------------------------------------------------
-        Returns :
-            Une liste d'urls correspondant au Genre demandé.
-        --------------------------------------------------------------------- """
+        """
+        Retourne la liste des tracks correspondant au Genre demandé.
+        :return: Une liste d'urls correspondant au Genre demandé.
+        """
         cursor = self.conn.cursor()
         query = f"SELECT url FROM tracks WHERE genre='{value}' ORDER BY year ASC"
         cursor.execute(query)
@@ -184,20 +186,16 @@ class VRDatabase:
     ) -> List[str]:
         """
         Retourne une liste d'URLs basée sur une plage de dates avec comportement circulaire.
-        Args :
-            target_year : Année de départ (format YYYY)
-            range_start : Début de la plage (format YYYY)
-            range_end : Fin de la plage (format YYYY)
-            
-        Returns :
-            Liste d'URLs triées selon l'ordre circulaire demandé.
+        :param target_year: Année de départ (format YYYY)
+        :param range_start: Début de la plage (format YYYY)
+        :param range_end: Fin de la plage (format YYYY)
+        :returns: Liste d'URLs triées selon l'ordre circulaire demandé.
             
         Exemple
-            target_year = "1963"
-            range_start = "1960"
-            range_end = "1969"
-            
-            Ordre= 1963 → 1964 → ... → 1969 → 1960 → 1961 → 1962 → 1963
+         - target_year = "1963"
+         - range_start = "1960"
+         - range_end = "1969"
+         - Donne l'ordre suivant = 1963 → 1964 → ... → 1969 → 1960 → 1961 → 1962 → 1963
         """
         log.debug(f" Cherche l'année {target_year} dans la plage {range_start}-{range_end}")
         cursor = self.conn.cursor()
@@ -231,29 +229,27 @@ class VRDatabase:
         return result
 
     # --------------------------------------------------------------------- #
-    # Retourne toutes les metadata d'une piste en fonction de son ID.
     # --------------------------------------------------------------------- #
     def get_track_info(self, item_id: str) -> Optional[dict]:
-        """ ---------------------------------------------------------------------
-        None if item not found.
-        Returns:
+        """
+        Retourne toutes les metadata d'une piste en fonction de son ID.
+        :returns:
             A dictionary with keys: title, artist, year, genre, rating, bpm.
-        --------------------------------------------------------------------- """
+            None if item not found.
+        """
         cursor = self.conn.cursor()
         cursor.execute('SELECT * FROM tracks WHERE dlna_id = ?', (item_id,))
         row = cursor.fetchone()
         return dict(row) if row else None
 
     # --------------------------------------------------------------------- #
-    # Renseigne une valeur pour la track donnée.
     # --------------------------------------------------------------------- #
     def update_track(self, url: str, key: str, value: int):
         """
-        Met à jour une valeur dans la base de données.
-        Args :
-            url : url de la track à modifier
-            key : nom de la colonne
-            value : valeur à modifier.
+        Met à jour une valeur pour la track donnée dans la base de données.
+        :param url: URL de la track à modifier.
+        :param key: Nom de la colonne.
+        :param value: Valeur à modifier.
         """
         if value is None: return
         cursor = self.conn.cursor()
@@ -262,9 +258,16 @@ class VRDatabase:
         self.conn.commit()
 
     # --------------------------------------------------------------------- #
-    # Ferme la connexion à la base de données.
     # --------------------------------------------------------------------- #
     def close(self):
         """Ferme la connexion à la base de données."""
         if self.conn:
             self.conn.close()
+
+    # --------------------------------------------------------------------- #
+    # --------------------------------------------------------------------- #
+    def drop(self):
+        """Supprime la base de données."""
+        if self.conn:
+            self.conn.close()
+        # TODO

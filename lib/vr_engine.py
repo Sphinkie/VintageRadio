@@ -98,20 +98,25 @@ class VREngine:
         log.info(f"Scan terminé: {len(all_tracks)} pistes trouvées")
 
     # --------------------------------------------------------------------- #
-    # Retourne la liste des tracks MP3 correspondant aux critères demandés.
     # --------------------------------------------------------------------- #
     def get_tracklist_from_db(self, mode: str, value: str) -> List[str]:
+        """
+        Retourne la liste des tracks MP3 correspondant aux critères demandés.
+        :param mode: La classification des musiques demandées par l'utilisateur (genre, year, bpm, rating, alea).
+        :param value: La valeur demandée (par exemple "Blues" si le mode est "par Genre").
+        :return: Une liste d'URLs.
+        """
         if mode == 'genre':
             return self.db_w.get_tracks_for_genre(value)
         if mode == 'year':
             return self.db_w.get_tracks_for_decade(int(value))
+        if mode == 'bpm':
+            return self.db_w.get_tracks_for_beat(float(value))
+            pass
         if mode == 'rating':
             # TODO : A COMPLETER
             pass
         if mode == 'alea':
-            # TODO : A COMPLETER
-            pass
-        if mode == 'bpm':
             # TODO : A COMPLETER
             pass
         return []
@@ -147,7 +152,7 @@ class VREngine:
             for track_url in unrythmed_track_list:
                 # track_url = "http://192.168.0.101:50002/m/MP3/3532.mp3"
                 await asyncio.sleep(period)
-                print (f"get dat for {track_url}")
+                log.debug(f"get dat for {track_url}")
                 self.get_additional_data(track_url)
         except asyncio.CancelledError:
             log.warning("repeat_get_data task cancelled.")

@@ -5,6 +5,7 @@
 # VintageRadio - Librairie.
 # David de Lorenzo (2026)
 # ==================================================================
+import os
 import sqlite3
 from typing import List, Optional
 from lib.vr_logger import get_logger
@@ -99,9 +100,6 @@ class VRDatabase:
                 ON CONFLICT(dlna_id) DO UPDATE 
                    SET artist = excluded.artist, genre = excluded.genre
             '''
-            # cursor.executemany(query, tracks)
-            old_query = '''INSERT INTO tracks(url, dlna_id, title, artist, genre, year, updated_at)
-                            VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP) '''
             cursor.execute(query, (
                 track['url'],
                 track['item_id'],
@@ -141,7 +139,7 @@ class VRDatabase:
 
     # --------------------------------------------------------------------- #
     # --------------------------------------------------------------------- #
-    def get_track_urls_by_bpm(self, value: Optional[float], direction: Optional[str]) -> List[str]:
+    def get_track_urls_by_bpm(self, value: Optional[float], direction: Optional[str] = None) -> List[str]:
         """
         Retourne liste de tracks (url) correspondant au Beat demandé.
         :param value: Une valeur de BeatPerMinute (pouvant être None).
@@ -155,7 +153,7 @@ class VRDatabase:
             query = f"SELECT url FROM tracks WHERE bpm >= {value} ORDER BY bmp ASC"
         elif direction == "desc":
             query = f"SELECT url FROM tracks WHERE bpm <= {value} ORDER BY bmp DESC"
-        else: # direction is None:
+        else:  # direction is None:
             query = f"SELECT url FROM tracks WHERE bpm = {value}"
         cursor.execute(query)
         result = [row['url'] for row in cursor.fetchall()]
@@ -251,7 +249,8 @@ class VRDatabase:
         :param key: Nom de la colonne.
         :param value: Valeur à modifier.
         """
-        if value is None: return
+        if value is None:
+            return
         cursor = self.conn.cursor()
         query = f"UPDATE tracks SET {key}={value}, updated_at = CURRENT_TIMESTAMP WHERE url='{url}' "
         cursor.execute(query)
@@ -270,4 +269,6 @@ class VRDatabase:
         """Supprime la base de données."""
         if self.conn:
             self.conn.close()
-        # TODO
+        os.remove(self.db_path)
+        log.fatal("Database destroyed")
+        # Alternative : dropper toutes les tables

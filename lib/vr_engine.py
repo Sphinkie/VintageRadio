@@ -27,7 +27,7 @@ class VREngine:
     # --------------------------------------------------------------------- #
     def __init__(self):
         """ Constructor. """
-        self.db_w = DBWrapper("./data/music_metadata.db")
+        self.db_wrapper = DBWrapper("./data/music_metadata.db")
         self.net_wrapper = DLNAWrapper()
         display = Display('tty')
         display.show("VINTAGE RADIO")
@@ -37,7 +37,13 @@ class VREngine:
     # --------------------------------------------------------------------- #
     def close(self):
         """Ferme les ressources (base de données)."""
-        self.db_w.close()
+        self.db_wrapper.close()
+
+    # --------------------------------------------------------------------- #
+    # --------------------------------------------------------------------- #
+    def drop_database(self):
+        """ Supprime la base de données. """
+        self.db_wrapper.drop_db()
 
     # --------------------------------------------------------------------- #
     # On est prêt si on a établi une liaison avec un serveur DLNA.
@@ -94,7 +100,7 @@ class VREngine:
         # ----------------------------------------------------------------- #
         # On stocke le résultat dans la base de données
         # ----------------------------------------------------------------- #
-        self.db_w.store_tracks(all_tracks)
+        self.db_wrapper.store_tracks(all_tracks)
         log.info(f"Scan terminé: {len(all_tracks)} pistes trouvées")
 
     # --------------------------------------------------------------------- #
@@ -107,17 +113,17 @@ class VREngine:
         :return: Une liste d'URLs.
         """
         if mode == 'genre':
-            return self.db_w.get_tracks_for_genre(value)
+            return self.db_wrapper.get_tracks_for_genre(value)
         if mode == 'year':
-            return self.db_w.get_tracks_for_decade(int(value))
+            return self.db_wrapper.get_tracks_for_decade(int(value))
         if mode == 'bpm':
-            return self.db_w.get_tracks_for_beat(float(value))
+            return self.db_wrapper.get_tracks_for_beat(float(value))
             pass
         if mode == 'rating':
-            # TODO : A COMPLETER
+            # TODO : gestion du mode rating
             pass
         if mode == 'alea':
-            # TODO : A COMPLETER
+            # TODO : gestion du mode aleatoire
             pass
         return []
 
@@ -132,7 +138,7 @@ class VREngine:
         """
         await asyncio.sleep(2)
         # info = self.net_wrapper.get_clip_info(track_id)
-        info = self.db_w.get_track_info(track_id)
+        info = self.db_wrapper.get_track_info(track_id)
         if info:
             title, artist, year, genre = info
             # NOW PLAYING :
@@ -147,7 +153,7 @@ class VREngine:
         Args:
             period: attente avant recupération nouveau BPM. Typiquement 500ms.
         """
-        unrythmed_track_list = self.db_w.get_unrythmed_tracks()
+        unrythmed_track_list = self.db_wrapper.get_unrythmed_tracks()
         try:
             for track_url in unrythmed_track_list:
                 # track_url = "http://192.168.0.101:50002/m/MP3/3532.mp3"
@@ -169,8 +175,8 @@ class VREngine:
         """
         tags = self.net_wrapper.get_track_details(track_url)
         # Enregistre les tags dans la base
-        self.db_w.update_track_bpm(tags)
-        self.db_w.update_track_rating(tags)
+        self.db_wrapper.update_track_bpm(tags)
+        self.db_wrapper.update_track_rating(tags)
 
 
 

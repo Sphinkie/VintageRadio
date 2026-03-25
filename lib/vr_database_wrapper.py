@@ -115,7 +115,7 @@ class DBWrapper:
             return self.db.get_track_urls()
         else:
             # Sinon, on ne renvoie que les urls qui n'ont pas de BPM en base.
-            return self.db.get_track_urls_by_bpm(None)
+            return self.db.get_track_urls_by_bpm(None, )
 
     # --------------------------------------------------------------------- #
     # --------------------------------------------------------------------- #
@@ -169,9 +169,7 @@ class DBWrapper:
     # --------------------------------------------------------------------- #
     # --------------------------------------------------------------------- #
     def drop_db(self):
-        """
-        Supprime la base de données.
-        """
+        """ Supprime la base de données. """
         self.db.drop()
 
 

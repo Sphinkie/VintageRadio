@@ -15,8 +15,9 @@ from lib.user_keyboard import KeyboardController
 import signal
 import sys
 
+
 def sigint_handler(signum, frame):
-    print(f"\nReceived SIGINT! (signum={signum})")
+    print(f"Received SIGINT! (signum={signum})")
     sys.exit(0)
 
 
@@ -39,8 +40,9 @@ def on_key_press(action):
         log.info("RESET command received")
         # Supprime la base de données et quitte.
         # Utilisé si la BDD a besoin d'être rafraichie
-        # TODO
-        pass
+        engine.drop_database()
+        log.warning("Quit application")
+        quit_event.set()
     elif action == 'DISCOVER':
         log.info("DISCOVERY command received")
         # Refait un scan du réseau à la recherche de serveurs DLNA

@@ -20,7 +20,7 @@ class VRDatabase:
     """Gestion de la base de données SQLite pour les métadonnées MP3.
     
         Schéma de la base de données.
-        tracks
+        Tracks
         ├── id (INTEGER PRIMARY KEY)
         ├── url (TEXT UNIQUE)
         ├── dlna_id (TEXT UNIQUE)
@@ -148,11 +148,11 @@ class VRDatabase:
         """
         cursor = self.conn.cursor()
         if value is None:
-            query = f"SELECT url FROM tracks WHERE bpm IS NULL"
+            query = f"SELECT url FROM tracks WHERE bpm IS NULL ORDER BY RANDOM()"
         elif direction == "asc":
-            query = f"SELECT url FROM tracks WHERE bpm >= {value} ORDER BY bmp ASC"
+            query = f"SELECT url FROM tracks WHERE bpm >= {value} ORDER BY bpm ASC"
         elif direction == "desc":
-            query = f"SELECT url FROM tracks WHERE bpm <= {value} ORDER BY bmp DESC"
+            query = f"SELECT url FROM tracks WHERE bpm <= {value} ORDER BY bpm DESC"
         else:  # direction is None:
             query = f"SELECT url FROM tracks WHERE bpm = {value}"
         cursor.execute(query)
@@ -165,7 +165,7 @@ class VRDatabase:
     def get_track_urls_by_genre(self, value: str) -> List[str]:
         """
         Retourne la liste des tracks correspondant au Genre demandé.
-        :return: Une liste d'urls correspondant au Genre demandé.
+        :return: Une liste d'URLs correspondant au Genre demandé.
         """
         cursor = self.conn.cursor()
         query = f"SELECT url FROM tracks WHERE genre='{value}' ORDER BY year ASC"

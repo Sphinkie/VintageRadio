@@ -33,10 +33,9 @@ class VREngine:
         display.show("VINTAGE RADIO")
 
     # --------------------------------------------------------------------- #
-    # Fermer la base de données à la fermeture de l'application.
     # --------------------------------------------------------------------- #
     def close(self):
-        """Ferme les ressources (base de données)."""
+        """ Ferme la base de données à la fermeture de l'application. """
         self.db_wrapper.close()
 
     # --------------------------------------------------------------------- #
@@ -46,15 +45,18 @@ class VREngine:
         self.db_wrapper.drop_db()
 
     # --------------------------------------------------------------------- #
-    # On est prêt si on a établi une liaison avec un serveur DLNA.
     # --------------------------------------------------------------------- #
     def ready(self) -> bool:
+        """
+        On est prêt si on a établi une liaison avec un serveur DLNA.
+        :return: True si tout est OK au niveau de la connexion avec le serveur DLNA.
+        """
         return self.net_wrapper.server_control_url is not None
 
     # --------------------------------------------------------------------- #
-    # Cherche le server DLNA. Il est mémorisé dans le network_wrapper.
     # --------------------------------------------------------------------- #
     def get_dlna_server(self):
+        """ Cherche un server DLNA. Il est mémorisé dans le network_wrapper. """
         # -----------------------------------------------------------------
         # Try to load a previously saved server
         # -----------------------------------------------------------------
@@ -92,9 +94,9 @@ class VREngine:
         self.net_wrapper.find_music_container()
 
     # --------------------------------------------------------------------- #
-    # Scanne le server DLNA et stocke les metadata des MP3 dans la database.
     # --------------------------------------------------------------------- #
     def scan_all_mp3(self):
+        """ Scanne le server DLNA et stockage des metadata des MP3 dans la database. """
         log.debug("Scanning DLNA server for all MP3s...")
         all_tracks = self.net_wrapper.scan_all_mp3()
         # ----------------------------------------------------------------- #
@@ -116,7 +118,7 @@ class VREngine:
             return self.db_wrapper.get_tracks_for_genre(value)
         if mode == 'year':
             return self.db_wrapper.get_tracks_for_decade(int(value))
-        if mode == 'bpm':
+        if mode == 'bpm' or mode == "beat":
             return self.db_wrapper.get_tracks_for_beat(float(value))
             pass
         if mode == 'rating':
@@ -128,30 +130,27 @@ class VREngine:
         return []
 
     # --------------------------------------------------------------------- #
-    # Attend 2 secondes et affiche les infos du clip.
     # --------------------------------------------------------------------- #
     async def show_clip_info(self, track_id: str):
         """
-        Attend 2 secondes et affiche les infos du clip.
-        Args :
-            track_id : l'identifiant du clip dont on veut afficher les informations détaillées.
+        Attend deux secondes et affiche les infos du clip.
+        :param track_id: L'identifiant du clip dont on veut afficher les informations détaillées.
         """
         await asyncio.sleep(2)
         # info = self.net_wrapper.get_clip_info(track_id)
         info = self.db_wrapper.get_track_info(track_id)
         if info:
-            title, artist, year, genre = info
+            title, artist, year, genre, bpm = info
             # NOW PLAYING :
-            Display.show(title.upper(), f"by {artist}", f"({year})", genre)
+            Display.show(title.upper(), f"by {artist}", f"({year})", genre, f"<beat {bpm} >")
 
     # --------------------------------------------------------------------- #
-    # Récupération du BPM et du RATING du clip.
     # --------------------------------------------------------------------- #
-    async def repeat_get_data (self, period: float):
+    async def repeat_get_data(self, period: float):
         """
-        Periodic task: check if we miss a BPM.
-        Args:
-            period: attente avant recupération nouveau BPM. Typiquement 500ms.
+        Récupération du BPM et du RATING du clip.
+        Périodiquement, on vérifie s'il nous manque encore des BPM.
+        :param period: Attente avant recupération nouveau BPM. Typiquement 1s.
         """
         unrythmed_track_list = self.db_wrapper.get_unrythmed_tracks()
         try:
@@ -177,6 +176,3 @@ class VREngine:
         # Enregistre les tags dans la base
         self.db_wrapper.update_track_bpm(tags)
         self.db_wrapper.update_track_rating(tags)
-
-
-

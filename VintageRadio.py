@@ -16,15 +16,17 @@ import signal
 import sys
 
 
+# --------------------------------------------------------------------- #
+# --------------------------------------------------------------------- #
 def sigint_handler(signum, frame):
-    print(f"Received SIGINT! (signum={signum})")
+    print(f"Received SIGINT! (signum={signum} - frame={frame})")
     sys.exit(0)
 
 
 # --------------------------------------------------------------------- #
-# Callback for the Keyboard Listening thread
 # --------------------------------------------------------------------- #
 def on_key_press(action):
+    """ Callback for the Keyboard and GPIO Listening threads. """
     if action == 'QUIT':
         log.warning("QUIT command received")
     elif action == 'NEXT':
@@ -48,17 +50,21 @@ def on_key_press(action):
         # Refait un scan du réseau à la recherche de serveurs DLNA
         # Utilisé pour la mise au point
         engine.net_wrapper.discover_servers()
+    # TODO : action STAR ME
 
 
 # --------------------------------------------------------------------- #
-# Helper pour le programme principal.
-# Parsing des arguments en ligne de commande.
 # --------------------------------------------------------------------- #
 def parse_args() -> argparse.Namespace:
-    """Parse command-line arguments."""
+    """
+    # Helper pour le programme principal.
+    # Parsing des arguments en ligne de commande.
+    :return: La liste des arguments.
+    """
     parser = argparse.ArgumentParser(
         description='VintageRadio - DLNA Music Player for Raspberry Pi'
     )
+    # Parse command-line arguments.
     parser.add_argument(
         '-v', '--verbose',
         action='count',
@@ -69,9 +75,9 @@ def parse_args() -> argparse.Namespace:
 
 
 # --------------------------------------------------------------------- #
-# Main initialisation
 # --------------------------------------------------------------------- #
 def setup():
+    """ Setup() : Main initialisation procedure. """
     log.info("Start Setup")
     # -----------------------------------------------------------------
     # Get the DLNA server
@@ -90,36 +96,36 @@ def setup():
     log.info("End Setup")
 
 
-# -----------------------------------------------------------------
-# Boucle principale asynchrone
-# -----------------------------------------------------------------
+# --------------------------------------------------------------------- #
+# --------------------------------------------------------------------- #
 async def loop():
+    """ loop() : Boucle principale asynchrone. """
     log.debug("Start Loop")
     lecture_task = None
-    # -------------------------------------------------------------------------- #
+    # ------------------------------------------------------------------------
     # Tache périodique No 1 : Reload user request (json file) every 5 seconds.
-    # -------------------------------------------------------------------------- #
+    # ------------------------------------------------------------------------
     refresh_task = asyncio.create_task(user_request.repeating_reread(5))  # fire-and-forget
-    # -------------------------------------------------------------------------- #
+    # ------------------------------------------------------------------------
     # Tache périodique No 2 : Read missing Beat Per Minute on server.
-    # -------------------------------------------------------------------------- #
-    refresh_bpm = asyncio.create_task(engine.repeat_get_data(10))  # start repeating
+    # ------------------------------------------------------------------------
+    refresh_bpm = asyncio.create_task(engine.repeat_get_data(6))  # start repeating
 
     try:
-        # -------------------------------------------------------------------------- #
+        # --------------------------------------------------------------------
         # Boucle principale
-        # -------------------------------------------------------------------------- #
+        # --------------------------------------------------------------------
         while True:
-            # ----------------------------------------------------------------- #
+            # ----------------------------------------------------------------
             # [1] Check if a QUIT event was received
-            # ----------------------------------------------------------------- #
+            # ----------------------------------------------------------------
             if quit_event.is_set():
                 log.debug("Exiting loop")
                 break
 
-            # ----------------------------------------------------------------- #
+            # ----------------------------------------------------------------
             # [2] A-t-on une nouvelle requete de l'utilisateur ?
-            # ----------------------------------------------------------------- #
+            # ----------------------------------------------------------------
             if user_request.has_changed():
                 log.info("User request change detected")
                 # -------------------------------------------------------------
@@ -150,6 +156,7 @@ async def loop():
                 # On demande l'affichage du titre
                 current_id = musics.get_playing_id()
                 display_task = asyncio.create_task(engine.show_clip_info(current_id))
+                log.debug(f"Start task {display_task}")
             # -------------------------------------------------------------
             # [4] Check if the MP3 file is still playing
             # -------------------------------------------------------------
@@ -169,32 +176,36 @@ async def loop():
         keyboard_ctrl.stop()
         refresh_task.cancel()
         refresh_bpm.cancel()
-        # On attend que les taches s'achevent
+        # On attend que les tâches s'achèvent
         await refresh_task
         await refresh_bpm
         log.warning("Shutdown complete")
 
 
-# ---------------------------------------------------------
-# Programme Principal
-# ---------------------------------------------------------
+# --------------------------------------------------------------------- #
+# --------------------------------------------------------------------- #
 async def main():
+    """ PROGRAMME PRINCIPAL """
+    # -----------------------------
     # On exécute le Setup
+    # -----------------------------
     setup()
+    # -----------------------------
     # On lance la boucle (si on a un serveur DLNA)
+    # -----------------------------
     if engine.ready():
         await loop()
     engine.close()
 
 
-# -------------------------------------------------------------
+# --------------------------------------------------------------------- #
 # Launch Main Program (EventLoop)
-# -------------------------------------------------------------
+# --------------------------------------------------------------------- #
 if __name__ == "__main__":
     args = parse_args()
-    # -----------------------------------------------------------------
+    # ---------------------------------------------------------
     # Initialisation du logger
-    # -----------------------------------------------------------------
+    # ---------------------------------------------------------
     set_logging(args.verbose)
     log = get_logger(__name__)
     # ---------------------------------------------------------

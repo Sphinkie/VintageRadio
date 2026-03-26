@@ -49,7 +49,7 @@ class UserRequest:
             with REQUEST_PATH.open("r", encoding="utf-8") as fp:
                 data = json.load(fp)
             # Normalise keys (allow upper‑case or missing entries)
-            mode_value = data.get('mode', self.default_mode) # can be 'genre' or 'year'
+            mode_value = data.get('mode', self.default_mode)  # can be 'genre' or 'year' or 'beat'
             self.new_request['mode'] = mode_value
             self.new_request['request'] = data.get(mode_value, self.default_request)
         except Exception as e:

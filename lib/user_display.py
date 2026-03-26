@@ -18,12 +18,11 @@ class Display:
     display_target = 0
 
     # --------------------------------------------------------------------- #
-    # Constructeur
     # --------------------------------------------------------------------- #
     def __init__(self, target: str):
         """ 
         Constructor. 
-        Param target: allowed values 'tty' | 'raspberry'
+        :param target: allowed values 'tty' | 'raspberry'
         """
         if target == 'raspberry':
             Display.display_target = 1
@@ -31,10 +30,13 @@ class Display:
             Display.display_target = 0
 
     # --------------------------------------------------------------------- #
-    # Efface l'afficheur et affiche un certain nombre de textes
     # --------------------------------------------------------------------- #
     @staticmethod
     def show(*texts):
+        """
+        Efface l'afficheur et affiche un certain nombre de textes
+        :param texts: Une suite de texte (nombre non précisé).
+        """
         if Display.display_target >= 0:
             Display.flush()
             for text in texts:
@@ -42,47 +44,58 @@ class Display:
 
     @staticmethod
     # --------------------------------------------------------------------- #
-    # Affiche une ligne à la suite de la précédente
     # --------------------------------------------------------------------- #
     def add_line(text: str):
+        """
+        Affiche une ligne à la suite de la précédente.
+        :param text: Une ligne de texte.
+        """
         if Display.display_target >= 0:
             print(text + "\r")
 
     # --------------------------------------------------------------------- #
-    # Affichage d'un texte en couleur rouge
     # --------------------------------------------------------------------- #
     @staticmethod
     def warning(text: str):
+        """
+        Affichage d'un texte en couleur rouge.
+        :param text: Une ligne de texte.
+        """
         if Display.display_target >= 0:
-            print("🚦 ⚡ " + text)
+            print(" ⚡ " + text)
 
     # --------------------------------------------------------------------- #
-    # Efface l'afficheur
     # --------------------------------------------------------------------- #
     @staticmethod
     def flush():
+        """
+        Efface l'afficheur.
+        """
         if Display.display_target >= 0:
             print("--------------\r")
 
     # --------------------------------------------------------------------- #
-    # Affichage d'un texte et attente de réponse.
-    # FONCTION BLOQUANTE
     # --------------------------------------------------------------------- #
     @staticmethod
     def input(text: str) -> str:
+        """
+        Affichage d'un texte et attente de réponse.
+        FONCTION BLOQUANTE
+        :param text: Un texte d'invite.
+        :return: Le caractère ou le texte entré par l'utilisateur.
+        """
         choice = input(text)
         return choice
 
     # --------------------------------------------------------------------- #
-    # Affiche le menu de choix du server DLNA parmi ceux qui ont été
-    # trouvé, et demande à l'utilisateur d'en choisir un.
-    # Retourne l'URL choisie (ou None).
     # --------------------------------------------------------------------- #
     @staticmethod
     def pick_server_interactively(server_list: List) -> Optional[str]:
         """
-        Show a numbered list of discovered servers (showing just the host part)
-        and ask the user to choose one.  Returns the selected *control URL*.
+        Affiche le menu de choix du server DLNA parmi ceux qui ont été trouvé,
+        et demande à l'utilisateur d'en choisir un.
+        :param server_list: La liste de choix (liste de serveurs DLNA).
+        :return: Retourne la Control URL du serveur choisi (ou None).
         """
         if not server_list:
             return None

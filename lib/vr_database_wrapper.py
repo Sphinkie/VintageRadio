@@ -115,7 +115,7 @@ class DBWrapper:
             return self.db.get_track_urls()
         else:
             # Sinon, on ne renvoie que les urls qui n'ont pas de BPM en base.
-            return self.db.get_track_urls_by_bpm(None, )
+            return self.db.get_track_urls_by_bpm(None)
 
     # --------------------------------------------------------------------- #
     # --------------------------------------------------------------------- #
@@ -146,14 +146,14 @@ class DBWrapper:
         Extract metadata from the database.
         :param item_id: The ID of the item to look up. Ex: '2913'.
         :returns:
-            Tuple of (title, artist, year, genre).
+            Tuple of (title, artist, year, genre, bpm).
             `Empty strings` if field is missing.
             `None` if item not found.
         """
         log.debug("get clip info from db for item id: %s", item_id)
         metadata = self.db.get_track_info(item_id)
         if metadata:
-            return metadata['title'], metadata['artist'], metadata['year'], metadata['genre']
+            return metadata['title'], metadata['artist'], metadata['year'], metadata['genre'], metadata['bpm']
         else:
             # Not found
             return None

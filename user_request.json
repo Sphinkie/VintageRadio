@@ -1,11 +1,11 @@
 {
-  "mode": "year",
-  "mode1": "genre",
+  "mode": "beat",
   "genre" : "Blues",
   "genre1" : "Country",
   "genre2" : "Jazz",
   "genre3" : "Classique",
   "genre4" : "Chanson",
   "genre5" : "Cajun",
-  "year": "1966"
+  "year": "1972",
+  "beat": "108"
 }

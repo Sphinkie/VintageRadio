@@ -30,10 +30,9 @@ class DLNAMusic:
     """ Interactions with musical files.  """
 
     # --------------------------------------------------------------------- #
-    # Constructeur
     # --------------------------------------------------------------------- #
     def __init__(self):
-        """ Constructor. """
+        """ Constructeur. """
         self.tracks = []
         self.shuffled_tracklist = []
         self.current_pos = 0
@@ -42,10 +41,10 @@ class DLNAMusic:
         # Création d'une instance VLC
         self._instance = vlc.Instance(
             '--quiet',
-            #'--verbose', '2',
-            '--aout', 'pulse',                   # Audio output module
-            '--audio-replay-gain-mode', 'track', # Mode ReplayGain
-            '--audio-replay-gain-preamp', '0',   # Replay Mode ReplayGain in dB
+            # '--verbose', '2',
+            '--aout', 'pulse',  # Audio output module
+            '--audio-replay-gain-mode', 'track',  # Mode ReplayGain
+            '--audio-replay-gain-preamp', '0',  # Replay Mode ReplayGain in dB
             '--no-video'
         )
         self.renderer = self._instance.media_player_new()
@@ -55,43 +54,49 @@ class DLNAMusic:
         random.seed(os.urandom(256))
 
     # --------------------------------------------------------------------- #
-    # Installe un Handler qui stoppe VLC proprement en cas de CTRL-C.
     # --------------------------------------------------------------------- #
     def install_signal_handler(self):
-        # -----------------------
-        # Handler for CTRL-C
-        # -----------------------
+        """ Installe un Handler qui stoppe VLC proprement en cas de CTRL-C. """
+
+        # ------------------------------------
         def handler(sig, frame):
+            """ Le Handler proprement dit. """
             log.info("Stop playing... (exit)")
             self.stop()
             sys.exit(0)
 
-        # -----------------------
+        # ------------------------------------
         signal.signal(signal.SIGINT, handler)
 
     # --------------------------------------------------------------------- #
-    # Remplissage de la liste des tracks.
     # --------------------------------------------------------------------- #
     def load_playlist(self, mp3_urls: List[str]):
-        """ Populate tracks with absolute URLs of MP3 files found under container_url."""
-        if mp3_urls is None:
-            Display.warning("No MP3 files were found in the folder.")
+        """
+        Remplissage de la liste des tracks.
+        Populate tracks with absolute URLs of MP3 files found under container_url.
+        :param mp3_urls: Une liste d'URLs.
+        """
+        if mp3_urls is None or len(mp3_urls) == 0:
+            log.warning("No MP3 files in the playlist.")
+            Display.warning("No MP3 files in the playlist.")
         else:
             self.tracks = mp3_urls
 
     # --------------------------------------------------------------------- #
-    # Affiche la liste des URLs reçues.
     # --------------------------------------------------------------------- #
     def list_all(self):
-        log.debug("MP3 url found:")
+        """Affiche la liste des URLs reçues."""
+        log.debug("MP3 urls found:")
         for url in self.tracks:
             log.debug(url)
 
     # --------------------------------------------------------------------- #
-    # Démarre un fichier MP3.
     # --------------------------------------------------------------------- #
     def start_track(self, track_url):
-        """ Send a Play request for a single track to the renderer."""
+        """
+        Démarre un fichier MP3.
+        Send a Play request for a single track to the renderer.
+        """
         # Create a media player from the instance
         media = self._instance.media_new(track_url)
         self.renderer.set_media(media)  # Link to the existing renderer
@@ -99,11 +104,10 @@ class DLNAMusic:
         self.renderer.play()
 
     # --------------------------------------------------------------------- #
-    # Stoppe le fichier MP3 courant et attend un court délai.
     # --------------------------------------------------------------------- #
     def stop(self):
-        """Stop playback and signal any running shuffle loop to exit."""
-        # Send the actual STOP command to the renderer:
+        """Stoppe le fichier MP3 courant et attend un court délai."""
+        # Send a STOP command to the renderer.
         self.renderer.stop()
         # Give the renderer a moment to settle before the next URI
         # Seconds to wait between tracks
@@ -113,9 +117,12 @@ class DLNAMusic:
             time.sleep(delay_between)
 
     # --------------------------------------------------------------------- #
-    # Retourne True si un fichier est Ended, False si le fichier est playing.
     # --------------------------------------------------------------------- #
     def is_stopped(self) -> bool:
+        """
+        Vérifie si une musique  est en cours.
+        :return: Retourne True si le renderer VLC est Ended, False si le renderer VLC est playing.
+        """
         """ returns False if a file is playing."""
         # log.debug(self.renderer.get_state())
         ended = (self.renderer.get_state() == vlc.State.Ended)
@@ -123,10 +130,10 @@ class DLNAMusic:
         return ended or stopped
 
     # ----------------------------------------------------------------------
-    # Gestion de la randomization.
     # ----------------------------------------------------------------------
     def shuffle_playlist(self):
         """
+        Gestion de la randomization.
         It makes a shallow copy of ``self.tracks`` before shuffling so the
         original ordering remains unchanged for later calls.
         """
@@ -139,24 +146,25 @@ class DLNAMusic:
         self.current_pos = 0
 
     # ----------------------------------------------------------------------
-    # Clone la playlist, pour obtenir une playlist de travail.
     # ----------------------------------------------------------------------
     def clone_playlist(self):
         """
+        Clone la playlist, pour obtenir une playlist de travail.
         Makes a shallow copy of ``self.tracks`` as it is the working playlist.
         """
-        if not self.tracks:
-            raise RuntimeError("No tracks loaded – call discover_tracks() first.")
         log.debug("Clone playlist")
+        if not self.tracks:
+            log.error("Playlist is empty !")
         self.shuffled_tracklist = self.tracks[:]  # shallow copy
         self.current_pos = 0
 
     # ----------------------------------------------------------------------
-    # Joue un fichier MP3 et attend la fin.
-    # Note: La fonction est bloquante : on y reste jusqu'à la fin du morceau.
     # ----------------------------------------------------------------------
     def play_sync(self):
-        """ Play an MP3 track of the shuffled playlist. """
+        """
+        Joue un fichier MP3 et attend la fin.
+        Note : La fonction est bloquante : on y reste jusqu'à la fin du morceau.
+        """
         track_url = self.shuffled_tracklist[self.current_pos]
         # Send a Play request for a single track to the renderer.
         self.start_track(track_url)
@@ -168,33 +176,41 @@ class DLNAMusic:
         self.current_pos += 1
 
     # --------------------------------------------------------------------- #
-    # Démarre la piste suivante de la playlist (en mode asynchrone).
     # --------------------------------------------------------------------- #
     async def play_async(self):
+        """ Démarre la piste suivante de la playlist (en mode asynchrone). """
         if self.current_pos >= len(self.shuffled_tracklist):
             self.current_pos = 0
-        uri = self.shuffled_tracklist[self.current_pos]
-        # Start the track
-        log.debug("[Start playing %d", self.current_pos)
-        self.start_track(uri)
-        self.current_pos += 1
+        if not self.shuffled_tracklist:
+            log.error("Playlist is empty: cannot play")
+        else:
+            uri = self.shuffled_tracklist[self.current_pos]
+            # Start the track
+            log.debug("[Start playing %d", self.current_pos)
+            self.start_track(uri)
+            self.current_pos += 1
 
     # --------------------------------------------------------------------- #
-    # Renvoie l'identifiant du clip en cours
-    # Example:
-    #   from http://192.168.0.101:50002/m/MP3/2913.mp3 the returned id is 2913
     # --------------------------------------------------------------------- #
-    def get_playing_id(self):
+    def get_playing_id(self) -> str:
+        """
+        Renvoie l'identifiant du clip en cours (ou une str vide).
+        :return: 2913 if the URL is `http://192.168.0.101:50002/m/MP3/2913.mp3`
+        """
         pos = max(0, self.current_pos - 1)
-        current_url = self.shuffled_tracklist[pos]
-        u = urlsplit(current_url)
-        filename = u.path.split('/').pop()
-        return filename.split('.')[0]
+        if not self.shuffled_tracklist:
+            log.error("Playlist is empty: cannot find curent id")
+            return ""
+        else:
+            current_url = self.shuffled_tracklist[pos]
+            u = urlsplit(current_url)
+            filename = u.path.split('/').pop()
+            return filename.split('.')[0]
 
     # --------------------------------------------------------------------- #
-    # Se repositionne sur le clip en cours
     # --------------------------------------------------------------------- #
     def rewind(self):
+        """Se repositionne sur le clip en cours."""
         self.current_pos -= 1
         if self.current_pos < 0:
             self.current_pos = 0

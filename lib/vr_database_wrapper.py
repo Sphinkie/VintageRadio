@@ -124,8 +124,12 @@ class DBWrapper:
         Met à jour le rating d'une piste.
         :param tags: Un dictionnaire ('url', 'rating', 'bpm').
         """
-        self.db.update_track(tags['url'], "rating", tags['rating'])
-        log.debug("tag updated: %s",tags['rating'])
+        # Contrôles
+        value = tags['rating']
+        if value is None or value == "" or int(value) is None:
+            return
+        self.db.update_track(tags['url'], "rating", value)
+        log.info("Rating update: %s",tags['rating'])
 
     # --------------------------------------------------------------------- #
     # --------------------------------------------------------------------- #
@@ -134,8 +138,12 @@ class DBWrapper:
         Met à jour le BPM (Beat Per Minute) d'une piste.
         :param tags: Un dictionnaire ('url', 'rating', 'bpm').
         """
-        self.db.update_track(tags['url'], "bpm", tags['bpm'])
-        log.info("BPM updated for %s: %s",tags['url'], tags['bpm'])
+        log.info("BPM update for %s: %s",tags['url'], tags['bpm'])
+        # Contrôles
+        value = tags['bpm']
+        if value is None or value == "" or float(value) is None:
+            return
+        self.db.update_track(tags['url'], "bpm", value)
 
     # --------------------------------------------------------------------- #
     # Retourne des infos sur le clip demandé, en les cherchant dans la

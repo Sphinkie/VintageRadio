@@ -117,7 +117,7 @@ def get_track_tags(track_url: str, max_bytes: int = 100000) -> Tuple[Optional[st
             raw_rating = popm_frame[0].rating
             log.debug(f"raw_rating: {raw_rating}")
             if raw_rating > 0:
-                mp3_rating = f"{round(raw_rating / 51)} stars"  # Rough approximation (255/51 ≈ 5)
+                mp3_rating = f"{round(raw_rating / 51)}"  # Rough approximation (255/51 ≈ 5)
 
         # ---------------------------------------------------------------------
         # Extract Genre specific field.

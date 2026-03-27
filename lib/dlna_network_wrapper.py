@@ -17,12 +17,11 @@ ROOT_ID = "0"
 
 
 # ----------------------------------------------------------------------- #
-# Cette classe encapsule les requetes HTTP au serveur DLNA.
+# Cette classe encapsule les requêtes HTTP au serveur DLNA.
 # ----------------------------------------------------------------------- #
 class DLNAWrapper:
 
     # --------------------------------------------------------------------- #
-    # Constructeur
     # --------------------------------------------------------------------- #
     def __init__(self):
         """ Constructor. """
@@ -34,7 +33,6 @@ class DLNAWrapper:
         self.latest_container_id = None
 
     # --------------------------------------------------------------------- #
-    # Demande au réseau de rechercher la liste des serveurs DLNA disponibles.
     # --------------------------------------------------------------------- #
     def discover_servers(self):
         """Demande au réseau de rechercher la liste des serveurs DLNA disponibles."""
@@ -45,22 +43,19 @@ class DLNAWrapper:
             log.info("> %s", host)
 
     # --------------------------------------------------------------------- #
-    # Définit le Serveur DLNA à utiliser.
     # --------------------------------------------------------------------- #
     def set_server(self, server_ctrl_url: str):
         """Définit le Serveur DLNA à utiliser."""
         self.server_control_url = server_ctrl_url
 
     # --------------------------------------------------------------------- #
-    # Transforme une "Description URL" en "ContentDirectory Control URL"
     # --------------------------------------------------------------------- #
     @staticmethod
     def resolve_control(url: str) -> Optional[str]:
-        """        
-        Args :
-            url : La 'Description URL' du serveur DLNA.
-        Returns :
-            La 'Control URL' du serveur DLNA (ContentDirectory).
+        """
+        Transforme une "Description URL" en "ContentDirectory Control URL".
+        :param url: La "Description URL" du serveur DLNA.
+        :returns: La "Control URL" du serveur DLNA (ContentDirectory).
         """
         return DLNANetwork.get_content_directory_control_url(url)
 
@@ -69,7 +64,8 @@ class DLNAWrapper:
     # We assume “Music” is a direct child of the root (Music / Photo / Video).
     # --------------------------------------------------------------------- #
     def find_music_container(self) -> Optional[str]:
-        if self.server_control_url is None: return None
+        if self.server_control_url is None:
+            return None
         self.music_container_id = self.find_container(ROOT_ID, ["Music", "Musique", "Música", "Musik"])
         if self.music_container_id is None:
             log.fatal("Could not locate a 'Music' container on the server.")
@@ -93,11 +89,11 @@ class DLNAWrapper:
     # objects they expose (containers, tracks, images, etc.).
     # --------------------------------------------------------------------- #
     def find_child_id(self, parent_id: str, title: str) -> Optional[str]:
-        didl = self.net.browse(self.server_control_url, object_id=parent_id)
-        if didl is None:
+        child_didl = self.net.browse(self.server_control_url, object_id=parent_id)
+        if child_didl is None:
             log.warning("didl is none")
             return None
-        for container in didl.findall('.//{*}container'):
+        for container in child_didl.findall('.//{*}container'):
             dc_title = container.find('{*}title')
             if dc_title is not None and dc_title.text and dc_title.text.strip().lower() == title.lower():
                 self.latest_container_id = container.attrib.get('id')
@@ -121,14 +117,11 @@ class DLNAWrapper:
     def get_clip_info(self, item_id: str) -> Optional[tuple]:
         """
         Extract metadata from a DIDL-Lite item element.
-        
-        Args:
-            item_id: The ID of the item to look up. Ex:2913
-            
-        Returns:
-            Tuple of (title, artist, year, genre)
-            Empty strings if field is missing
-            None if item not found
+        :param item_id: The ID of the item to look up. Ex:2913.
+        :returns:
+         - Tuple of (title, artist, year, genre).
+         - Empty strings if field is missing.
+         - None if item not found.
         """
         item_full_id = self.latest_container_id + "$@" + item_id
         log.debug("Searching for item id: %s", item_full_id)
@@ -210,10 +203,10 @@ class DLNAWrapper:
         }
 
     # --------------------------------------------------------------------- #
-    # Retourne TOUS les MP3 du serveur DLNA.
     # --------------------------------------------------------------------- #
     def scan_all_mp3(self) -> List[dict]:
         """
+        Retourne TOUS les MP3 du serveur DLNA.
         Scanne le serveur DLNA en priorité via "All Music",
         puis, en fallback, en mode récursif si nécessaire.
         """
@@ -225,7 +218,7 @@ class DLNAWrapper:
         if self.music_container_id is None:
             self.find_music_container()
         # --------------------------------------------------------------------- #
-        # Chercher le contenu du container "All Music"
+        # Chercher le contenu du conteneur "All Music"
         # --------------------------------------------------------------------- #
         log.info("Recherche du container 'All Music'...")
         # On cherche le container "All Music"
@@ -251,17 +244,12 @@ class DLNAWrapper:
         return all_tracks
 
     # --------------------------------------------------------------------- #
-    # Extrait tous les MP3 d'une réponse DIDL-Lite (flat list)
     # --------------------------------------------------------------------- #
     def extract_all_mp3_from_didl(self, didl_root: ET.Element) -> List[dict]:
         """
         Extrait toutes les pistes MP3 d'un élément DIDL-Lite avec métadonnées complètes.
-
-        Args:
-            didl_root: L'élément racine DIDL-Lite (résultat de self.browse())
-
-        Returns:
-            Liste de dicts avec: url, genre, year, filename, title, artist
+        :param didl_root: L'élément racine DIDL-Lite (résultat de self.browse())
+        :returns: Liste de dicts avec : url, genre, year, filename, title, artist
         """
         mp3_tracks = []
 
@@ -299,19 +287,15 @@ class DLNAWrapper:
         return mp3_tracks
 
     # --------------------------------------------------------------------- #
-    # Helper pour extraire un field du DIDL-Lite XML
     # --------------------------------------------------------------------- #
     @staticmethod
     def _extract_field(element: ET.Element, tag_name: str) -> str:
         """
+        Helper pour extraire un field du DIDL-Lite XML.
         Safely extract text content from an XML element.
-
-        Args:
-            element: The parent XML element
-            tag_name: The tag to search for (supports wildcard namespace {*})
-
-        Returns:
-            Text content or empty string if not found
+        :param element: The parent XML element
+        :param tag_name: The tag to search for (supports wildcard namespace {*})
+        :returns: Text content or empty string if not found
         """
         field = element.find(tag_name)
         if field is not None and field.text:
@@ -326,8 +310,8 @@ if __name__ == "__main__":
     wrapper = DLNAWrapper()
     wrapper.set_server("http://192.168.0.101:50001/ContentDirectory/control")
     # Trouver "All Music"
-    music_ctnr_id = wrapper.find_music_container()
-    all_music_ctnr_id = wrapper.find_container(music_ctnr_id, ["All music"])
+    music_conteneur_id = wrapper.find_music_container()
+    all_music_ctnr_id = wrapper.find_container(music_conteneur_id, ["All music"])
     print("all_music_id: ", all_music_ctnr_id)
 
     # -------------------------------------------------------------

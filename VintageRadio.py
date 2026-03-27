@@ -107,7 +107,7 @@ async def loop():
     # ------------------------------------------------------------------------
     refresh_task = asyncio.create_task(user_request.repeating_reread(5))  # fire-and-forget
     # ------------------------------------------------------------------------
-    # Tache périodique No 2 : Read missing Beat Per Minute on server.
+    # Tache périodique No 2 : Read missing Beat Per Minute and Ratings on server.
     # ------------------------------------------------------------------------
     refresh_bpm = asyncio.create_task(engine.repeat_get_data(6))  # start repeating
 

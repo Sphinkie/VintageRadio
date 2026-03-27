@@ -17,20 +17,20 @@ log = get_logger(__name__)
 # Gestion de la base de données SQLite pour les métadonnées MP3.
 # --------------------------------------------------------------------- #
 class VRDatabase:
-    """Gestion de la base de données SQLite pour les métadonnées MP3.
-    
-        Schéma de la base de données.
-        Tracks
-        ├── id (INTEGER PRIMARY KEY)
-        ├── url (TEXT UNIQUE)
-        ├── dlna_id (TEXT UNIQUE)
-        ├── file_hash (TEXT)  # Hash 8 chars basé sur le nom
-        ├── genre (TEXT)
-        ├── year (TEXT)
-        ├── rating (INTEGER)  # 0-5 étoiles
-        ├── bpm (REAL)        # battements par minute (beat)
-        ├── added_at (TIMESTAMP)
-        └── updated_at (TIMESTAMP)
+    """
+    Gestion de la base de données SQLite pour les métadonnées MP3.
+    Schéma de la base de données.
+     - Tracks
+         + id (INTEGER PRIMARY KEY)
+         + url (TEXT UNIQUE)
+         + dlna_id (TEXT UNIQUE)
+         + file_hash (TEXT) - hash de 8 chars basé sur le nom.
+         + genre (TEXT)
+         + year (TEXT)
+         + rating (INTEGER) - de 0 à 5 étoiles.
+         + bpm (REAL) - battements par minute (beat).
+         + added_at (TIMESTAMP)
+         + updated_at (TIMESTAMP)
     """
 
     # --------------------------------------------------------------------- #
@@ -128,7 +128,7 @@ class VRDatabase:
     # --------------------------------------------------------------------- #
     def get_track_urls(self) -> List[str]:
         """
-        Retourne la liste de toutes les tracks (url)..
+        Retourne la liste de toutes les tracks (url).
         :returns: Une liste d'URLs de tracks.
         """
         cursor = self.conn.cursor()
@@ -242,15 +242,15 @@ class VRDatabase:
 
     # --------------------------------------------------------------------- #
     # --------------------------------------------------------------------- #
-    def update_track(self, url: str, key: str, value: int):
+    def update_track(self, url: str, key: str, value: str):
         """
         Met à jour une valeur pour la track donnée dans la base de données.
         :param url: URL de la track à modifier.
-        :param key: Nom de la colonne.
-        :param value: Valeur à modifier.
+        :param key: Nom de la colonne (doit exister).
+        :param value: Valeur à modifier (doit être controlée en amont).
         """
         if value is None:
-            return
+            value = ""
         cursor = self.conn.cursor()
         query = f"UPDATE tracks SET {key}={value}, updated_at = CURRENT_TIMESTAMP WHERE url='{url}' "
         cursor.execute(query)

@@ -2,19 +2,19 @@
 
 ## Bill of Material
 
--   Convertisseur analogique-numerique (ADC)
-	MCP3008 (SPI) : 8 canaux, 10 bits (1024 valeurs). Très simple à câbler, bibliothèque Python (spidev) très 
-	Adafruit 5€ Product ID: 856 
+- Convertisseur analogique-numerique (ADC)
+   MCP3008 (SPI) : 8 canaux, 10 bits (1024 valeurs). Très simple à câbler, bibliothèque Python (spidev) très 
+   Adafruit 5€ Product ID: 856 
 	
--   Potentiomètre 10kΩ - linéaire.
-	Trop difficile à trouver en 180° (half-turn) => on pren un single-turn.
-	A vérifier dans le stock.
+-  Potentiomètre 10kΩ - linéaire.
+   Trop difficile à trouver en 180° (half-turn) => on pren un single-turn.
+   A vérifier dans le stock.
 	
--	Ampli
+-  Ampli
 
-- ePaper 2.13" 5x2.5xm SPI
+-  ePaper 2.13" - 5cm x 2.5xm - SPI - 250 x 122
 
-- ePaper 2.9"	3x6.8 cm SPI
+-  ePaper 2.9" - 3cm x 6.8cm - SPI - 296 x 128
 
 
 	
@@ -48,24 +48,24 @@ sudo apt-get install python3-spidev
 
 Alimentation (Power) :
 
-    - 3.3V : Relié aux broches VDD, DVDD, VREF du MCP3008 et à la broche 3 du potentiomètre.
-    - GND : Relié aux broches VSS, AGND, DGND du MCP3008 et à la broche 1 du potentiomètre.
+- 3.3V : Relié aux broches VDD, DVDD, VREF du MCP3008 et à la broche 3 du potentiomètre.
+- GND : Relié aux broches VSS, AGND, DGND du MCP3008 et à la broche 1 du potentiomètre.
 
 Signal Analogique :
 
-    - La broche centrale du potentiomètre (Broche 2) va sur CH0 (Canal 0) du MCP3008.
+- La broche centrale du potentiomètre (Broche 2) va sur CH0 (Canal 0) du MCP3008.
 
 Interface SPI (Communication) :
 
-    - CLK (Horloge) ↔ GPIO 23 (SCLK)
-    - DOUT (Données du MCP vers le Pi) ↔ GPIO 24 (MISO)
-    - DIN (Données du Pi vers le MCP) ↔ GPIO 25 (MOSI)
-    - CS (Chip Select) ↔ GPIO 8 (CE0)
+- CLK (Horloge) ↔ GPIO 23 (SCLK)
+- DOUT (Données du MCP vers le Pi) ↔ GPIO 24 (MISO)
+- DIN (Données du Pi vers le MCP) ↔ GPIO 25 (MOSI)
+- CS (Chip Select) ↔ GPIO 8 (CE0)
 
 
 ```mermaid
 graph LR
-    subgraph Potentiometre_10k [Potentiomètre 10kOhms Linéaire]
+    subgraph Potentiometre_10k [Potentiomètre 10kΩ]
         P1[Broche 1<br/>GND]
         P2[Broche 2<br/>Signal]
         P3[Broche 3<br/>3.3V]

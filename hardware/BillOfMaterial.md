@@ -33,7 +33,7 @@
                           │ DOUT (8) │──────────┴── GPIO 24 (MISO)
                           │ DIN (9)  │──────────┴── GPIO 25 (MOSI)
                           │ CS (10)  │──────────┴── GPIO 8 (CE0)
-                          └──────────┘
+                          └──────────┘          └──────────────┘
 ```
 
 #### Activation du SPI:
@@ -65,7 +65,7 @@ Interface SPI (Communication) :
 
 ```mermaid
 graph LR
-    subgraph Potentiometre_10k [Potentiomètre 10kOhms (Linéaire)]
+    subgraph Potentiometre_10k [Potentiomètre 10kOhms Linéaire]
         P1[Broche 1<br/>GND]
         P2[Broche 2<br/>Signal]
         P3[Broche 3<br/>3.3V]

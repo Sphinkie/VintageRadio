@@ -20,7 +20,7 @@
 	
 ###  MCP3008 - 8-Channel 10-Bit ADC With SPI Interface 
 
-  
+```  
   Potentiomètre 10kΩ          MCP3008              Raspberry Pi
 ┌─────────────┐           ┌──────────┐          ┌──────────────┐
 │  Broche 1 ──┴── GND     │ VSS (1)  │──────────┴── GND        │
@@ -34,6 +34,8 @@
                           │ DIN (9)  │──────────┴── GPIO 25 (MOSI)
                           │ CS (10)  │──────────┴── GPIO 8 (CE0)
                           └──────────┘
+```
+
 #### Activation du SPI:
 
 ```shell
@@ -46,24 +48,24 @@ sudo apt-get install python3-spidev
 
 Alimentation (Power) :
 
-    3.3V : Relié aux broches VDD, DVDD, VREF du MCP3008 et à la broche 3 du potentiomètre.
-    GND : Relié aux broches VSS, AGND, DGND du MCP3008 et à la broche 1 du potentiomètre.
+    - 3.3V : Relié aux broches VDD, DVDD, VREF du MCP3008 et à la broche 3 du potentiomètre.
+    - GND : Relié aux broches VSS, AGND, DGND du MCP3008 et à la broche 1 du potentiomètre.
 
 Signal Analogique :
 
-    La broche centrale du potentiomètre (Broche 2) va sur CH0 (Canal 0) du MCP3008.
+    - La broche centrale du potentiomètre (Broche 2) va sur CH0 (Canal 0) du MCP3008.
 
 Interface SPI (Communication) :
 
-    CLK (Horloge) ↔ GPIO 23 (SCLK)
-    DOUT (Données du MCP vers le Pi) ↔ GPIO 24 (MISO)
-    DIN (Données du Pi vers le MCP) ↔ GPIO 25 (MOSI)
-    CS (Chip Select) ↔ GPIO 8 (CE0)
+    - CLK (Horloge) ↔ GPIO 23 (SCLK)
+    - DOUT (Données du MCP vers le Pi) ↔ GPIO 24 (MISO)
+    - DIN (Données du Pi vers le MCP) ↔ GPIO 25 (MOSI)
+    - CS (Chip Select) ↔ GPIO 8 (CE0)
 
 
 ```mermaid
 graph LR
-    subgraph Potentiometre_10k [Potentiomètre 10kΩ (Linéaire)]
+    subgraph Potentiometre_10k [Potentiomètre 10kOhms (Linéaire)]
         P1[Broche 1<br/>GND]
         P2[Broche 2<br/>Signal]
         P3[Broche 3<br/>3.3V]

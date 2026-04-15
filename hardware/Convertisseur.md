@@ -1,24 +1,20 @@
 # Vintage Radio
 
-## Bill of Material
 
-- Convertisseur analogique-numerique (ADC)
-   MCP3008 (SPI) : 8 canaux, 10 bits (1024 valeurs). Très simple à câbler, bibliothèque Python (spidev) très 
-   Adafruit 5€ Product ID: 856 
+## Convertisseur analogique-numerique (ADC)
+
+MCP3008 (SPI) : 8 canaux, 10 bits (1024 valeurs). 
+
+MCP3008 - 8-Channel 10-Bit ADC With SPI Interface.
+
+Simple à câbler.
+Vibliothèque Python (spidev).  
+Adafruit:  5€  [Product ID: 856]
 	
--  Potentiomètre 10kΩ - linéaire.
-   Trop difficile à trouver en 180° (half-turn) => on pren un single-turn.
-   A vérifier dans le stock.
-	
--  Ampli
+Role: interfacàage avec un potentiomètre analogique.  
+(il n'y a pas d'entrée analogique sur un Raspberry).
 
--  ePaper 2.13" - 5cm x 2.5xm - SPI - 250 x 122
-
--  ePaper 2.9" - 3cm x 6.8cm - SPI - 296 x 128
-
-
-	
-###  MCP3008 - 8-Channel 10-Bit ADC With SPI Interface 
+###  Schéma de principe
 
 ```  
   Potentiomètre 10kΩ          MCP3008              Raspberry Pi
@@ -36,7 +32,7 @@
                           └──────────┘          └──────────────┘
 ```
 
-#### Activation du SPI:
+### Activation du SPI
 
 ```shell
 sudo raspi-config
@@ -44,23 +40,23 @@ sudo raspi-config
 sudo apt-get install python3-spidev						  
 ```
 
-####  Cablage
+###  Cablage
 
-Alimentation (Power) :
+- Alimentation (Power):
+   - **3.3V** : Relié aux broches `VDD`, `DVDD`, `VREF` du MCP3008 et à la broche 3 du potentiomètre.
+   - **GND** : Relié aux broches `VSS`, `AGND`, `DGND` du MCP3008 et à la broche 1 du potentiomètre.
 
-- 3.3V : Relié aux broches VDD, DVDD, VREF du MCP3008 et à la broche 3 du potentiomètre.
-- GND : Relié aux broches VSS, AGND, DGND du MCP3008 et à la broche 1 du potentiomètre.
+- Signal Analogique:
+   - **Data** : La broche centrale du potentiomètre (Broche 2) va sur `CH0` (Canal 0) du MCP3008.
 
-Signal Analogique :
+Interface SPI (Communication):
 
-- La broche centrale du potentiomètre (Broche 2) va sur CH0 (Canal 0) du MCP3008.
-
-Interface SPI (Communication) :
-
-- CLK (Horloge) ↔ GPIO 23 (SCLK)
-- DOUT (Données du MCP vers le Pi) ↔ GPIO 24 (MISO)
-- DIN (Données du Pi vers le MCP) ↔ GPIO 25 (MOSI)
-- CS (Chip Select) ↔ GPIO 8 (CE0)
+| ------  | --- | --- | --- |
+| Signal  | MCP3008 (Slave) | Raspberry (Master) | SPI |
+| Horloge | `CLK` | ↔ `GPIO 23` | SCLK| 
+| Données du MCP vers le Pi | `DOUT` | ↔ `GPIO 24` | MISO| 
+| Données du Pi vers le MCP | `DIN`  | ↔ `GPIO 25` | MOSI| 
+| Chip Select | `CS` | ↔ `GPIO 8` | CE-0| 
 
 
 ```mermaid

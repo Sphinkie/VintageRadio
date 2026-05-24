@@ -1,12 +1,10 @@
 # Vintage Radio
 
-## Devis
-
-**Farnell**:
+## Devis Farnell
 
   
 - 4x LED (Mode) Ambre (605nm) . Prévoir 2 à 3 cd (20 à 30 lumen) 20ma - 2.2V - Super ambre =  longueur d'onde plus profonde (~585-590 nm)
-   Farnell
+   Farnell: _Pas trouvé_
 
 - 2x 74HC595 - Registres à décalage.
    Farnell 1.66 € HT 

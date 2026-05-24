@@ -1,10 +1,9 @@
 # Vintage Radio
 
-## Devis
+## Devis Amazon
 
-**Farnell**:
 
-- [ ] Amplificateur audio (mono)
+- Amplificateur audio (mono)
    InnoMaker RPI HiFi AMP Hat TAS5713 Amplifier Audio Module 25W Class D Power.  
    Sound Card Extension Board for Raspberry Pi 5/4/3/B+/Pi/Zero.  
    Capacitor Nichicon. Connexion SPI. Sortie sur connecteur. Réglage du gain.  
@@ -23,12 +22,11 @@
 - 2x MCP3008 Convertisseur analogique-numerique (ADC).  
 
 	
--  Potentiomètre 10kΩ - linéaire A.
-   *half-turn / single-turn*.
+-  Potentiomètre 10kΩ - linéaire A. half-turn / single-turn.
 	
 - Potentiomètre 10kΩ - linéaire A - Avec interrupteur. 
-   Amazon 5.50: 
    WELTRON 002045038963 WCIP20CIPS-08-60F1-10K-20%-Lin Rotary Potentiometer with Switch Mono 0.4 W 10 kΩ 1 pc(s) 
+   Amazon 5.50: 
 
-- Frais de Livraison
+- Frais de Livraison : selon fournissseur
 	

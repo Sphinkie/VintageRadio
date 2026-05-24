@@ -3,12 +3,8 @@
 ## Bill Of Material
 
 
-- [x] Amplificateur audio (mono)
-   InnoMaker RPI HiFi AMP Hat TAS5713 Amplifier Audio Module 25W Class D Power.  
-   Sound Card Extension Board for Raspberry Pi 5/4/3/B+/Pi/Zero.  
-   Capacitor Nichicon. Connexion SPI. Sortie sur connecteur. Réglage du gain.  
-   Power supply = 12/20v.  
-   36€ Amazon.  
+
+### Outputs
    
 - [x] Ecran ePaper
    Deux modèles à disposition dan le stock:
@@ -18,9 +14,24 @@
 
 - [x] Haut parleur - 4Ω - 5 W - Diamètre 7cm
 
-- [x] 3x PushButton (Again / Star me / Next)
+- [x] 1x LED Jaune (status "ON"). 
+- [x] 1x Resistance 150Ω (sous 3.3v)
 
-- [x] 4x PushButton (Genre / Year / Beat / Blutooth).   
+- [ ] 4x LED (Mode) Ambre. Prévoir 2 à 3 cd (20 à 30 lumen)
+- [x] 4x Résistance 150Ω (sous 3.3v — Vf=2.1v, 8mA/led)
+
+- [x] 1x LED bar (Affichage du rating) (7 Leds vertes) 2.2v 20mA
+- [x] 7x Résistance 150Ω (sous 3.3v — Vf=2.2v, 7.3mA/led, 51mA total — dans la limite 74HC595 70mA max)
+
+- [x] 2x LED E10 (Eclairage tuning) : L3 + L4
+- [x] 2x Résistance 150Ω (sous 5v — Vf=2.0v, 20mA/led)
+
+- [x] 1x LED (Eclairage ePaper) - Double blanche L1 + L2 (nécessite 5v avec résistances 380Ω).  
+
+### Inputs
+
+- [x] 3x PushButton (Again / Star me / Next)
+- [x] 4x PushButton (Genre / Year / Beat / Bluetooth).   
 - [x] 8x Résistance pour PushButton (10kΩ) SIL-9
 
 - [x] 1x micro PushButton (Reset database) - En face arrière.  
@@ -29,29 +40,26 @@
 - [x] 1x Switch Button (Local files/DLNA) - En face arrière.
 - [x] 1x Résistance 10k
 
-- [x] 1x Power Button (incl. LED) - En face arrière.
+- [x] 1x Power Button (incl. LED) - En face arrière. Bouton 16mm chrome, anneau LED bleue.
+- [x] 1x Résistance 120Ω (LED ring bleue, sous 5v — Vf=3.2v, 15mA)
 
-- [x] 1x LED Jaune (status "ON").
-- [x] 1x Resistance 150Ω
+### Composants
 
-- [x] 2x LED E10 (Eclairage tuning)
-- [ ] 2x Resistance ??
 
-- [x] 1x LED bar (Affichage du rating) (7 Leds vertes) 2.2v 20mA => 150Ω sous 5v
-- [x] 7x Resistance 200Ω.
-
-- [ ] 4x LED (Mode) Ambre. Prévoir 2 à 3 cd (20 à 30 lumen)
-- [ ] 4x Resistance ??
-
-- [x] 1x LED (Eclairage ePaper) - Double blanche avec résistances 380Ω.  
-
+- [x] Amplificateur audio (mono)
+   InnoMaker RPI HiFi AMP Hat TAS5713 Amplifier Audio Module 25W Class D Power.  
+   Sound Card Extension Board for Raspberry Pi 5/4/3/B+/Pi/Zero.  
+   Capacitor Nichicon. Connexion SPI. Sortie sur connecteur. Réglage du gain.  
+   Power supply = 12/20v.  
+   36€ Amazon.  
+   
 - [x] 2x 74HC595 Registres à décalage pour controle des LEDs. Format DIP-16.  
    Amazon 9€ (les 10)
 
 - [x] PCF8574 (8pins) I2C Expander pour controle des Pushbutton. Format miniboard.  
    Amazon 7€ (les 2)
 
-- [x] 2x MCP3008 Convertisseur analogique-numerique Adafruit (ADC).  Format DIP-16.
+- [x] MCP3008 Convertisseur analogique-numerique Adafruit (ADC).  Format DIP-16.
    8 canaux, 10 bits (1024 valeurs) - Connexion SPI. Lib Python: spidev.   
    Amazon 22€ (les 2)
 	
@@ -63,3 +71,14 @@
    Amazon 5.50: 
 
 - [ ] Ecran plexi
+
+
+### Récapitulatif des résistances
+
+  | Valeur     | Qté       | Usage                          |
+  | ---------- | --------- | ------------------------------ |
+  | 120Ω       | 1         | P — LED bleue power ring       |
+  | 150Ω       | 14        | On + L3 + L4 + V1–V7 + M1–M4  |
+  | 380Ω       | 2         | L1 + L2 — backlight ePaper     |
+  | 10kΩ SIL-9 | 1 boîtier | B1–B7 (7 pull-ups, 1 spare)    |
+  | 10kΩ       | 2         | B8 Reset + SW9 Local/DLNA      |

@@ -1,0 +1,316 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="900" viewBox="0 0 1180 900" font-family="Arial, sans-serif">
+
+  <rect width="1180" height="900" fill="#FAFAFA" stroke="#CCCCCC" stroke-width="1"/>
+
+  <!-- TITLE -->
+  <text x="590" y="26" text-anchor="middle" font-size="15" font-weight="bold" fill="#222">VintageRadio — Architecture matérielle (simplifiée)</text>
+
+  <!-- ===== LEGEND ===== -->
+  <rect x="900" y="40" width="265" height="160" rx="5" fill="#F9F9F9" stroke="#BBBBBB"/>
+  <text x="910" y="58" font-size="10" font-weight="bold" fill="#333">Légende</text>
+  <line x1="910" y1="68" x2="950" y2="68" stroke="#0055CC" stroke-width="2.5"/>
+  <text x="957" y="72" font-size="9" fill="#0055CC">SPI</text>
+  <line x1="910" y1="84" x2="950" y2="84" stroke="#AA0000" stroke-width="2.5"/>
+  <text x="957" y="88" font-size="9" fill="#AA0000">I2C</text>
+  <line x1="910" y1="100" x2="950" y2="100" stroke="#007755" stroke-width="2.5"/>
+  <text x="957" y="104" font-size="9" fill="#007755">I2S (audio)</text>
+  <line x1="910" y1="116" x2="950" y2="116" stroke="#226600" stroke-width="2"/>
+  <text x="957" y="120" font-size="9" fill="#226600">GPIO direct → LED</text>
+  <line x1="910" y1="132" x2="950" y2="132" stroke="#CC6600" stroke-width="2"/>
+  <text x="957" y="136" font-size="9" fill="#CC6600">Sorties LED (logiciel SPI)</text>
+  <line x1="910" y1="148" x2="950" y2="148" stroke="#CC0000" stroke-width="2"/>
+  <text x="957" y="152" font-size="9" fill="#CC0000">+5V direct (permanent)</text>
+  <line x1="910" y1="164" x2="950" y2="164" stroke="#333" stroke-width="2.5"/>
+  <text x="957" y="168" font-size="9" fill="#333">12V / audio analogique</text>
+  <circle cx="920" cy="181" r="7" fill="#F5C518"/>
+  <text x="933" y="185" font-size="9" fill="#886600">LED ambre</text>
+  <circle cx="985" cy="181" r="7" fill="#44BB44"/>
+  <text x="998" y="185" font-size="9" fill="#226622">LED verte</text>
+
+  <!-- ===== I2C EXPANDERS ===== -->
+  <rect x="15" y="215" width="130" height="255" rx="4" fill="#E8E8E8" stroke="#999" stroke-width="1.5"/>
+  <text x="80" y="234" text-anchor="middle" font-size="10" font-weight="bold" fill="#333">I2C Expanders</text>
+  <text x="80" y="248" text-anchor="middle" font-size="8" fill="#666">2× PCF8574</text>
+  <line x1="25" y1="253" x2="135" y2="253" stroke="#999" stroke-width="0.7"/>
+  <text x="25" y="270" font-size="8" fill="#555">Reset</text>
+  <text x="25" y="284" font-size="8" fill="#555">ON</text>
+  <text x="25" y="298" font-size="8" fill="#555">Local / DLNA</text>
+  <text x="25" y="312" font-size="8" fill="#555">Beat</text>
+  <text x="25" y="326" font-size="8" fill="#555">Genre</text>
+  <text x="25" y="340" font-size="8" fill="#555">BT</text>
+  <text x="25" y="354" font-size="8" fill="#555">Year</text>
+  <text x="25" y="368" font-size="8" fill="#555">Again</text>
+  <text x="25" y="382" font-size="8" fill="#555">Star me</text>
+  <text x="25" y="396" font-size="8" fill="#555">Next</text>
+  <circle cx="145" cy="335" r="3" fill="#AA0000"/>
+
+  <!-- ===== RASPBERRY PI ===== -->
+  <rect x="195" y="240" width="155" height="250" rx="8" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="2"/>
+  <text x="272" y="263" text-anchor="middle" font-size="13" font-weight="bold" fill="#1a1a8c">Raspberry Pi</text>
+  <line x1="205" y1="270" x2="340" y2="270" stroke="#6C8EBF" stroke-width="0.8"/>
+
+  <!-- Pin labels right side -->
+  <text x="338" y="293" text-anchor="end" font-size="8" fill="#0055CC">SPI: MOSI/MISO/SCLK/CE×2</text>
+  <text x="338" y="311" text-anchor="end" font-size="8" fill="#AA0000">I2C: SDA / SCL</text>
+  <text x="338" y="329" text-anchor="end" font-size="8" fill="#007755">I2S: BCK / LRCK / DATA</text>
+  <text x="338" y="347" text-anchor="end" font-size="8" fill="#666">GPIO25 — LATCH 74HC595</text>
+  <line x1="205" y1="355" x2="340" y2="355" stroke="#6C8EBF" stroke-width="0.5" stroke-dasharray="4,3"/>
+  <text x="338" y="373" text-anchor="end" font-size="8" fill="#226600" font-weight="bold">GPIO ?? — LED Year</text>
+  <text x="338" y="391" text-anchor="end" font-size="8" fill="#226600" font-weight="bold">GPIO ?? — LED Beat</text>
+  <text x="338" y="409" text-anchor="end" font-size="8" fill="#226600" font-weight="bold">GPIO ?? — LED Genre</text>
+  <text x="338" y="427" text-anchor="end" font-size="8" fill="#226600" font-weight="bold">GPIO ?? — LED BT</text>
+  <text x="338" y="450" text-anchor="end" font-size="8" fill="#226600" font-weight="bold">GPIO ?? — LED ON</text>
+  <text x="338" y="468" text-anchor="end" font-size="8" fill="#007755">GPIO 18/19/21 — I2S</text>
+
+  <!-- RPi output dots -->
+  <circle cx="350" cy="290" r="3.5" fill="#0055CC"/>
+  <circle cx="350" cy="308" r="3.5" fill="#AA0000"/>
+  <circle cx="350" cy="370" r="3.5" fill="#226600"/>
+  <circle cx="350" cy="388" r="3.5" fill="#226600"/>
+  <circle cx="350" cy="406" r="3.5" fill="#226600"/>
+  <circle cx="350" cy="424" r="3.5" fill="#226600"/>
+  <circle cx="350" cy="447" r="3.5" fill="#226600"/>
+  <circle cx="272" cy="490" r="3.5" fill="#007755"/>
+
+  <!-- ===== SPI BUS ===== -->
+  <!-- Horizontal bus from RPi to x=530 -->
+  <line x1="350" y1="290" x2="530" y2="290" stroke="#0055CC" stroke-width="2.5"/>
+  <text x="432" y="283" text-anchor="middle" font-size="9" font-weight="bold" fill="#0055CC">SPI bus</text>
+  <!-- Vertical bus at x=530 -->
+  <line x1="530" y1="75" x2="530" y2="640" stroke="#0055CC" stroke-width="2" stroke-dasharray="6,3"/>
+  <circle cx="530" cy="290" r="4" fill="#0055CC"/>
+  <!-- Branches right to devices -->
+  <line x1="530" y1="75"  x2="590" y2="75"  stroke="#0055CC" stroke-width="2"/>   <!-- ePaper -->
+  <line x1="530" y1="400" x2="590" y2="400" stroke="#0055CC" stroke-width="2"/>   <!-- 74HC595 -->
+  <line x1="530" y1="640" x2="590" y2="640" stroke="#0055CC" stroke-width="2"/>   <!-- MCP3008 -->
+  <circle cx="530" cy="75"  r="3.5" fill="#0055CC"/>
+  <circle cx="530" cy="400" r="3.5" fill="#0055CC"/>
+  <circle cx="530" cy="640" r="3.5" fill="#0055CC"/>
+
+  <!-- I2C bus -->
+  <line x1="145" y1="335" x2="195" y2="335" stroke="#AA0000" stroke-width="2"/>
+  <text x="166" y="328" text-anchor="middle" font-size="8" fill="#AA0000">I2C</text>
+
+  <!-- ===== ePaper ===== -->
+  <rect x="590" y="48" width="165" height="55" rx="4" fill="#E8F4F8" stroke="#5599BB" stroke-width="1.5"/>
+  <text x="672" y="69" text-anchor="middle" font-size="10" font-weight="bold" fill="#1a4a6a">ePaper</text>
+  <text x="672" y="84" text-anchor="middle" font-size="8" fill="#555">2.9″ SPI — 296×128</text>
+  <text x="672" y="97" text-anchor="middle" font-size="8" fill="#9900AA">L1, L2 → +5V direct (380Ω)</text>
+
+  <!-- ===== GPIO DIRECT LEDs (Year/Beat/Genre/BT) ===== -->
+  <rect x="590" y="128" width="250" height="190" rx="4" fill="#E8F5E9" stroke="#388E3C" stroke-width="1.5"/>
+  <text x="715" y="148" text-anchor="middle" font-size="10" font-weight="bold" fill="#1B5E20">GPIO direct — 150Ω — LED ambre</text>
+  <text x="715" y="163" text-anchor="middle" font-size="8" fill="#555">(3.3V → 8 mA — pas de chip intermédiaire)</text>
+  <line x1="600" y1="169" x2="830" y2="169" stroke="#388E3C" stroke-width="0.7"/>
+
+  <!-- Year -->
+  <line x1="350" y1="370" x2="490" y2="370" stroke="#226600" stroke-width="1.8"/>
+  <line x1="490" y1="370" x2="490" y2="188" stroke="#226600" stroke-width="1.8"/>
+  <line x1="490" y1="188" x2="700" y2="188" stroke="#226600" stroke-width="1.8"/>
+  <text x="560" y="184" font-size="7" fill="#226600">150Ω</text>
+  <circle cx="718" cy="188" r="12" fill="#F5C518" stroke="#886600" stroke-width="1.5"/>
+  <text x="718" y="192" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">Year</text>
+
+  <!-- Beat -->
+  <line x1="350" y1="388" x2="483" y2="388" stroke="#226600" stroke-width="1.8"/>
+  <line x1="483" y1="388" x2="483" y2="212" stroke="#226600" stroke-width="1.8"/>
+  <line x1="483" y1="212" x2="700" y2="212" stroke="#226600" stroke-width="1.8"/>
+  <text x="560" y="208" font-size="7" fill="#226600">150Ω</text>
+  <circle cx="718" cy="212" r="12" fill="#F5C518" stroke="#886600" stroke-width="1.5"/>
+  <text x="718" y="216" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">Beat</text>
+
+  <!-- Genre -->
+  <line x1="350" y1="406" x2="476" y2="406" stroke="#226600" stroke-width="1.8"/>
+  <line x1="476" y1="406" x2="476" y2="236" stroke="#226600" stroke-width="1.8"/>
+  <line x1="476" y1="236" x2="700" y2="236" stroke="#226600" stroke-width="1.8"/>
+  <text x="560" y="232" font-size="7" fill="#226600">150Ω</text>
+  <circle cx="718" cy="236" r="12" fill="#F5C518" stroke="#886600" stroke-width="1.5"/>
+  <text x="718" y="240" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">Genre</text>
+
+  <!-- BT -->
+  <line x1="350" y1="424" x2="469" y2="424" stroke="#226600" stroke-width="1.8"/>
+  <line x1="469" y1="424" x2="469" y2="260" stroke="#226600" stroke-width="1.8"/>
+  <line x1="469" y1="260" x2="700" y2="260" stroke="#226600" stroke-width="1.8"/>
+  <text x="560" y="256" font-size="7" fill="#226600">150Ω</text>
+  <circle cx="718" cy="260" r="12" fill="#F5C518" stroke="#886600" stroke-width="1.5"/>
+  <text x="718" y="264" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">BT</text>
+
+  <!-- ON LED (témoin logiciel) -->
+  <line x1="350" y1="447" x2="462" y2="447" stroke="#226600" stroke-width="1.8"/>
+  <line x1="462" y1="447" x2="462" y2="293" stroke="#226600" stroke-width="1.8"/>
+  <line x1="462" y1="293" x2="700" y2="293" stroke="#226600" stroke-width="1.8"/>
+  <text x="560" y="289" font-size="7" fill="#226600">150Ω</text>
+  <circle cx="718" cy="293" r="12" fill="#F5C518" stroke="#886600" stroke-width="2.5"/>
+  <text x="718" y="297" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">ON</text>
+  <text x="734" y="288" font-size="7" fill="#555">témoin</text>
+  <text x="734" y="299" font-size="7" fill="#555">logiciel</text>
+
+  <!-- ===== 74HC595 — v1 à v7 (direct SPI, plus de daisy-chain) ===== -->
+  <rect x="590" y="315" width="215" height="270" rx="4" fill="#FFF9DB" stroke="#D6B656" stroke-width="2"/>
+  <text x="697" y="336" text-anchor="middle" font-size="11" font-weight="bold" fill="#5a4000">74HC595</text>
+  <text x="697" y="351" text-anchor="middle" font-size="8" fill="#888">Barre LED v1–v7  (SPI direct)</text>
+  <line x1="590" y1="357" x2="805" y2="357" stroke="#D6B656" stroke-width="1"/>
+
+  <!-- Inputs left -->
+  <text x="597" y="377" font-size="8" fill="#0055CC">◄ DS    (14)  MOSI</text>
+  <text x="597" y="397" font-size="8" fill="#0055CC">◄ SHCP  (11)  SCLK</text>
+  <text x="597" y="417" font-size="8" fill="#0055CC">◄ STCP  (12)  LATCH GPIO25</text>
+  <text x="597" y="437" font-size="8" fill="#888">  OE (13) → GND</text>
+  <text x="597" y="457" font-size="8" fill="#888">  MR (10) → 3.3V</text>
+  <text x="597" y="477" font-size="8" fill="#888">  VCC (16) → 3.3V</text>
+  <text x="597" y="497" font-size="8" fill="#888">  GND (8) → GND</text>
+
+  <!-- Outputs right -->
+  <text x="797" y="377" text-anchor="end" font-size="8" fill="#CC6600">Q0 → v1 ►</text>
+  <text x="797" y="397" text-anchor="end" font-size="8" fill="#CC6600">Q1 → v2 ►</text>
+  <text x="797" y="417" text-anchor="end" font-size="8" fill="#CC6600">Q2 → v3 ►</text>
+  <text x="797" y="437" text-anchor="end" font-size="8" fill="#CC6600">Q3 → v4 ►</text>
+  <text x="797" y="457" text-anchor="end" font-size="8" fill="#CC6600">Q4 → v5 ►</text>
+  <text x="797" y="477" text-anchor="end" font-size="8" fill="#CC6600">Q5 → v6 ►</text>
+  <text x="797" y="497" text-anchor="end" font-size="8" fill="#CC6600">Q6 → v7 ►</text>
+  <text x="797" y="560" text-anchor="end" font-size="8" fill="#AAAAAA">Q7'(9) nc</text>
+
+  <!-- 74HC595 connector dots -->
+  <circle cx="590" cy="374" r="3" fill="#0055CC"/>
+  <circle cx="590" cy="394" r="3" fill="#0055CC"/>
+  <circle cx="590" cy="414" r="3" fill="#0055CC"/>
+  <circle cx="805" cy="374" r="3" fill="#44BB44"/>
+  <circle cx="805" cy="394" r="3" fill="#44BB44"/>
+  <circle cx="805" cy="414" r="3" fill="#44BB44"/>
+  <circle cx="805" cy="434" r="3" fill="#44BB44"/>
+  <circle cx="805" cy="454" r="3" fill="#44BB44"/>
+  <circle cx="805" cy="474" r="3" fill="#44BB44"/>
+  <circle cx="805" cy="494" r="3" fill="#44BB44"/>
+
+  <!-- SPI wire to 74HC595 (from bus) -->
+  <line x1="530" y1="400" x2="590" y2="400" stroke="#0055CC" stroke-width="2"/>
+
+  <!-- LATCH wire from RPi GPIO25 -->
+  <line x1="350" y1="344" x2="455" y2="344" stroke="#0055CC" stroke-width="1.5" stroke-dasharray="5,2"/>
+  <line x1="455" y1="344" x2="455" y2="414" stroke="#0055CC" stroke-width="1.5" stroke-dasharray="5,2"/>
+  <line x1="455" y1="414" x2="590" y2="414" stroke="#0055CC" stroke-width="1.5" stroke-dasharray="5,2"/>
+  <text x="410" y="340" font-size="7" fill="#0055CC">LATCH</text>
+
+  <!-- v1-v7 LED circles -->
+  <line x1="805" y1="374" x2="845" y2="374" stroke="#CC6600" stroke-width="1.5"/>
+  <line x1="805" y1="394" x2="845" y2="394" stroke="#CC6600" stroke-width="1.5"/>
+  <line x1="805" y1="414" x2="845" y2="414" stroke="#CC6600" stroke-width="1.5"/>
+  <line x1="805" y1="434" x2="845" y2="434" stroke="#CC6600" stroke-width="1.5"/>
+  <line x1="805" y1="454" x2="845" y2="454" stroke="#CC6600" stroke-width="1.5"/>
+  <line x1="805" y1="474" x2="845" y2="474" stroke="#CC6600" stroke-width="1.5"/>
+  <line x1="805" y1="494" x2="845" y2="494" stroke="#CC6600" stroke-width="1.5"/>
+  <text x="817" y="369" font-size="7" fill="#CC6600">150Ω</text>
+  <circle cx="855" cy="374" r="9" fill="#44BB44" stroke="#226622" stroke-width="1.5"/>
+  <text x="855" y="378" text-anchor="middle" font-size="7" fill="#fff">v1</text>
+  <circle cx="855" cy="394" r="9" fill="#44BB44" stroke="#226622" stroke-width="1.5"/>
+  <text x="855" y="398" text-anchor="middle" font-size="7" fill="#fff">v2</text>
+  <circle cx="855" cy="414" r="9" fill="#44BB44" stroke="#226622" stroke-width="1.5"/>
+  <text x="855" y="418" text-anchor="middle" font-size="7" fill="#fff">v3</text>
+  <circle cx="855" cy="434" r="9" fill="#44BB44" stroke="#226622" stroke-width="1.5"/>
+  <text x="855" y="438" text-anchor="middle" font-size="7" fill="#fff">v4</text>
+  <circle cx="855" cy="454" r="9" fill="#44BB44" stroke="#226622" stroke-width="1.5"/>
+  <text x="855" y="458" text-anchor="middle" font-size="7" fill="#fff">v5</text>
+  <circle cx="855" cy="474" r="9" fill="#44BB44" stroke="#226622" stroke-width="1.5"/>
+  <text x="855" y="478" text-anchor="middle" font-size="7" fill="#fff">v6</text>
+  <circle cx="855" cy="494" r="9" fill="#44BB44" stroke="#226622" stroke-width="1.5"/>
+  <text x="855" y="498" text-anchor="middle" font-size="7" fill="#fff">v7</text>
+
+  <!-- ===== MCP3008 ===== -->
+  <rect x="590" y="615" width="175" height="110" rx="4" fill="#D0D8E8" stroke="#5566AA" stroke-width="1.5"/>
+  <text x="677" y="635" text-anchor="middle" font-size="10" font-weight="bold" fill="#1a2a6a">MCP3008  (ADC SPI)</text>
+  <text x="677" y="650" text-anchor="middle" font-size="8" fill="#444">8 canaux — 10 bits</text>
+  <line x1="600" y1="656" x2="755" y2="656" stroke="#5566AA" stroke-width="0.7"/>
+  <text x="597" y="673" font-size="8" fill="#444">CH0 ◄ Tuning (pot 10kΩ)</text>
+  <text x="597" y="689" font-size="8" fill="#444">CH1 ◄ Volume (pot 10kΩ)</text>
+  <text x="597" y="705" font-size="8" fill="#0055CC">◄ SPI (MOSI/MISO/SCLK/CE)</text>
+  <text x="597" y="718" font-size="8" fill="#888">Ref = 3.3V → 0-3.3V sur curseur</text>
+  <line x1="530" y1="640" x2="590" y2="640" stroke="#0055CC" stroke-width="2"/>
+
+  <!-- Pots -->
+  <rect x="795" y="620" width="115" height="40" rx="4" fill="#C8E6C9" stroke="#388E3C" stroke-width="1.5"/>
+  <text x="852" y="636" text-anchor="middle" font-size="9" font-weight="bold" fill="#1B5E20">Tuning</text>
+  <text x="852" y="650" text-anchor="middle" font-size="8" fill="#444">10kΩ linéaire</text>
+  <line x1="795" y1="638" x2="765" y2="673" stroke="#444" stroke-width="1.5"/>
+
+  <rect x="795" y="675" width="115" height="40" rx="4" fill="#FFCCBC" stroke="#E64A19" stroke-width="1.5"/>
+  <text x="852" y="691" text-anchor="middle" font-size="9" font-weight="bold" fill="#BF360C">Volume</text>
+  <text x="852" y="705" text-anchor="middle" font-size="8" fill="#444">10kΩ + interrupteur</text>
+  <line x1="795" y1="693" x2="765" y2="689" stroke="#444" stroke-width="1.5"/>
+
+  <!-- ===== AMPLI + HP ===== -->
+  <rect x="195" y="730" width="160" height="90" rx="4" fill="#E8E8E8" stroke="#666" stroke-width="1.5"/>
+  <text x="275" y="752" text-anchor="middle" font-size="11" font-weight="bold" fill="#222">AMPLI</text>
+  <text x="275" y="767" text-anchor="middle" font-size="8" fill="#555">TAS5713 HAT — 25W</text>
+  <line x1="205" y1="773" x2="345" y2="773" stroke="#666" stroke-width="0.7"/>
+  <text x="202" y="789" font-size="8" fill="#007755">◄ I2S audio</text>
+  <text x="202" y="803" font-size="8" fill="#AA0000">◄ I2C volume (amixer)</text>
+  <text x="202" y="817" font-size="8" fill="#333">◄ 12V alim</text>
+
+  <!-- HP shape -->
+  <polygon points="375,742 420,722 420,820 375,820" fill="#CCCCCC" stroke="#555" stroke-width="1.5"/>
+  <text x="397" y="773" text-anchor="middle" font-size="9" fill="#222">HP</text>
+  <text x="397" y="786" text-anchor="middle" font-size="8" fill="#555">4Ω 5W</text>
+  <line x1="355" y1="773" x2="375" y2="773" stroke="#333" stroke-width="2.5"/>
+
+  <!-- I2S wire RPi → AMPLI -->
+  <path d="M272,490 L272,600 L272,730" stroke="#007755" stroke-width="2.5" fill="none"/>
+  <text x="280" y="620" font-size="8" fill="#007755">I2S</text>
+
+  <!-- I2C volume RPi → AMPLI -->
+  <path d="M255,490 L255,620 L180,620 L180,773 L195,773" stroke="#AA0000" stroke-width="1.5" fill="none" stroke-dasharray="5,3"/>
+  <text x="163" y="700" font-size="8" fill="#AA0000" transform="rotate(-90,163,700)">I2C vol.</text>
+
+  <!-- ===== L1-L4 + ON LED + Power ===== -->
+  <rect x="15" y="590" width="165" height="130" rx="5" fill="#F3E6FA" stroke="#9900AA" stroke-width="1.5"/>
+  <text x="97" y="610" text-anchor="middle" font-size="10" font-weight="bold" fill="#6A0080">Alim. directe 5V</text>
+  <line x1="25" y1="616" x2="170" y2="616" stroke="#9900AA" stroke-width="0.7"/>
+
+  <circle cx="45" cy="638" r="9" fill="#EEEEEE" stroke="#888" stroke-width="1.5"/>
+  <text x="45" y="642" text-anchor="middle" font-size="7" fill="#444">L1</text>
+  <circle cx="72" cy="638" r="9" fill="#EEEEEE" stroke="#888" stroke-width="1.5"/>
+  <text x="72" y="642" text-anchor="middle" font-size="7" fill="#444">L2</text>
+  <text x="90" y="635" font-size="7" fill="#555">blanc</text>
+  <text x="90" y="645" font-size="7" fill="#555">ePaper</text>
+  <text x="25" y="660" font-size="7" fill="#888">+5V → 380Ω → LED → GND</text>
+
+  <circle cx="45" cy="682" r="9" fill="#F5C518" stroke="#886600" stroke-width="1.5"/>
+  <text x="45" y="686" text-anchor="middle" font-size="7" fill="#333">L3</text>
+  <circle cx="72" cy="682" r="9" fill="#F5C518" stroke="#886600" stroke-width="1.5"/>
+  <text x="72" y="686" text-anchor="middle" font-size="7" fill="#333">L4</text>
+  <text x="90" y="679" font-size="7" fill="#555">jaune</text>
+  <text x="90" y="689" font-size="7" fill="#555">tuning</text>
+  <text x="25" y="700" font-size="7" fill="#888">+5V → 150Ω → LED → GND</text>
+
+  <!-- +5V source -->
+  <line x1="97" y1="590" x2="97" y2="574" stroke="#CC0000" stroke-width="2"/>
+  <text x="97" y="570" text-anchor="middle" font-size="8" fill="#CC0000">+5V (ALIM)</text>
+
+  <!-- Power input -->
+  <polygon points="15,855 55,835 55,875" fill="#CC2200" stroke="#880000" stroke-width="1.5"/>
+  <text x="34" y="860" text-anchor="middle" font-size="9" fill="white" font-weight="bold">12V</text>
+  <line x1="55" y1="855" x2="90" y2="855" stroke="#333" stroke-width="2.5"/>
+  <rect x="90" y="835" width="85" height="40" rx="4" fill="#DDD" stroke="#666" stroke-width="1.5"/>
+  <text x="132" y="850" text-anchor="middle" font-size="9" font-weight="bold" fill="#222">ALIM</text>
+  <text x="132" y="865" text-anchor="middle" font-size="8" fill="#555">12V → 5V</text>
+  <line x1="132" y1="835" x2="132" y2="790" stroke="#CC0000" stroke-width="2"/>
+  <line x1="132" y1="790" x2="97" y2="790" stroke="#CC0000" stroke-width="2"/>
+  <line x1="97" y1="790" x2="97" y2="590" stroke="#CC0000" stroke-width="2"/>
+  <line x1="175" y1="855" x2="230" y2="800" stroke="#333" stroke-width="2.5"/>
+
+  <!-- ===== NOTE SIMPLIFICATION ===== -->
+  <rect x="900" y="220" width="265" height="100" rx="5" fill="#E8F5E9" stroke="#388E3C" stroke-width="1.5"/>
+  <text x="1032" y="240" text-anchor="middle" font-size="10" font-weight="bold" fill="#1B5E20">✓ Simplifications</text>
+  <text x="910" y="258" font-size="9" fill="#333">74HC595 #1 supprimé</text>
+  <text x="910" y="273" font-size="9" fill="#333">Year/Beat/Genre/BT → GPIO direct</text>
+  <text x="910" y="288" font-size="9" fill="#333">74HC595 #2 → SPI direct (1 chip)</text>
+  <text x="910" y="303" font-size="9" fill="#333">Level-shifter inutile (3.3V partout)</text>
+  <text x="910" y="318" font-size="9" fill="#333">9 GPIO encore libres</text>
+
+  <!-- ===== PYTHON NOTE ===== -->
+  <rect x="900" y="335" width="265" height="80" rx="5" fill="#F5F5F5" stroke="#888" stroke-width="1"/>
+  <text x="1032" y="353" text-anchor="middle" font-size="9" font-weight="bold" fill="#333">Python — 74HC595 (1 octet)</text>
+  <text x="910" y="372" font-size="9" font-family="Courier New, monospace" fill="#1a1a8c">spi.xfer([byte_v1_v7])</text>
+  <text x="910" y="389" font-size="8" fill="#666"># bit0=v1 … bit6=v7</text>
+  <text x="910" y="407" font-size="8" fill="#226600">GPIO.output(PIN_YEAR, GPIO.HIGH)</text>
+
+</svg>

@@ -75,10 +75,10 @@
 
 ### Récapitulatif des résistances
 
-  | Valeur     | Qté       | Usage                          |
-  | ---------- | --------- | ------------------------------ |
-  | 120Ω       | 1         | P — LED bleue power ring       |
-  | 150Ω       | 14        | On + L3 + L4 + V1–V7 + M1–M4  |
-  | 380Ω       | 2         | L1 + L2 — backlight ePaper     |
-  | 10kΩ SIL-9 | 1 boîtier | B1–B7 (7 pull-ups, 1 spare)    |
-  | 10kΩ       | 2         | B8 Reset + SW9 Local/DLNA      |
+  | Valeur     | Qté       | Usage                          | En stock | 
+  | ---------- | --------- | ------------------------------ | -------- |
+  | 120Ω       | 1         | P — LED bleue power ring       |  |
+  | 150Ω       | 14        | On + L3 + L4 + V1–V7 + M1–M4   |  |
+  | 380Ω       | 2         | L1 + L2 — backlight ePaper     | oui      |
+  | 10kΩ SIL-9 | 1 boîtier | B1–B7 (7 pull-ups, 1 spare)    | oui      |
+  | 10kΩ       | 2         | B8 Reset + SW9 Local/DLNA      | oui      |

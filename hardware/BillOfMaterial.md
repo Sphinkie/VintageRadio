@@ -15,18 +15,19 @@
 - [x] Haut parleur - 4Ω - 5 W - Diamètre 7cm
 
 - [x] 1x LED Jaune (status "ON"). 
-- [x] 1x Resistance 150Ω (sous 3.3v)
+- [] 1x Resistance 150Ω (sous 3.3v)
 
-- [ ] 4x LED (Mode) Ambre. Prévoir 2 à 3 cd (20 à 30 lumen)
-- [x] 4x Résistance 150Ω (sous 3.3v — Vf=2.1v, 8mA/led)
+- [ ] 4x LED (Mode) Ambre. Prévoir 2 à 3 cd (20 à 30 lumen).  | 
+- [] 4x Résistance 150Ω (sous 3.3v — Vf=2.1v, 8mA/led).  
 
 - [x] 1x LED bar (Affichage du rating) (7 Leds vertes) 2.2v 20mA
-- [x] 7x Résistance 150Ω (sous 3.3v — Vf=2.2v, 7.3mA/led, 51mA total — dans la limite 74HC595 70mA max)
+- [] 7x Résistance 150Ω (sous 3.3v — Vf=2.2v, 7.3mA/led, 51mA total — dans la limite 74HC595 70mA max)
 
-- [x] 2x LED E10 (Eclairage tuning) : L3 + L4
-- [x] 2x Résistance 150Ω (sous 5v — Vf=2.0v, 20mA/led)
+- [x] 2x LED E10 (Eclairage tuning) : [L3 + L4 ]
+- [] 2x Résistance 150Ω (sous 5v — Vf=2.0v, 20mA/led)
 
-- [x] 1x LED (Eclairage ePaper) - Double blanche L1 + L2 (nécessite 5v avec résistances 380Ω).  
+- [x] 1x LED (Eclairage ePaper) - Blanche - [L1 + L2]
+- [x] Résistances 380Ω (incluses) - (nécessite 5v).  
 
 ### Inputs
 
@@ -35,13 +36,13 @@
 - [x] 8x Résistance pour PushButton (10kΩ) SIL-9
 
 - [x] 1x micro PushButton (Reset database) - En face arrière.  
-- [x] 1x Résistance 10k
+- [] 1x Résistance 10k
 
 - [x] 1x Switch Button (Local files/DLNA) - En face arrière.
-- [x] 1x Résistance 10k
+- [] 1x Résistance 10k
 
 - [x] 1x Power Button (incl. LED) - En face arrière. Bouton 16mm chrome, anneau LED bleue.
-- [x] 1x Résistance 120Ω (LED ring bleue, sous 5v — Vf=3.2v, 15mA)
+- [] 1x Résistance 120Ω (LED ring bleue, sous 5v — Vf=3.2v, 15mA)
 
 ### Composants
 
@@ -77,8 +78,9 @@
 
   | Valeur     | Qté       | Usage                          | En stock | 
   | ---------- | --------- | ------------------------------ | -------- |
-  | 120Ω       | 1         | P — LED bleue power ring       |  |
-  | 150Ω       | 14        | On + L3 + L4 + V1–V7 + M1–M4   |  |
+  | 120Ω       | 1         | P — LED bleue power ring       |          |
+  | 150Ω       | 6         | On + L3 + L4 + M1–M4           |          |
+  | 150Ω       | 1 SIL     | V1–V7  (7 pull-ups, 1 spare)   |          |
   | 380Ω       | 2         | L1 + L2 — backlight ePaper     | oui      |
   | 10kΩ SIL-9 | 1 boîtier | B1–B7 (7 pull-ups, 1 spare)    | oui      |
-  | 10kΩ       | 2         | B8 Reset + SW9 Local/DLNA      | oui      |
+  | 10kΩ       | 2         | B8 Reset + SW9 Local/DLNA      |          |

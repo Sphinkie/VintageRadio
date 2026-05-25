@@ -15,32 +15,42 @@
 - [x] Haut parleur - 4Ω - 5 W - Diamètre 7cm
 
 - [x] 1x LED Jaune. _Ref: L0_
+  ![LED jaune L0](Components/images/LED_ON.png)
 - [x] 1x Résistance 120Ω (sous 3.3v — Vf=2.1v, 10mA). _Ref: R0_
 
-- [ ] 4x LED (Mode) Ambre. Prévoir 2 à 3 cd (20 à 30 lumen). _Ref: M1 M2 M3 M4_
+- [ ] 4x LED (Mode) Ambre. Prévoir 2 à 3 cd (20 à 30 lumen). _Ref: M1 M2 M3 M4_ — [Datasheet](<Components/datasheets/LED superambre 2861556.pdf>)
 - [] 4x Résistance 150Ω (sous 3.3v — Vf=2.1v, 8mA/led). _Ref: R21 R22 R23 R24_
 
 - [x] 1x LED bar (7 Leds vertes) 2.2v 20mA. _Ref: V1 V2 V3 V4 V5 V6 V7_
 - [x] 7x Résistance 200Ω (sous 3.3v — Vf=2.2v, 5.5mA/led). _Ref: R11 R12 R13 R14 R15 R16 R17_
+  ![Résistances 200Ω](Components/images/R_200_ohms.png)
 
 - [x] 2x LED E10 (Eclairage tuning). _Ref: L3 L4_ Ampoule incandescente 6V/0.25W — sans résistance (filament auto-limitant, ~34mA sous 5v).
+  ![LED E10 amber L3 L4](Components/images/LED_E10_L3_L4.png)
 
 - [x] 2x LED (Eclairage ePaper) - Blanche. _Ref: L1 L2_
+  ![LED blanche L1 L2](Components/images/LED_WHITE_L1_L2.png)
 - [x] 2x Résistance 380Ω (sous 5v — Vf=3.2v, 4.7mA/led). _Ref: R1 R2_
 
 ### Inputs
 
 - [x] 4x PushButton (Year / Genre / Beat / Bluetooth). _Ref: B1 B2 B3 SW4_
+  ![PushButton modes](Components/images/PUSH_MODES.png)
 - [x] 3x PushButton (Again / Star me / Next). _Ref: B5 B6 B7_
+  ![PushButton x3](Components/images/PUSH-x3.png)
 - [x] 8x Résistance pull-up 10kΩ SIL-9 (7 utilisées + 1 spare). _Ref: RS1_
+  ![SIL-9 10k](Components/images/SIL-9-10k.png)
 
 - [x] 1x micro PushButton (Reset database) - En face arrière. _Ref: B8_
+  ![PushButton Reset DB](Components/images/PUSH_ResetDB.png)
 - [x] 1x Résistance 20kΩ pull-up. _Ref: R31_
 
 - [x] 1x Switch Button (Local files/DLNA) - En face arrière. _Ref: SW9_
+  ![Switch Local/DLNA](Components/images/SW_LOCAL.png)
 - [x] 1x Résistance 20kΩ pull-up. _Ref: R32_
 
 - [x] 1x Power Button (incl. LED) - En face arrière. Bouton 16mm chrome, anneau LED bleue. _Ref: SW10_
+  ![Power Button](Components/images/SW_POWER.png)
 - [x] 1x Résistance 120Ω (LED ring bleue, sous 5v — Vf=3.2v, 15mA). _Ref: RP_
 
 ### Composants
@@ -52,16 +62,26 @@
    Capacitor Nichicon. Connexion SPI. Sortie sur connecteur. Réglage du gain.  
    Power supply = 12/20v.  
    36€ Amazon.  
-   
+  ![InnoMaker TAS5713](Components/images/InnoMaker_TAS5713.png)
+  ![InnoMaker TAS5713 HAT](Components/images/InnoMaker_TAS5713_HAT.png)
+  [Pinout](Components/datasheets/InnoMaker_TAS5713_pinout.jpg) — [Board map](Components/datasheets/InnoMaker_TAS5713_map.jpg)
+
 - [x] 2x 74HC595 Registres à décalage pour controle des LEDs. Format DIP-16.  
    Amazon 9€ (les 10)
+  ![74HC595](Components/images/SN74HCS595.png)
+  [Pinout](Components/datasheets/SN74HCS595_Pinout.png)
 
 - [x] PCF8574 (8pins) I2C Expander pour controle des Pushbutton. Format miniboard.  
    Amazon 7€ (les 2)
+  ![PCF8574 front](Components/images/PCF8575.png)
+  ![PCF8574 back](Components/images/PCF8575-back.png)
+  [Datasheet](Components/datasheets/PCF8575.md)
 
 - [x] MCP3008 Convertisseur analogique-numerique Adafruit (ADC).  Format DIP-16.
    8 canaux, 10 bits (1024 valeurs) - Connexion SPI. Lib Python: spidev.   
    Amazon 22€ (les 2)
+  ![MCP3008](Components/images/MCP3008.png)
+  [Datasheet](Components/datasheets/MCP3008-Converter.md)
 	
 - [ ] Potentiomètre 10kΩ - linéaire A.  
    Trop difficile à trouver en 180° (*half-turn*) => on prend un *single-turn*.  

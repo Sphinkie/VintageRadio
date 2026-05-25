@@ -17,14 +17,13 @@
 - [x] 1x LED Jaune. _Ref: L0_
 - [x] 1x Résistance 120Ω (sous 3.3v — Vf=2.1v, 10mA). _Ref: R0_
 
-- [ ] 4x LED (Mode) Ambre. Prévoir 2 à 3 cd (20 à 30 lumen). _Ref: M1 M2 M3 M4_ 
-- [] 4x Résistance 150Ω (sous 3.3v — Vf=2.1v, 8mA/led).  _Ref: R21 R22 R23 R24_
+- [ ] 4x LED (Mode) Ambre. Prévoir 2 à 3 cd (20 à 30 lumen). _Ref: M1 M2 M3 M4_
+- [] 4x Résistance 150Ω (sous 3.3v — Vf=2.1v, 8mA/led). _Ref: R21 R22 R23 R24_
 
 - [x] 1x LED bar (7 Leds vertes) 2.2v 20mA. _Ref: V1 V2 V3 V4 V5 V6 V7_
 - [x] 7x Résistance 200Ω (sous 3.3v — Vf=2.2v, 5.5mA/led). _Ref: R11 R12 R13 R14 R15 R16 R17_
 
-- [x] 2x LED E10 (Eclairage tuning). _Ref: L3 L4_
-- [x] 2x Résistance 150Ω (sous 5v — Vf=2.0v, 20mA/led). _Ref: R3 R4_
+- [x] 2x LED E10 (Eclairage tuning). _Ref: L3 L4_ Ampoule incandescente 6V/0.25W — sans résistance (filament auto-limitant, ~34mA sous 5v).
 
 - [x] 2x LED (Eclairage ePaper) - Blanche. _Ref: L1 L2_
 - [x] 2x Résistance 380Ω (sous 5v — Vf=3.2v, 4.7mA/led). _Ref: R1 R2_
@@ -79,7 +78,7 @@
   | Valeur     | Qté       | Refs                        | Usage                       | En stock |
   | ---------- | --------- | --------------------------- | --------------------------- | -------- |
   | 120Ω       | 2         | R0, RP                      | L0 (témoin) + POW (ring)    | oui      |
-  | 150Ω       | 6         | R3 R4, R21 R22 R23 R24      | L3 L4 (E10) + M1–M4 (mode)  |          |
+  | 150Ω       | 4         | R21 R22 R23 R24             | M1–M4 (mode superamber)     |          |
   | 200Ω       | 7         | R11 à R17                   | V1–V7 (LED bar rating)      | oui      |
   | 380Ω       | 2         | R1 R2                       | L1 L2 — backlight ePaper    | oui      |
   | 10kΩ SIL-9 | 1 boîtier | RS1                         | B1–B7 (7 pull-ups, 1 spare) | oui      |

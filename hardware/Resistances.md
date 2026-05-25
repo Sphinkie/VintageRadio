@@ -10,19 +10,19 @@
 |✓ POW | Power ring      | 5v      | Alim board |✓ RP  | 120Ω       | 3.2v | 15 mA  | bleue 16mm chrome|
 |✓ L1  | backlight       | 5v      | Alim board |✓ R1  | 380Ω       | 3.2v | 4.7 mA | white            |
 |✓ L2  | backlight       | 5v      | Alim board |✓ R2  | 380Ω       | 3.2v | 4.7 mA | white            |
-|✓ L3  | backlight       | 5v      | Alim board |✓ R3  | 150Ω       | 2.0v | 20 mA  | amber E10        |
-|✓ L4  | backlight       | 5v      | Alim board |✓ R4  | 150Ω       | 2.0v | 20 mA  | amber E10        |
-|✓ V1  | value_1         | 3.3v    | 74HC595    |✓ R11 | 200Ω       | 2.2v | 5.5 mA | verte (moins vive)          |
+|✓ L3  | backlight       | 5v      | Alim board | —    | —          | —    | ~34 mA | amber E10 — incandescente 6V, sans résistance |
+|✓ L4  | backlight       | 5v      | Alim board | —    | —          | —    | ~34 mA | amber E10 — incandescente 6V, sans résistance |
+|✓ V1  | value_1         | 3.3v    | 74HC595    |✓ R11 | 200Ω       | 2.2v | 5.5 mA | verte (moins vive)|
 |✓ V2  | value_2         | 3.3v    | 74HC595    |✓ R12 | 200Ω       | 2.2v | 5.5 mA | verte            |
 |✓ V3  | value_3         | 3.3v    | 74HC595    |✓ R13 | 200Ω       | 2.2v | 5.5 mA | verte            |
 |✓ V4  | value_4         | 3.3v    | 74HC595    |✓ R14 | 200Ω       | 2.2v | 5.5 mA | verte            |
 |✓ V5  | value_5         | 3.3v    | 74HC595    |✓ R15 | 200Ω       | 2.2v | 5.5 mA | verte            |
 |✓ V6  | value_6         | 3.3v    | 74HC595    |✓ R16 | 200Ω       | 2.2v | 5.5 mA | verte            |
 |✓ V7  | value_7         | 3.3v    | 74HC595    |✓ R17 | 200Ω       | 2.2v | 5.5 mA | verte            |
-| M1   | Year            | 3.3v    | Rpi GPIO   | R21 | 150Ω       | 2.1v | 8 mA   | superamber       |
-| M2   | Beat            | 3.3v    | Rpi GPIO   | R22 | 150Ω       | 2.1v | 8 mA   | superamber       |
-| M3   | Genre           | 3.3v    | Rpi GPIO   | R23 | 150Ω       | 2.1v | 8 mA   | superamber       |
-| M4   | BT              | 3.3v    | Rpi GPIO   | R24 | 150Ω       | 2.1v | 8 mA   | superamber       |
+| M1   | Year            | 3.3v    | Rpi GPIO   | R21  | 150Ω       | 2.1v | 8 mA   | superamber       |
+| M2   | Beat            | 3.3v    | Rpi GPIO   | R22  | 150Ω       | 2.1v | 8 mA   | superamber       |
+| M3   | Genre           | 3.3v    | Rpi GPIO   | R23  | 150Ω       | 2.1v | 8 mA   | superamber       |
+| M4   | BT              | 3.3v    | Rpi GPIO   | R24  | 150Ω       | 2.1v | 8 mA   | superamber |
 
 ### Boutons poussoirs (Pull-up)
 

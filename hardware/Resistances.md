@@ -26,20 +26,20 @@
 
 ### Boutons poussoirs (Pull-up)
 
-Résistances de tirage vers 3.3v sur les entrées des PCF8574 (les PCF8574 ont des pull-up internes ~100kΩ trop faibles — les 10kΩ externes assurent la robustesse).
+Résistances de tirage vers 3.3v sur les entrées des PCF8575 (les PCF8575 ont des pull-up internes ~100kΩ trop faibles — les 10kΩ externes assurent la robustesse).
 
 B = Bouton poussoir.
 SW = Interrupteurs à 2 positions.
 
 | Ref   | Role       | Tension | Lu par  | Ref   |Résistance | Commentaire     |
 | ----- | ---------- | ------- | ------- | ----- |---------- | --------------- |
-|✓ B1   | Year       | 3.3 v   | PCF8574 |✓ RS1  |10kΩ | pull-up — SIL-9 |
-|✓ B2   | Genre      | 3.3 v   | PCF8574 |✓ RS1  |10kΩ | pull-up — SIL-9 |
-|✓ B3   | Beat       | 3.3 v   | PCF8574 |✓ RS1  |10kΩ | pull-up — SIL-9 |
-|✓ SW4  | Bluetooth  | 3.3 v   | PCF8574 |✓ RS1  |10kΩ | pull-up — SIL-9 |
-|✓ B5   | Again      | 3.3 v   | PCF8574 |✓ RS1  |10kΩ | pull-up — SIL-9 |
-|✓ B6   | Star me    | 3.3 v   | PCF8574 |✓ RS1  |10kΩ | pull-up — SIL-9 |
-|✓ B7   | Next       | 3.3 v   | PCF8574 |✓ RS1  |10kΩ | pull-up — SIL-9 |
-|✓ B8   | Reset DB   | 3.3 v   | PCF8574 |✓ R31  |20kΩ | pull-up — résistance séparée |
-|✓ SW9  | Local/DLNA | 3.3 v   | PCF8574 |✓ R32  |20kΩ | pull-up — résistance séparée |
+|✓ B1   | Year       | 3.3 v   | PCF8575 |✓ RS1  |10kΩ | pull-up — SIL-9 |
+|✓ B2   | Genre      | 3.3 v   | PCF8575 |✓ RS1  |10kΩ | pull-up — SIL-9 |
+|✓ B3   | Beat       | 3.3 v   | PCF8575 |✓ RS1  |10kΩ | pull-up — SIL-9 |
+|✓ SW4  | Bluetooth  | 3.3 v   | PCF8575 |✓ RS1  |10kΩ | pull-up — SIL-9 |
+|✓ B5   | Again      | 3.3 v   | PCF8575 |✓ RS1  |10kΩ | pull-up — SIL-9 |
+|✓ B6   | Star me    | 3.3 v   | PCF8575 |✓ RS1  |10kΩ | pull-up — SIL-9 |
+|✓ B7   | Next       | 3.3 v   | PCF8575 |✓ RS1  |10kΩ | pull-up — SIL-9 |
+|✓ B8   | Reset DB   | 3.3 v   | PCF8575 |✓ R31  |20kΩ | pull-up — résistance séparée |
+|✓ SW9  | Local/DLNA | 3.3 v   | PCF8575 |✓ R32  |20kΩ | pull-up — résistance séparée |
 |✓ SW10 | Power      | 12 v    | --      | --  |-- | Alimente le système (avec LED séparée) |

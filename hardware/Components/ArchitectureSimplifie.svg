@@ -30,7 +30,7 @@
   <!-- ===== I2C EXPANDERS ===== -->
   <rect x="15" y="215" width="130" height="255" rx="4" fill="#E8E8E8" stroke="#999" stroke-width="1.5"/>
   <text x="80" y="234" text-anchor="middle" font-size="10" font-weight="bold" fill="#333">I2C Expanders</text>
-  <text x="80" y="248" text-anchor="middle" font-size="8" fill="#666">2× PCF8574</text>
+  <text x="80" y="248" text-anchor="middle" font-size="8" fill="#666">2× PCF8575</text>
   <line x1="25" y1="253" x2="135" y2="253" stroke="#999" stroke-width="0.7"/>
   <text x="25" y="270" font-size="8" fill="#555">Reset</text>
   <text x="25" y="284" font-size="8" fill="#555">ON</text>

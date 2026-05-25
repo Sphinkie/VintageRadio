@@ -2,18 +2,16 @@
 
 ## Principe
 
-Deux modules PCF8575 sur le même bus I2C. Chaque module a une adresse distincte
-configurée par ses broches A0/A1/A2.
+Un module PCF8575 sur le bus I2C.  
+Chaque module a une adresse distincte configurée par ses broches A0/A1/A2.
 
 | Module | A0  | A1  | A2  | Adresse I2C |
 | ------ | --- | --- | --- | ----------- |
 | #1     | GND | GND | GND | 0x20        |
-| #2     | VCC | GND | GND | 0x21        |
 
-Le PCF8575 dispose de 16 I/O (P00–P07 + P10–P17). Les 9 boutons utilisent
-le module #1 (P00–P08). Le module #2 reste disponible pour extension.
+Le PCF8575 dispose de 16 I/O (P00–P07 + P10–P17). 
 
-## Schéma
+## Exeple de schéma
 
 ```mermaid
 graph TD
@@ -47,7 +45,7 @@ graph TD
 
 ## Câblage des boutons
 
-Chaque bouton est câblé entre la broche I/O du PCF8575 et **GND**.
+Chaque bouton est câblé entre la broche I/O du PCF8575 et **GND**.  
 La résistance pull-up (RS1 = SIL-9 10kΩ, ou R31/R32 = 20kΩ) tire la broche
 vers **3.3V** au repos. L'appui tire vers GND → lecture LOW = appuyé.
 

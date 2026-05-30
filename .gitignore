@@ -5,6 +5,7 @@ __pycache__/
 *$py.class
 *.dll
 *.bkp
+*.FCBak
 
 # Test files and folders
 lib/data/

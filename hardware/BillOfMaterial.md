@@ -6,11 +6,11 @@
 
 ### Outputs
    
-- [x] Ecran ePaper
-   Deux modèles à disposition dan le stock:
-   - ePaper 2.13" - 5cm x 2.5xm - SPI - 250 x 122
-   - ePaper 2.9" - 3cm x 6.8cm - SPI - 296 x 128
-   Connexion SPI.
+- [x] Ecran ePaper 2.13" - 5cm x 2.5cm - 212 x 104 px -  avec DriverHat
+  <img src="Components/images/2.13inch-ePaper-details.png" width="150" alt="ePaper">  
+  <img src="Components/images/ePaper.png" width="150" alt="ePaper with Driver HAT">  
+  Connexion SPI.
+  [Sizes](Components/datasheets/ePaper-Driver-HAT-size.jpg) — [Features](Components/datasheets/ePaper-Driver-HAT-features.jpg) - [SPI Control](Components/datasheets/ePaper-Driver-HAT-SPIcontrol.jpg)
 
 - [x] Haut parleur - 4Ω - 5 W - Diamètre 7cm
 

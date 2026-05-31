@@ -3,14 +3,12 @@
 ## Bill Of Material
 
 
-
 ### Outputs
    
-- [x] Ecran ePaper 2.13" - 5cm x 2.5cm - 212 x 104 px -  avec DriverHat
-  <img src="Components/images/2.13inch-ePaper-details.png" width="150" alt="ePaper">  
+- [x] Ecran ePaper 2.13" - 5cm x 2.5cm - 212 x 104 px - Avec Driver HAT et bus SPI.  
+  <img src="Components/images/2.13inch-ePaper-details.png" width="150" alt="ePaper">
   <img src="Components/images/ePaper.png" width="150" alt="ePaper with Driver HAT">  
-  Connexion SPI.
-  [Sizes](Components/datasheets/ePaper-Driver-HAT-size.jpg) — [Features](Components/datasheets/ePaper-Driver-HAT-features.jpg) - [SPI Control](Components/datasheets/ePaper-Driver-HAT-SPIcontrol.jpg)
+  [Sizes](Components/datasheets/ePaper-Driver-HAT-size.png) — [Features](Components/datasheets/ePaper-Driver-HAT-features.png) — [SPI Control](Components/datasheets/ePaper-Driver-HAT-SPIcontrol.png)
 
 - [x] Haut parleur - 4Ω - 5 W - Diamètre 7cm
 
@@ -18,21 +16,22 @@
   <img src="Components/images/LED_ON.png" width="150" alt="LED jaune L0">
 - [x] 1x Résistance 120Ω (sous 3.3v — Vf=2.1v, 10mA). _Ref: R0_
 
-- [ ] 4x LED (Mode) Ambre. Prévoir 2 à 3 cd (20 à 30 lumen). _Ref: M1 M2 M3 M4_  
+- [ ] 4x LEDs oranges (Modes). Prévoir 2 à 3 cd (20 à 30 lumen). _Ref: M1 M2 M3 M4_  
   [Datasheet](<Components/datasheets/LED superambre 2861556.pdf>)
 - [ ] 4x Résistance 150Ω (sous 3.3v — Vf=2.1v, 8mA/led). _Ref: R21 R22 R23 R24_
 
-- [x] 1x LED bar (7 Leds vertes) 2.2v 20mA. _Ref: V1 V2 V3 V4 V5 V6 V7_
+- [x] 1x LED bar (7 Leds vertes) Vf=2.2v - 20mA. _Ref: V1 V2 V3 V4 V5 V6 V7_
 - [x] 7x Résistance 200Ω (sous 3.3v — Vf=2.2v, 5.5mA/led). _Ref: R11 R12 R13 R14 R15 R16 R17_  
   <img src="Components/images/R_200_ohms.png" width="150" alt="Résistances 200Ω">
 
-- [x] 2x LED E10 (Eclairage tuning). _Ref: L3 L4_   
+- [x] 2x LEDs E10 (Eclairage tuning). _Ref: L3 L4_   
   Ampoule incandescente 6V/0.25W — sans résistance (filament auto-limitant, ~34mA sous 5v).  
   <img src="Components/images/LED_E10_L3_L4.png" width="150" alt="LED E10 amber L3 L4">
 
-- [x] 2x LED (Eclairage ePaper) - Blanche. _Ref: L1 L2_  
+- [x] 2x LEDs blanches (Eclairage ePaper). _Ref: L1 L2_  
   <img src="Components/images/LED_WHITE_L1_L2.png" width="150" alt="LED blanche L1 L2">
-- [x] 2x Résistance 380Ω (sous 5v — Vf=3.2v, 4.7mA/led). _Ref: R1 R2_
+- [x] 2x Résistance 380Ω (sous 5v — Vf=3.2v - 4.7mA/led). _Ref: R1 R2_
+
 
 ### Inputs
 
@@ -55,6 +54,7 @@
   <img src="Components/images/SW_POWER.png" width="150" alt="Power Button">
 - [x] 1x Résistance 120Ω (LED ring bleue, sous 5v — Vf=3.2v, 15mA). _Ref: RP_
 
+
 ### Composants
 
 
@@ -64,7 +64,7 @@
    Capacitor Nichicon. Connexion SPI. Sortie sur connecteur. Réglage du gain.  
    Power supply = 12/20v.  
    36€ Amazon.  
-  <img src="Components/images/InnoMaker_TAS5713.png" width="150" alt="InnoMaker TAS5713">  
+  <img src="Components/images/InnoMaker_TAS5713.png" width="150" alt="InnoMaker TAS5713">
   <img src="Components/images/InnoMaker_TAS5713_HAT.png" width="150" alt="InnoMaker TAS5713 HAT">  
   [Pinout](Components/datasheets/InnoMaker_TAS5713_pinout.jpg) — [Board map](Components/datasheets/InnoMaker_TAS5713_map.jpg)
 

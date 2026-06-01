@@ -52,6 +52,15 @@ The application has three layers that communicate via async tasks and shared sta
    - `lib/vr_database.py` — SQLite schema and raw queries (genre, year, rating, BPM)
    - `lib/vr_database_wrapper.py` — abstraction: queries by genre/decade/rating/random
 
+7. **Utilities:**
+   - `lib/tag_collector.py` — fetches ID3 tags (BPM, Rating) directly from MP3 URLs via HTTP Range requests (no full download)
+   - `lib/utilities.py` — `calculate_file_hash()`, hash 8 chars basé sur le nom de fichier
+   - `lib/vr_logger.py` — logger centralisé (`get_logger`, `set_logging` avec niveaux -v / -vv)
+
+## Database Path
+
+The SQLite database is at `./data/music_metadata.db` (relative to the project root). The `lib/data/` folder is a test artifact and is not used at runtime.
+
 ## User Control via JSON
 
 The file `user_request.json` (in repo root) is the runtime control interface — edit it while the app is running to change playback mode, genre filter, year filter, and BPM threshold. It is polled every 5 seconds.

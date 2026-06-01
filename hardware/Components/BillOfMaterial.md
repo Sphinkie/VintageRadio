@@ -5,24 +5,24 @@
 
 ### Outputs
    
-- [x] Ecran ePaper 2.13" - 5cm x 2.5cm - 212 x 104 px - Avec Driver HAT et bus SPI.  
-  <img src="Components/images/2.13inch-ePaper-details.png" width="150" alt="ePaper">
-  <img src="Components/images/ePaper.png" width="150" alt="ePaper with Driver HAT">  
-  [Sizes](Components/datasheets/ePaper-Driver-HAT-size.png) — [Features](Components/datasheets/ePaper-Driver-HAT-features.png) — [SPI Control](Components/datasheets/ePaper-Driver-HAT-SPIcontrol.png)
+- [x] Ecran ePaper 2.13" flexible (Ref Waweshare SKU 14986) - 5cm x 2.5cm - 212 x 104 px. Avec Driver HAT (ref Waveshare RRX)(avec bus SPI).  
+  <img src="images/2.13inch-ePaper-details.png" width="150" alt="ePaper">
+  <img src="images/ePaper.png" width="150" alt="ePaper with Driver HAT">  
+  [Sizes](datasheets/ePaper-Driver-HAT-size.png) — [Features](Components/datasheets/ePaper-Driver-HAT-features.png) — [SPI Control](Components/datasheets/ePaper-Driver-HAT-SPIcontrol.png)
 
 - [x] Haut parleur - 4Ω - 5 W - Diamètre 7cm
 
 - [x] 1x LED Jaune. _Ref: L0_  
-  <img src="Components/images/LED_ON.png" width="150" alt="LED jaune L0">
+  <img src="images/LED_ON.png" width="150" alt="LED jaune L0">
 - [x] 1x Résistance 120Ω (sous 3.3v — Vf=2.1v, 10mA). _Ref: R0_
 
 - [ ] 4x LEDs oranges (Modes). Prévoir 2 à 3 cd (20 à 30 lumen). _Ref: M1 M2 M3 M4_  
-  [Datasheet](<Components/datasheets/LED superambre 2861556.pdf>)
+  [Datasheet](<datasheets/LED superambre 2861556.pdf>)
 - [ ] 4x Résistance 150Ω (sous 3.3v — Vf=2.1v, 8mA/led). _Ref: R21 R22 R23 R24_
 
 - [x] 1x LED bar (7 Leds vertes) Vf=2.2v - 20mA. _Ref: V1 V2 V3 V4 V5 V6 V7_
 - [x] 7x Résistance 200Ω (sous 3.3v — Vf=2.2v, 5.5mA/led). _Ref: R11 R12 R13 R14 R15 R16 R17_  
-  <img src="Components/images/R_200_ohms.png" width="150" alt="Résistances 200Ω">
+  <img src="images/R_200_ohms.png" width="150" alt="Résistances 200Ω">
 
 - [x] 2x LEDs E10 (Eclairage tuning). _Ref: L3 L4_   
   Ampoule incandescente 6V/0.25W — sans résistance (filament auto-limitant, ~34mA sous 5v).  

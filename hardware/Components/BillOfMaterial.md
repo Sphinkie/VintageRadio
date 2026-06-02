@@ -8,7 +8,7 @@
 - [x] Ecran ePaper 2.13" flexible (Ref Waweshare SKU 14986) - 5cm x 2.5cm - 212 x 104 px. Avec Driver HAT (ref Waveshare RRX)(avec bus SPI).  
   <img src="images/2.13inch-ePaper-details.png" width="150" alt="ePaper">
   <img src="images/ePaper.png" width="150" alt="ePaper with Driver HAT">  
-  [Sizes](datasheets/ePaper-Driver-HAT-size.png) — [Features](datasheets/ePaper-Driver-HAT-features.png) — [SPI Control](datasheets/ePaper-Driver-HAT-SPIcontrol.png)
+  [Sizes](datasheets/ePaper-Driver-HAT-size.png) — [Features](datasheets/ePaper-Driver-HAT-features.png) — [SPI Control](datasheets/ePaper-Driver-HAT-SPIcontrol.png) — [Description](datasheets/ePaper-Driver.md)
 
 - [x] Haut parleur - 4Ω - 5 W - Diamètre 7cm
 

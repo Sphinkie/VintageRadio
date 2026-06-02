@@ -1,8 +1,8 @@
 # Vintage Radio — Modèles 3D
 
-Vue d'ensemble du boîtier (2026-06-01) :
+Vue d'ensemble du boîtier :
 
-![Vue d'ensemble](model-view-2026-06-01.png)
+![Vue d'ensemble](model-view-latest.png)
 
 ---
 

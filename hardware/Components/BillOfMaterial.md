@@ -16,11 +16,16 @@
   <img src="images/LED_ON.png" width="150" alt="LED jaune L0">
 - [x] 1x Résistance 120Ω (sous 3.3v — Vf=2.1v, 10mA). _Ref: R0_
 
-- [x] 4x LEDs oranges (Modes). Prévoir 2 à 3 cd (20 à 30 lumen). _Ref: M1 M2 M3 M4_  
+- [x] 3x LEDs oranges (Modes). Prévoir 2 à 3 cd (20 à 30 lumen). _Ref: M1 M2 M3_  
+  <img src="images/LED_ORANGE.png" width="150" alt="LED Orange">
+- [x] 1x LED verte (BT). _Ref: M4_  
   <img src="images/LED_ORANGE.png" width="150" alt="LED Orange">
 - [ ] 4x Résistance 150Ω (sous 3.3v — Vf=2.1v, 8mA/led). _Ref: R21 R22 R23 R24_
 
 - [x] 1x LED bar (7 Leds vertes) Vf=2.2v - 20mA. _Ref: V1 V2 V3 V4 V5 V6 V7_
+  <img src="images/Ledbar-front.png" width="150" alt="7 Leds bar">
+  <img src="images/Ledbar-back.png" width="150" alt="7 Leds bar">
+
 - [x] 7x Résistance 200Ω (sous 3.3v — Vf=2.2v, 5.5mA/led). _Ref: R11 R12 R13 R14 R15 R16 R17_  
   <img src="images/R_200_ohms.png" width="150" alt="Résistances 200Ω">
 

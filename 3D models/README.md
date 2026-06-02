@@ -5,6 +5,14 @@ Vue d'ensemble du boîtier :
 ![Vue d'ensemble](model-view-latest.png)
 
 ---
+## Conseils d'impression
+
+- Activer le body
+- Se mettre en vue ortho
+- Menu: affichage -> représentation -> (3) filaire
+- Menu: fichier -> Imprimer -> Préférences -> Paysage + A4 + Encre noire uniquement.  
+On a alors une mise à l'échelle proche de 1:1.
+ 
 
 ## Pièces imprimables
 

@@ -96,6 +96,10 @@
 
 - [ ] Ecran plexi
 
+### Connectique
+
+- [ ] Header 40 double row for Raspberry extension board
+
 
 ### Récapitulatif des résistances
 

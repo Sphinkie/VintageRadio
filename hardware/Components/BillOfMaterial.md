@@ -26,7 +26,7 @@
   <img src="images/LED_ORANGE.png" width="150" alt="LED Orange">
   
 - [x] 1x LED verte (pour l'info Bluetooth BT). _Ref: L6_  
-  <img src="images/LED_ORANGE.png" width="150" alt="LED Orange">
+  <img src="images/LED_VERTE.png" width="150" alt="LED Orange">
   
 - [ ] 4x Résistance 150Ω (sous 3.3v — Vf=2.1v, 8mA/led). _Ref: R3 R4 R5 R6_
 

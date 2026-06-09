@@ -31,10 +31,10 @@
 - [ ] 4x Résistance 150Ω (sous 3.3v — Vf=2.1v, 8mA/led). _Ref: R3 R4 R5 R6_
 
 - [x] 5x LED 3mm vert-jaune (pour le rating). _Ref: L11 L12 L13 L14 L15_
-  <img src="images/Ledbar-front.png" width="150" alt="Leds pour rating">
+  <img src="images/LED_3mm_colors.png" width="150" alt="Leds pour rating">
 
 - [x] 1x LED 3mm mauve (pour le bat). _Ref: L16_
-  <img src="images/Ledbar-back.png" width="150" alt="Led pour beat">
+  <img src="images/LED_3mm_dimensions.png" width="150" alt="Led pour beat">
 
 - [] 6x Résistance 200Ω (sous 3.3v — Vf=2.2v, 5.5mA/led). _Ref: R11 R12 R13 R14 R15 R16_  
   <img src="images/R_200_ohms.png" width="150" alt="Résistances 200Ω">

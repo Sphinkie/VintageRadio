@@ -1,4 +1,6 @@
+# --------------------------------------
 # Byte-compiled / optimized / DLL files
+# --------------------------------------
 __pycache__/
 .idea/
 *.py[cod]
@@ -7,14 +9,21 @@ __pycache__/
 *.bkp
 *.FCBak
 
+# --------------------------
 # Test files and folders
+# --------------------------
 lib/data/
 *.db
 
+# --------------------------
 # Distribution / packaging
+# --------------------------
 .Python
 build/
 dist/
 downloads/
 
-
+# --------------------------
+# KiCad
+# --------------------------
+.history/

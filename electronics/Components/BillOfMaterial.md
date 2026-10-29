@@ -28,7 +28,7 @@
 - [x] 1x LED verte (pour l'info Bluetooth BT). _Ref: L6_  
   <img src="images/LED_VERTE.png" width="150" alt="LED Orange">
   
-- [ ] 4x Résistance 150Ω (sous 3.3v — Vf=2.1v, 8mA/led). _Ref: R3 R4 R5 R6_
+- [x] 4x Résistance 150Ω (sous 3.3v — Vf=2.1v, 8mA/led). _Ref: R3 R4 R5 R6_
 
 - [x] 5x LED 3mm vert-jaune (pour le rating). _Ref: L11 L12 L13 L14 L15_
   <img src="images/LED_3mm_colors.png" width="150" alt="Leds pour rating">
@@ -36,7 +36,7 @@
 - [x] 1x LED 3mm mauve (pour le bat). _Ref: L16_
   <img src="images/LED_3mm_dimensions.png" width="150" alt="Led pour beat">
 
-- [] 6x Résistance 200Ω (sous 3.3v — Vf=2.2v, 5.5mA/led). _Ref: R11 R12 R13 R14 R15 R16_  
+- [x] 6x Résistance 200Ω (sous 3.3v — Vf=2.2v, 5.5mA/led). _Ref: R11 R12 R13 R14 R15 R16_  
   <img src="images/R_200_ohms.png" width="150" alt="Résistances 200Ω">
 
 - [x] 2x LEDs E10 (Eclairage tuning). _Ref: L20 L21_   
@@ -110,7 +110,8 @@
 
 ### Connectique
 
-- [ ] Header 40 double row for Raspberry extension board
+- [ ] Header 40 (2x20) double-row for Raspberry extension board
+  Commandé sur Amazon le 29/10/2026 (9€).
 
 
 ### Récapitulatif des résistances
@@ -118,7 +119,7 @@
   | Valeur     | Qté       | Refs                        | Usage                       | En stock |
   | ---------- | --------- | --------------------------- | --------------------------- | -------- |
   | 120Ω       | 2         | R0, RP                      | L0 (témoin) + POW (ring)    | oui      |
-  | 150Ω       | 4         | R21 R22 R23 R24             | M1–M4 (mode superamber)     |          |
+  | 150Ω       | 4         | R21 R22 R23 R24             | M1–M4 (mode superamber)     | oui      |
   | 200Ω       | 7         | R11 à R17                   | V1–V7 (LED bar rating)      | oui      |
   | 380Ω       | 2         | R1 R2                       | L1 L2 — backlight ePaper    | oui      |
   | 10kΩ SIL-9 | 1 boîtier | RS1                         | B1–B7 (7 pull-ups, 1 spare) | oui      |

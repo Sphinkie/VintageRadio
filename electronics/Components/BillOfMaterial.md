@@ -110,7 +110,7 @@
 
 ### Connectique
 
-- [ ] Header 40 (2x20) double-row for Raspberry extension board
+- [x] Header 40 (2x20) double-row for Raspberry extension board
   Commandé sur Amazon le 29/10/2026 (9€).
 
 
